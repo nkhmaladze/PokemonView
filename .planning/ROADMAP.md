@@ -32,7 +32,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A Marketplace Insights API access request (Application Growth Check) has been submitted, with its status tracked and a decision-by date recorded.
   3. A documented fallback decision exists for the denied case: ship an active-only product as v1 and revisit sold-price in a later phase/milestone.
   4. 50-100 real eBay Pokemon sealed-product listing titles are captured as fixtures for building and testing matching rules.
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 01-01-PLAN.md — Secret hygiene & Python project scaffolding (.gitignore, .env.example, requirements.txt)
+- [ ] 01-02-PLAN.md — Marketplace Insights access gate: manual steps, Growth Check narrative & fallback decision
+- [ ] 01-03-PLAN.md — eBay OAuth + Browse API verification script (ebay_client.py, verify_ebay_access.py)
+- [ ] 01-04-PLAN.md — Install dependencies & run live verification (package-legitimacy gate + 50-100 fixtures)
 
 ### Phase 2: Product Catalog & Data Model
 **Goal**: A curated catalog of every v1 sealed product exists, persisted on the shared MongoDB data model that ingestion, matching, and pricing all depend on.
@@ -120,7 +124,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. eBay API Feasibility Gate | 0/TBD | Not started | - |
+| 1. eBay API Feasibility Gate | 0/4 | Not started | - |
 | 2. Product Catalog & Data Model | 0/TBD | Not started | - |
 | 3. Active-Listing Ingestion Pipeline | 0/TBD | Not started | - |
 | 4. Listing Matching & Price Normalization | 0/TBD | Not started | - |
