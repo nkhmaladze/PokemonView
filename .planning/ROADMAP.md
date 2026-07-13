@@ -61,11 +61,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Each catalog product carries canonical metadata — set, product type, and release info — usable by matching rules.
   3. The catalog is persisted in MongoDB and is queryable by set and product type, on a schema that reserves fields for both item-only and total (item + shipping) price points and time-series history.
 
-**Plans**: 1/6 plans executed
+**Plans**: 2/6 plans executed
 
 **Wave 1** *(independent — env + data curation in parallel)*
 
-- [ ] 02-01-PLAN.md — Python dependencies (pymongo, pytest) with package-legitimacy gate
+- [x] 02-01-PLAN.md — Python dependencies (pymongo, pytest) with package-legitimacy gate
 - [ ] 02-02-PLAN.md — MongoDB instance provisioning (Atlas M0 or local) + MONGODB_URI
 - [x] 02-03-PLAN.md — Curated catalog data module (scripts/catalog_data.py, 4 sets × product types)
 
@@ -173,7 +173,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. eBay API Feasibility Gate | 3/4 | In Progress|  |
-| 2. Product Catalog & Data Model | 1/6 | In Progress|  |
+| 2. Product Catalog & Data Model | 2/6 | In Progress|  |
 | 3. Active-Listing Ingestion Pipeline | 0/TBD | Not started | - |
 | 4. Listing Matching & Price Normalization | 0/TBD | Not started | - |
 | 5. Flask REST API (active-price serving) | 0/TBD | Not started | - |
