@@ -9,8 +9,8 @@ Requirements for initial release. Each maps to roadmap phases. Items tagged **(P
 
 ### Catalog
 
-- [ ] **CATALOG-01**: Curated catalog of sealed English product (booster packs, booster boxes, ETBs) exists for the 2-3 most recent sets
-- [ ] **CATALOG-02**: Each catalog product has canonical metadata (set, product type, release info) used for matching
+- [x] **CATALOG-01**: Curated catalog of sealed English product (booster packs, booster boxes, ETBs) exists for the 2-3 most recent sets
+- [x] **CATALOG-02**: Each catalog product has canonical metadata (set, product type, release info) used for matching
 
 ### Ingestion
 
@@ -68,8 +68,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CATALOG-01 | Phase 2 | Pending |
-| CATALOG-02 | Phase 2 | Pending |
+| CATALOG-01 | Phase 2 | Complete |
+| CATALOG-02 | Phase 2 | Complete |
 | INGEST-01 | Phase 3 | Pending |
 | INGEST-02 | Phase 3 | Pending |
 | INGEST-03 | Phase 3 | Pending |
@@ -89,6 +89,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 **Note:** Phases 1 (feasibility gate), 5 (Flask API serving layer), and 7 (launch & hardening) own no requirements directly. They are enabling/operational layers of the horizontal-layer build. Phase 5 serves the display requirements (PRICE-01/02/03, SEARCH-01/02) that become user-observable in Phase 6.
 
 **Coverage:**
+
 - v1 requirements: 17 total
 - Mapped to phases: 17 ✓
 - Unmapped: 0
