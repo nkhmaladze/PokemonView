@@ -38,12 +38,14 @@ created: 2026-07-13
 
 Task IDs are assigned by the planner; this table pre-maps each phase requirement to its test so the planner can slot in real Task IDs directly. Update the Task ID / Plan / Wave columns once PLAN.md files exist.
 
+Test files are authored in Plan 02-05 (Wave 2, RED) and driven green in Plan 02-06 Task 2 (Wave 3). The `$jsonSchema` validator the rejection test exercises is created in Plan 02-04 (Wave 2).
+
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| TBD | TBD | TBD | CATALOG-01 | — | Catalog contains every in-scope product (4 sets × up to 4 product types, ~15-16 docs, excluding D-05 exclusions) as a distinct entry | integration | `pytest tests/test_catalog_schema.py::test_catalog_completeness -x` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | CATALOG-01 | — | Re-running the seed script does not create duplicate documents | integration | `pytest tests/test_catalog_schema.py::test_seed_idempotent -x` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | CATALOG-02 | V5 (input validation) | Every catalog document has set_name, product_type, release info, msrp, image_url per the `$jsonSchema` validator | unit/integration | `pytest tests/test_catalog_schema.py::test_schema_validator_rejects_malformed -x` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | CATALOG-02 | — | Catalog is queryable by set and product_type via the compound index | integration | `pytest tests/test_catalog_schema.py::test_query_by_set_and_type -x` | ❌ W0 | ⬜ pending |
+| 02-05-T2 (authored) → 02-06-T2 (green) | 02-05 → 02-06 | 2 → 3 | CATALOG-01 | — | Catalog contains every in-scope product (4 sets × up to 4 product types, ~15-16 docs, excluding D-05 exclusions) as a distinct entry | integration | `pytest tests/test_catalog_schema.py::test_catalog_completeness -x` | ❌ W0 | ⬜ pending |
+| 02-05-T2 (authored) → 02-06-T2 (green) | 02-05 → 02-06 | 2 → 3 | CATALOG-01 | T-02-06 | Re-running the seed script does not create duplicate documents | integration | `pytest tests/test_catalog_schema.py::test_seed_idempotent -x` | ❌ W0 | ⬜ pending |
+| 02-05-T2 (authored) → 02-06-T2 (green); validator from 02-04-T1 | 02-04/02-05 → 02-06 | 2 → 3 | CATALOG-02 | T-02-01 / V5 (input validation) | Every catalog document has set_name, product_type, release info, msrp, image_url per the `$jsonSchema` validator (malformed product_type rejected at DB layer) | unit/integration | `pytest tests/test_catalog_schema.py::test_schema_validator_rejects_malformed -x` | ❌ W0 | ⬜ pending |
+| 02-05-T2 (authored) → 02-06-T2 (green); index from 02-04-T1 | 02-04/02-05 → 02-06 | 2 → 3 | CATALOG-02 | — | Catalog is queryable by set and product_type via the compound index | integration | `pytest tests/test_catalog_schema.py::test_query_by_set_and_type -x` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 

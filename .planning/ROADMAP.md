@@ -61,7 +61,22 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Each catalog product carries canonical metadata — set, product type, and release info — usable by matching rules.
   3. The catalog is persisted in MongoDB and is queryable by set and product type, on a schema that reserves fields for both item-only and total (item + shipping) price points and time-series history.
 
-**Plans**: TBD
+**Plans**: 6 plans
+
+**Wave 1** *(independent — env + data curation in parallel)*
+
+- [ ] 02-01-PLAN.md — Python dependencies (pymongo, pytest) with package-legitimacy gate
+- [ ] 02-02-PLAN.md — MongoDB instance provisioning (Atlas M0 or local) + MONGODB_URI
+- [ ] 02-03-PLAN.md — Curated catalog data module (scripts/catalog_data.py, 4 sets × product types)
+
+**Wave 2** *(depends on Wave 1 env)*
+
+- [ ] 02-04-PLAN.md — MongoDB schema: products ($jsonSchema validator + index) & price_points (time-series)
+- [ ] 02-05-PLAN.md — Test scaffold: conftest fixture + 4 catalog contract tests (pytest.ini)
+
+**Wave 3** *(depends on Wave 2)*
+
+- [ ] 02-06-PLAN.md — Idempotent seed script + run seed + full green test suite
 
 ### Phase 3: Active-Listing Ingestion Pipeline
 
@@ -158,7 +173,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. eBay API Feasibility Gate | 3/4 | In Progress|  |
-| 2. Product Catalog & Data Model | 0/TBD | Not started | - |
+| 2. Product Catalog & Data Model | 0/6 | Not started | - |
 | 3. Active-Listing Ingestion Pipeline | 0/TBD | Not started | - |
 | 4. Listing Matching & Price Normalization | 0/TBD | Not started | - |
 | 5. Flask REST API (active-price serving) | 0/TBD | Not started | - |
