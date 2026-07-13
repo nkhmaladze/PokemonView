@@ -130,3 +130,7 @@ None.
 ---
 *Phase: 01-ebay-api-feasibility-gate*
 *Completed: 2026-07-13*
+
+## Self-Check: PASSED
+
+All created files verified present on disk (MANUAL-STEPS.md, GROWTH-CHECK-NARRATIVE.md, FALLBACK-DECISION.md, 01-02-SUMMARY.md). All task commit hashes (d82c379, 00e44c2, f297ad0, 9fbd4de) verified present in git log.
