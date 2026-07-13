@@ -5,7 +5,7 @@
 
 ## v1 Requirements
 
-Requirements for initial release. Each maps to roadmap phases. Items tagged **(Phase 5, contingent)** depend on eBay Marketplace Insights API access being approved — see PROJECT.md Context and research/PITFALLS.md. If access is denied, v1 ships without them and they roll into a later milestone.
+Requirements for initial release. Each maps to roadmap phases. Items tagged **(Phase 8, contingent)** depend on eBay Marketplace Insights API access being approved — see PROJECT.md Context and research/PITFALLS.md. Phases 1-7 ship a complete active-price product independent of that approval; if access is denied, the contingent items roll into a later milestone.
 
 ### Catalog
 
@@ -17,7 +17,7 @@ Requirements for initial release. Each maps to roadmap phases. Items tagged **(P
 - [ ] **INGEST-01**: Scheduled worker pulls active eBay listings via the Browse API every N hours
 - [ ] **INGEST-02**: Ingestion is idempotent (upsert by eBay item ID) and safe against overlapping/retried runs
 - [ ] **INGEST-03**: Both pre-shipping item price and estimated total price (item price + estimated shipping cost) are stored per listing
-- [ ] **INGEST-04** (Phase 5, contingent): Sold listings are pulled via the Marketplace Insights API once access is confirmed
+- [ ] **INGEST-04** (Phase 8, contingent): Sold listings are pulled via the Marketplace Insights API once access is confirmed
 
 ### Matching
 
@@ -30,9 +30,9 @@ Requirements for initial release. Each maps to roadmap phases. Items tagged **(P
 - [ ] **PRICE-01**: User can view a product's current price, led by estimated total price (item + shipping) with pre-shipping item price shown as secondary detail
 - [ ] **PRICE-02**: User can see a "data as of [timestamp]" freshness indicator
 - [ ] **PRICE-03**: User can see a price-trend badge (7d/30d % change) based on active-price history
-- [ ] **PRICE-04** (Phase 5, contingent): User can see a historical sold-price trend chart
-- [ ] **PRICE-05** (Phase 5, contingent): User can see an active-vs-sold spread indicator ("asking X% above last sale")
-- [ ] **PRICE-06** (Phase 5, contingent): User can see a sold-volume/liquidity indicator ("N sold in last 7 days")
+- [ ] **PRICE-04** (Phase 8, contingent): User can see a historical sold-price trend chart
+- [ ] **PRICE-05** (Phase 8, contingent): User can see an active-vs-sold spread indicator ("asking X% above last sale")
+- [ ] **PRICE-06** (Phase 8, contingent): User can see a sold-volume/liquidity indicator ("N sold in last 7 days")
 
 ### Search & Browse
 
@@ -68,29 +68,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CATALOG-01 | TBD | Pending |
-| CATALOG-02 | TBD | Pending |
-| INGEST-01 | TBD | Pending |
-| INGEST-02 | TBD | Pending |
-| INGEST-03 | TBD | Pending |
-| INGEST-04 | TBD | Pending |
-| MATCH-01 | TBD | Pending |
-| MATCH-02 | TBD | Pending |
-| MATCH-03 | TBD | Pending |
-| PRICE-01 | TBD | Pending |
-| PRICE-02 | TBD | Pending |
-| PRICE-03 | TBD | Pending |
-| PRICE-04 | TBD | Pending |
-| PRICE-05 | TBD | Pending |
-| PRICE-06 | TBD | Pending |
-| SEARCH-01 | TBD | Pending |
-| SEARCH-02 | TBD | Pending |
+| CATALOG-01 | Phase 2 | Pending |
+| CATALOG-02 | Phase 2 | Pending |
+| INGEST-01 | Phase 3 | Pending |
+| INGEST-02 | Phase 3 | Pending |
+| INGEST-03 | Phase 3 | Pending |
+| INGEST-04 | Phase 8 (contingent) | Pending |
+| MATCH-01 | Phase 4 | Pending |
+| MATCH-02 | Phase 4 | Pending |
+| MATCH-03 | Phase 4 | Pending |
+| PRICE-01 | Phase 6 | Pending |
+| PRICE-02 | Phase 6 | Pending |
+| PRICE-03 | Phase 6 | Pending |
+| PRICE-04 | Phase 8 (contingent) | Pending |
+| PRICE-05 | Phase 8 (contingent) | Pending |
+| PRICE-06 | Phase 8 (contingent) | Pending |
+| SEARCH-01 | Phase 6 | Pending |
+| SEARCH-02 | Phase 6 | Pending |
+
+**Note:** Phases 1 (feasibility gate), 5 (Flask API serving layer), and 7 (launch & hardening) own no requirements directly. They are enabling/operational layers of the horizontal-layer build. Phase 5 serves the display requirements (PRICE-01/02/03, SEARCH-01/02) that become user-observable in Phase 6.
 
 **Coverage:**
 - v1 requirements: 17 total
-- Mapped to phases: 0 (pending roadmap creation)
-- Unmapped: 17 ⚠️
+- Mapped to phases: 17 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-07-12*
-*Last updated: 2026-07-12 after initial definition*
+*Last updated: 2026-07-12 after roadmap creation (traceability mapped; contingent items re-tagged to Phase 8)*
