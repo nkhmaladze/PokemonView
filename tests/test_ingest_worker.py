@@ -11,6 +11,7 @@ active_listings/ingestion_locks/ingestion_runs before yielding):
   - test_upsert_listings_skips_item_with_empty_categories_list
                                                       (INGEST-02, CR-01 regression)
   - test_lock_prevents_concurrent_acquire            (INGEST-02)
+  - test_acquire_lock_steals_expired_lock            (INGEST-02, WR-03)
   - test_run_ingestion_once_skips_when_locked        (INGEST-02)
   - test_run_ingestion_once_happy_path               (INGEST-01/02/03, WR-01)
   - test_run_ingestion_once_partial_on_product_error (INGEST-02, WR-01/CR-02 regression)
@@ -198,6 +199,36 @@ def test_lock_prevents_concurrent_acquire(ingest_db):
     release_lock(ingest_db, "holder-A")
 
     assert acquire_lock(ingest_db, "holder-B") is True
+
+
+def test_acquire_lock_steals_expired_lock(ingest_db):
+    """acquire_lock succeeds against a prior lock document whose
+    expires_at has already passed, without an explicit release — the
+    self-heal mechanism that makes the lock crash-safe after a
+    hard-killed worker never reached release_lock (WR-03, T-03-02)."""
+    from datetime import datetime, timedelta, timezone
+
+    from scripts.ingest_worker import LOCK_ID, acquire_lock, ensure_lock_index
+
+    ensure_lock_index(ingest_db)
+
+    now = datetime.now(timezone.utc)
+    ingest_db.ingestion_locks.insert_one(
+        {
+            "_id": LOCK_ID,
+            "holder": "crashed-holder",
+            "acquired_at": now - timedelta(seconds=1000),
+            "expires_at": now - timedelta(seconds=10),
+        }
+    )
+
+    assert acquire_lock(ingest_db, "new-holder") is True
+
+    lock_doc = ingest_db.ingestion_locks.find_one({"_id": LOCK_ID})
+    assert lock_doc["holder"] == "new-holder", (
+        "acquire_lock must steal (overwrite) an expired lock document "
+        "rather than treating it as still held"
+    )
 
 
 def test_run_ingestion_once_skips_when_locked(ingest_db, monkeypatch):
