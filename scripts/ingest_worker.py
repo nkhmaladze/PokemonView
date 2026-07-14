@@ -263,3 +263,71 @@ def run_ingestion_once(db):
         return db.ingestion_runs.find_one({"_id": run_id})
     finally:
         release_lock(db, run_id)
+
+
+def main() -> int:
+    """Entrypoint: `--once` for a single manual/CI run, else a
+    BlockingScheduler + IntervalTrigger firing run_ingestion_once every
+    INGESTION_INTERVAL_HOURS (default 4).
+
+    Mirrors scripts/seed_catalog.py's main() shape: load_dotenv() ->
+    read MONGODB_URI from os.environ -> MongoClient -> try/finally:
+    client.close() -> init_collections(db) before the primary op.
+
+    Never prints mongodb_uri or the raw eBay access token — only a
+    generic connected/started message and, per run, the counts
+    returned by run_ingestion_once.
+    """
+    load_dotenv()
+    mongodb_uri = os.environ["MONGODB_URI"]
+    client = MongoClient(mongodb_uri)
+    try:
+        db = client["pokemonview"]
+        init_collections(db)
+
+        if "--once" in sys.argv:
+            result = run_ingestion_once(db)
+            print(
+                f"run_id={result['_id']} status={result['status']} "
+                f"products_queried={result['products_queried']} "
+                f"listings_fetched={result['listings_fetched']} "
+                f"listings_written={result['listings_written']}"
+            )
+            return 0
+
+        # Lazy import: apscheduler is only required for the scheduled
+        # (non --once) path, so the module itself never requires
+        # apscheduler to be installed just to be imported/tested.
+        from apscheduler.schedulers.blocking import BlockingScheduler
+        from apscheduler.triggers.interval import IntervalTrigger
+
+        interval_hours = int(os.environ.get("INGESTION_INTERVAL_HOURS", "4"))
+        scheduler = BlockingScheduler()
+
+        def shutdown(signum, frame):
+            scheduler.shutdown(wait=False)
+            client.close()
+            sys.exit(0)
+
+        import signal
+
+        signal.signal(signal.SIGTERM, shutdown)
+        signal.signal(signal.SIGINT, shutdown)
+
+        scheduler.add_job(
+            run_ingestion_once,
+            trigger=IntervalTrigger(hours=interval_hours),
+            args=[db],
+            max_instances=1,
+            coalesce=True,
+            misfire_grace_time=300,
+        )
+        print(f"ingestion worker started — interval_hours={interval_hours}")
+        scheduler.start()
+        return 0
+    finally:
+        client.close()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
