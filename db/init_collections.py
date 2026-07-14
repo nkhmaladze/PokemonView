@@ -25,6 +25,7 @@ from pymongo import ASCENDING
 
 PRODUCTS_JSON_SCHEMA = {
     "bsonType": "object",
+    "additionalProperties": False,
     "required": [
         "set_name",
         "product_type",
