@@ -6,14 +6,14 @@ current_phase: 03
 current_phase_name: active-listing-ingestion-pipeline
 status: executing
 stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-07-14T22:15:15.766Z"
+last_updated: "2026-07-14T22:23:48.171Z"
 last_activity: 2026-07-14
 last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 8
   completed_phases: 1
   total_plans: 15
-  completed_plans: 12
+  completed_plans: 13
   percent: 13
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 ## Current Position
 
 Phase: 03 (active-listing-ingestion-pipeline) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-07-14 — Phase 03 execution started
 
@@ -67,6 +67,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03 P01 | 10min | 2 tasks | 1 files |
 | Phase 03 P02 | 2min | 2 tasks | 1 files |
 | Phase 03 P03 | 2min | 2 tasks | 2 files |
+| Phase 03 P04 | 4min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,8 @@ Recent decisions affecting current work:
 - [Phase 03-02]: TDD for the collection-bootstrap task was verified via inline RED/GREEN runs of the plan's own automated verify command plus a live MongoDB integration check, rather than a separate committed pytest file, since the persisted ingest_db fixture/tests are Plan 03-03's scope
 - [Phase 03-03]: ingest_db fixture mirrors catalog_db structurally but targets active_listings/ingestion_locks/ingestion_runs and does not seed catalog data
 - [Phase 03-03]: Used exactly-representable float values (50.00, 4.50, 54.50) in test_price_and_shipping_captured to keep == assertions safe
+- [Phase ?]: [Phase 03-04]: Extracted access_token = token['access_token'] from get_app_token()'s dict return before calling search_sealed_listings, matching ebay_client.py's actual signature rather than the plan action text's shorthand
+- [Phase ?]: [Phase 03-04]: shipping_cost computed as round(total_cost(item) - item_price, 2) so total_price always equals ebay_client.total_cost(item) exactly, avoiding a second independent shipping-extraction code path
 
 ### Pending Todos
 
@@ -122,6 +125,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-14T22:15:15.759Z
+Last session: 2026-07-14T22:23:42.214Z
 Stopped at: Completed 03-03-PLAN.md
 Resume file: None

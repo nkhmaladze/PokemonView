@@ -90,7 +90,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Every stored listing records both the pre-shipping item price and the estimated total price (item price + estimated shipping cost).
   4. Each run logs metadata (run time, listings fetched, listings written) so a stalled or empty pull is detectable rather than silent.
 
-**Plans**: 3/5 plans executed
+**Plans**: 4/5 plans executed
 
 **Wave 1** *(independent — dependency install + storage bootstrap in parallel)*
 
@@ -103,7 +103,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 3** *(depends on Waves 1-2)*
 
-- [ ] 03-04-PLAN.md — scripts/ingest_worker.py: build_query, MongoDB lock, idempotent upsert, run_ingestion_once, APScheduler main()
+- [x] 03-04-PLAN.md — scripts/ingest_worker.py: build_query, MongoDB lock, idempotent upsert, run_ingestion_once, APScheduler main()
 
 **Wave 4** *(depends on Wave 3)*
 
@@ -191,7 +191,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. eBay API Feasibility Gate | 3/4 | In Progress|  |
 | 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
-| 3. Active-Listing Ingestion Pipeline | 3/5 | In Progress|  |
+| 3. Active-Listing Ingestion Pipeline | 4/5 | In Progress|  |
 | 4. Listing Matching & Price Normalization | 0/TBD | Not started | - |
 | 5. Flask REST API (active-price serving) | 0/TBD | Not started | - |
 | 6. React SPA Frontend (active-price product) | 0/TBD | Not started | - |
