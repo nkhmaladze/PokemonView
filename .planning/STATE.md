@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 02
 current_phase_name: product-catalog-data-model
 status: executing
-stopped_at: Completed 02-03-PLAN.md
-last_updated: "2026-07-13T06:46:23.422Z"
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-07-14T04:22:40.750Z"
 last_activity: 2026-07-13
 last_activity_desc: Phase 02 execution started
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 10
-  completed_plans: 5
+  completed_plans: 6
   percent: 0
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 ## Current Position
 
 Phase: 02 (product-catalog-data-model) — EXECUTING
-Plan: 3 of 6
+Plan: 4 of 6
 Status: Ready to execute
 Last activity: 2026-07-13 — Phase 02 execution started
 
@@ -60,6 +60,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01 P03 | 2min | 2 tasks | 2 files |
 | Phase 02 P03 | 20min | 2 tasks | 2 files |
 | Phase 02 P01 | 5min | 2 tasks | 1 files |
+| Phase 02 P02 | 10min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,7 @@ Recent decisions affecting current work:
 - [Phase 02-03]: ~11 of 16 catalog entries left with image_url=None (unresolved TCGplayer IDs) rather than fabricated, per plan instruction
 - [Phase 02]: Approved pymongo==4.17.0 install after human review confirmed [SUS] verdict was a false positive from unresolved download-count telemetry
 - [Phase 02]: Used exact version pins (pymongo==4.17.0, pytest==8.4.2) per registry-verified research rather than unpinned ranges
+- [Phase 02-02]: User provisioned MongoDB Atlas M0 (free tier) as the MongoDB instance, matching documented stack choice over local Homebrew install
 
 ### Pending Todos
 
@@ -92,6 +94,7 @@ None yet.
 [Issues that affect future work]
 
 - [Phase 1 → Phase 8]: Marketplace Insights API access is approval-gated and may be denied; Phase 8 (sold-price) is contingent on the Phase 1 outcome.
+- [Phase 01 -> future eBay-dependent phases]: A prior continuation-agent crash overwrote .env, wiping the previously-entered EBAY_CLIENT_ID/EBAY_CLIENT_SECRET from Phase 1 Plan 01-04. User confirmed loss and does not yet have replacement values (pending eBay response). Non-blocking for Phase 2 (no eBay dependency), but EBAY_CLIENT_ID, EBAY_CLIENT_SECRET, and EBAY_ENV=production must be re-added to .env before any phase requiring live eBay API calls proceeds.
 
 ## Deferred Items
 
@@ -103,6 +106,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-13T06:43:46.739Z
-Stopped at: Completed 02-03-PLAN.md
+Last session: 2026-07-14T04:22:40.744Z
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
