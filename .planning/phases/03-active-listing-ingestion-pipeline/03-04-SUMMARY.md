@@ -158,3 +158,12 @@ None - no external service configuration required. Note: a genuine live Producti
 ---
 *Phase: 03-active-listing-ingestion-pipeline*
 *Completed: 2026-07-14*
+
+## Self-Check: PASSED
+
+- FOUND: scripts/ingest_worker.py
+- FOUND: .planning/phases/03-active-listing-ingestion-pipeline/03-04-SUMMARY.md
+- FOUND: d466a16 (Task 1 commit)
+- FOUND: 1ba065f (Task 2 commit)
+- FOUND: 758a2ec (Task 3 commit)
+- FOUND: ad76080 (SUMMARY commit)
