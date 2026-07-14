@@ -15,8 +15,8 @@ Requirements for initial release. Each maps to roadmap phases. Items tagged **(P
 ### Ingestion
 
 - [x] **INGEST-01**: Scheduled worker pulls active eBay listings via the Browse API every N hours
-- [ ] **INGEST-02**: Ingestion is idempotent (upsert by eBay item ID) and safe against overlapping/retried runs
-- [ ] **INGEST-03**: Both pre-shipping item price and estimated total price (item price + estimated shipping cost) are stored per listing
+- [x] **INGEST-02**: Ingestion is idempotent (upsert by eBay item ID) and safe against overlapping/retried runs
+- [x] **INGEST-03**: Both pre-shipping item price and estimated total price (item price + estimated shipping cost) are stored per listing
 - [ ] **INGEST-04** (Phase 8, contingent): Sold listings are pulled via the Marketplace Insights API once access is confirmed
 
 ### Matching
@@ -71,8 +71,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CATALOG-01 | Phase 2 | Complete |
 | CATALOG-02 | Phase 2 | Complete |
 | INGEST-01 | Phase 3 | Complete |
-| INGEST-02 | Phase 3 | Pending |
-| INGEST-03 | Phase 3 | Pending |
+| INGEST-02 | Phase 3 | Complete |
+| INGEST-03 | Phase 3 | Complete |
 | INGEST-04 | Phase 8 (contingent) | Pending |
 | MATCH-01 | Phase 4 | Pending |
 | MATCH-02 | Phase 4 | Pending |
