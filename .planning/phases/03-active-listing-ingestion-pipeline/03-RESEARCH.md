@@ -396,17 +396,17 @@ stale = latest is None or (datetime.now(timezone.utc) - latest["started_at"]) > 
 
 **If this table is empty:** N/A — see entries above; several carry real (not purely theoretical) risk given Phase 1's live-verification gap.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Does the Browse API's `q` search actually behave as assumed (Pitfall 4 / Assumption A3) against real Production data for this specific catalog?**
+1. **Does the Browse API's `q` search actually behave as assumed (Pitfall 4 / Assumption A3) against real Production data for this specific catalog?** — RESOLVED (Phase 3 live-run gate)
    - What we know: eBay's Browse API supports keyword search via `q`; Phase 1's own `verify_ebay_access.py` already uses clean phrase-shaped queries successfully in its authored (but not yet live-run) form.
    - What's unclear: Whether `build_query()`'s exact phrasing returns adequate result counts for all ~16 catalog products, especially newer/lower-search-volume sets (Pitch Black, pre-release as of this research date).
-   - Recommendation: The Phase 3 plan's live-verification task should log result counts per product and flag any product returning zero results for a follow-up query-tuning pass — not block the phase on perfecting every query upfront.
+   - Resolution: Deferred to Plan 03-05 (live Production verification). That task logs result counts per product and flags any product returning zero results for a follow-up query-tuning pass in Phase 4 — not a blocker on planning or on Phase 3's non-live tasks.
 
-2. **What should happen to `active_listings` documents that stop appearing in subsequent runs (the item sold/ended/was removed)?**
+2. **What should happen to `active_listings` documents that stop appearing in subsequent runs (the item sold/ended/was removed)?** — RESOLVED (deferred to Phase 4/5)
    - What we know: Upserting by `itemId` naturally leaves stale documents in place if an item disappears from search results (no delete happens).
    - What's unclear: Whether Phase 3 should mark listings as `stale`/expire them, or whether this is deferred to Phase 4/5 (which will need "current vs. gone" logic anyway for price aggregation).
-   - Recommendation: Out of scope for Phase 3's SC — record `fetched_at`/`run_id` on every upsert (already in Pattern 3) so a later phase can determine staleness by "not updated in the last N runs" without Phase 3 needing to implement deletion/expiry logic itself.
+   - Resolution: Out of scope for Phase 3's SC. `fetched_at`/`run_id` are recorded on every upsert (Pattern 3, implemented in Plan 03-04) so a later phase can determine staleness by "not updated in the last N runs" without Phase 3 needing to implement deletion/expiry logic itself.
 
 ## Environment Availability
 
