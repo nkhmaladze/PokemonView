@@ -2,13 +2,10 @@
 phase: 02-product-catalog-data-model
 reviewed: 2026-07-14T00:00:00Z
 depth: standard
-files_reviewed: 9
+files_reviewed: 7
 files_reviewed_list:
-  - .env.example
   - db/__init__.py
   - db/init_collections.py
-  - pytest.ini
-  - requirements.txt
   - scripts/__init__.py
   - scripts/catalog_data.py
   - scripts/seed_catalog.py
@@ -16,9 +13,9 @@ files_reviewed_list:
   - tests/test_catalog_schema.py
 findings:
   critical: 0
-  warning: 4
+  warning: 5
   info: 4
-  total: 8
+  total: 9
 status: issues_found
 ---
 
@@ -26,41 +23,23 @@ status: issues_found
 
 **Reviewed:** 2026-07-14T00:00:00Z
 **Depth:** standard
-**Files Reviewed:** 9 (10 listed; see tooling limitation note below)
+**Files Reviewed:** 7
 **Status:** issues_found
 
 ## Summary
 
-Reviewed the product-catalog data model bootstrap: `db/init_collections.py` (schema/index/time-series creation), `scripts/catalog_data.py` (static curated catalog), `scripts/seed_catalog.py` (idempotent upsert entrypoint), and the test suite (`tests/conftest.py`, `tests/test_catalog_schema.py`), plus `pytest.ini` and `requirements.txt`.
+Reviewed the product catalog data model bootstrap (`db/init_collections.py`), the curated static catalog (`scripts/catalog_data.py`), the idempotent seed entrypoint (`scripts/seed_catalog.py`), and the test suite (`tests/conftest.py`, `tests/test_catalog_schema.py`). `db/__init__.py` and `scripts/__init__.py` are empty package markers with no content to review.
 
-No secrets, injection vectors, or dangerous function usage were found. Package versions in `requirements.txt` (requests 2.34.2, python-dotenv 1.2.2, pymongo 4.17.0, pytest 8.4.2) were verified against PyPI and all exist and are current/installable — no phantom versions. `.env` is correctly gitignored and untracked.
+No hardcoded secrets, injection vectors, or dangerous function usage were found; credential handling (`MONGODB_URI` via `os.environ` after `load_dotenv()`, never printed) is sound, and the core idempotent-upsert design (deterministic slug `_id` + `bulk_write` of `UpdateOne(upsert=True)`) correctly avoids duplicate inserts on re-run for the happy path the tests exercise.
 
-The core logic issues found are: (1) the "idempotent bootstrap" guarantee for the compound index is not actually unconditional — it's coupled to collection creation rather than being independently idempotent, unlike `create_index()`'s native idempotency; (2) the `$jsonSchema` validator omits `additionalProperties: false`, undercutting its own docstring's claim to be a general-purpose input-validation control; and (3) `scripts/seed_catalog.py`'s `main()` has no `try/finally` around the MongoClient lifecycle, unlike the sibling `scripts/verify_ebay_access.py` pattern it claims to mirror (which uses `os.environ.get()` with a default rather than raw indexing).
-
-**Tooling limitation:** `.env.example` was explicitly listed as in-scope, but the sandbox's Read/Bash permission settings denied all access to it (both `Read` and `Bash ls/wc/file` on the path were blocked), consistent with the broad `.env*` restriction described in the task. This file could not be reviewed. Per the task's guidance this is noted as a tooling limitation rather than a failure; it should be reviewed manually to confirm it documents `MONGODB_URI` (referenced by `scripts/seed_catalog.py` and `tests/conftest.py`) and contains only placeholder values, no live credentials.
+The issues found are all about gaps between what the code's own docstrings *claim* it guarantees and what it actually enforces: the compound index is not guaranteed to exist independent of collection-creation timing, the `$jsonSchema` validator does not reject unexpected fields despite being framed as a general-purpose input-validation control, `(set_name, product_type)` uniqueness is enforced only by an application-level naming convention rather than a database constraint, and resource cleanup (`MongoClient.close()`) is skipped on setup-failure paths in both the seed script and the test fixture. None of these are exploitable today given the single-writer, well-behaved-catalog-data reality of this phase, but they are exactly the kind of latent defect that turns into a real incident once a second writer or an operational hiccup enters the picture — which is the explicit intent of this phase's V5 input-validation and idempotent-bootstrap claims. No blockers.
 
 ## Warnings
 
 ### WR-01: Compound index creation is not independently idempotent
 
 **File:** `db/init_collections.py:95-104`
-**Issue:** The module docstring and function docstring both assert that `init_collections()` idempotently ensures the `products` collection has "a compound index on `{set_name: 1, product_type: 1}}`." But the `create_index()` call is nested *inside* the `if "products" not in db.list_collection_names():` block:
-
-```python
-if "products" not in db.list_collection_names():
-    db.create_collection(
-        "products",
-        validator={"$jsonSchema": PRODUCTS_JSON_SCHEMA},
-        validationLevel="strict",
-        validationAction="error",
-    )
-    db.products.create_index(
-        [("set_name", ASCENDING), ("product_type", ASCENDING)]
-    )
-```
-
-Unlike the `$jsonSchema` validator and `timeseries` options (which genuinely are creation-time-only, per the docstring's own Pitfall-1 rationale), `create_index()` has no such restriction — it can be called on an already-existing collection at any time and is itself idempotent (a no-op if the equivalent index already exists). By nesting it under the collection-existence guard, any pre-existing `products` collection that lacks this index (e.g. created by an earlier code version, restored from a backup, or left in a partial state because a prior `init_collections()` call succeeded at `create_collection()` but crashed before reaching `create_index()`) will **never** get the index added by subsequent calls — the function will silently skip both statements forever. This directly undermines `CATALOG-02`'s "queryable by set alone or by set + product_type" requirement in exactly the redeploy/migration scenarios this bootstrap function exists to handle safely. It is not caught by the current test suite because `tests/conftest.py` always drops `products` before calling `init_collections()`, so the "collection already exists without the index" path is never exercised.
-
+**Issue:** `db.products.create_index(...)` (lines 102-104) is nested inside `if "products" not in db.list_collection_names():` (line 95). Index creation therefore only ever happens the moment the collection is first created. Unlike the `$jsonSchema` validator and `timeseries` options — which really are creation-time-only settings, per this same file's own Pitfall-1 rationale (lines 5-9) — `create_index()` has no such restriction: it is safe and idempotent to call on an already-existing collection. By gating it behind the collection-existence check, any pre-existing `products` collection that lacks the index (created by an earlier code version, restored from backup, or left partially initialized by a prior run that failed between `create_collection()` and `create_index()`) will never get the index added by subsequent `init_collections()` calls — the function silently no-ops for it forever. This undermines the function's own docstring claim (lines 76-81) that it "idempotently" ensures the index exists. The current test suite doesn't catch this because `tests/conftest.py` always drops `products` before calling `init_collections()`, so the "collection exists without the index" path is never exercised.
 **Fix:** Decouple index creation from collection creation so it always runs:
 ```python
 if "products" not in db.list_collection_names():
@@ -79,7 +58,7 @@ db.products.create_index(
 ### WR-02: `$jsonSchema` validator does not restrict additional properties
 
 **File:** `db/init_collections.py:26-54`
-**Issue:** `PRODUCTS_JSON_SCHEMA` declares `required` fields and typed `properties`, but never sets `"additionalProperties": false`. MongoDB's `$jsonSchema` validator allows arbitrary extra fields by default unless explicitly restricted. The module docstring for `init_collections()` frames this validator as "a V5 input-validation control, not just this phase's seed script" — i.e., intended to guard *any* future writer (e.g. a later admin API), not merely today's trusted seed script. As written, any writer can attach unvalidated arbitrary fields to a `products` document alongside the required ones, which weakens the validator's value as the stated general-purpose input-validation boundary.
+**Issue:** `PRODUCTS_JSON_SCHEMA` declares `required` fields and typed `properties` but never sets `"additionalProperties": false`. MongoDB's `$jsonSchema` allows arbitrary extra fields by default unless explicitly restricted. The docstring for `init_collections()` (lines 76-81) frames this validator as a general-purpose "V5 input-validation control, not just this phase's seed script" — i.e., meant to guard any future writer, not just today's trusted seed script. As written, any writer can attach unvalidated, arbitrary, or misspelled fields (e.g. `"verifed"` instead of `"verified"`) to a `products` document and the insert will still succeed, silently defeating the validator's stated purpose.
 **Fix:**
 ```python
 PRODUCTS_JSON_SCHEMA = {
@@ -89,9 +68,21 @@ PRODUCTS_JSON_SCHEMA = {
     "properties": {...},
 }
 ```
-(Verify this doesn't break the `_id` field validation path — `_id` is implicitly exempt from `additionalProperties` in MongoDB's `$jsonSchema`, so this should be safe, but confirm against the seeded documents' actual field set before enabling in case a legitimate field was missed from `properties`.)
+(Confirm this doesn't reject any legitimately-seeded field first — `_id` is implicitly exempt from `additionalProperties` in MongoDB's `$jsonSchema`, so this should be safe against the current `CATALOG` shape.)
 
-### WR-03: `MongoClient` is not closed on the error path in `seed_catalog.py main()`
+### WR-03: `(set_name, product_type)` uniqueness is enforced only by convention, not by the database
+
+**File:** `db/init_collections.py:102-104`
+**Issue:** The compound index is created without `unique=True`. `scripts/seed_catalog.py`'s idempotency guarantee (no duplicate documents across re-runs) depends entirely on every writer independently computing the same deterministic slug `_id = f"{set_name}_{product_type}".lower().replace(" ", "-")` (seed_catalog.py:70-71). Nothing at the database layer prevents a different writer — a future admin script, a direct `insert_one`, a bug that generates a different `_id` for the same logical product — from inserting a second document for the same `(set_name, product_type)` pair. `tests/test_catalog_schema.py::test_catalog_completeness` only checks that the *already-seeded* dataset has no duplicate pairs; it does not prove the database would reject a newly-inserted duplicate.
+**Fix:** Add `unique=True` as a defense-in-depth constraint:
+```python
+db.products.create_index(
+    [("set_name", ASCENDING), ("product_type", ASCENDING)],
+    unique=True,
+)
+```
+
+### WR-04: `MongoClient` is not closed on the error path in `seed_catalog.py main()`
 
 **File:** `scripts/seed_catalog.py:99-121`
 **Issue:**
@@ -104,7 +95,7 @@ seed_catalog(db, CATALOG)
 ...
 client.close()
 ```
-If `init_collections(db)` or `seed_catalog(db, CATALOG)` raises (e.g. a validator conflict, a network blip, an `OperationFailure`), `client.close()` at line 120 is never reached and the connection leaks. The module docstring claims this script "mirrors Phase 1's `scripts/verify_ebay_access.py` pattern" for credential hygiene, but that sibling script uses `os.environ.get("EBAY_ENV", "production")` defensively — this file doesn't carry the same defensive posture through to resource cleanup.
+If `init_collections(db)` or `seed_catalog(db, CATALOG)` raises (validator conflict, transient network error, `OperationFailure`), `client.close()` at line 120 is never reached and the connection leaks. The module docstring (lines 18-22) claims this script "mirrors Phase 1's `scripts/verify_ebay_access.py` pattern" for credential hygiene, but resource cleanup here isn't wrapped defensively the way that framing implies.
 **Fix:**
 ```python
 client = MongoClient(mongodb_uri)
@@ -117,53 +108,47 @@ finally:
     client.close()
 ```
 
-### WR-04: `catalog_db` test fixture leaks its MongoClient on setup failure
+### WR-05: `catalog_db` test fixture leaks its `MongoClient` on setup failure
 
-**File:** `tests/conftest.py:57-80`
-**Issue:** Same pattern as WR-03, in the test fixture. `MongoClient(mongodb_uri)`, `test_db.drop_collection(...)`, `init_collections(test_db)`, and `seed_catalog(test_db, CATALOG)` all run before the `yield`, with no `try/finally`. If any of these calls raises during fixture setup (e.g. a transient connectivity issue against Atlas, or a validator error introduced by a future schema change), the `client.close()` at line 80 never runs. This is flagged despite the general "skip test-file issues" guidance because it affects test reliability: repeated setup failures across a test run/CI session can exhaust the process's or Atlas's connection pool, turning a single flaky failure into cascading failures for unrelated tests in the same session.
-**Fix:** Wrap setup in `try/except` to close the client before re-raising, or move `client = MongoClient(...)` to its own fixture with `addfinalizer`/`yield`-based cleanup so teardown always runs regardless of where setup fails.
+**File:** `tests/conftest.py:57-74`
+**Issue:** `MongoClient(mongodb_uri)` (line 57), `drop_collection(...)` (lines 61-62), `init_collections(test_db)`, and `seed_catalog(test_db, CATALOG)` (lines 71-72) all run before `yield test_db` (line 74), with no `try/finally`. If any of these raise during fixture setup (e.g. a transient Atlas connectivity blip, or a future schema/validator regression), the teardown block at lines 76-80 — including `client.close()` — never executes, because pytest only runs the code after `yield` in a generator-style fixture if execution actually reaches the `yield`. Flagged despite the "don't report test-file issues unless they affect reliability" guidance because repeated setup failures across a session can accumulate leaked connections and exhaust a shared connection pool, turning one flaky failure into cascading failures for unrelated tests.
+**Fix:** Wrap setup in `try`/`except`, closing the client before re-raising, or move connection lifecycle management into a separate fixture with guaranteed teardown.
 
 ## Info
 
 ### IN-01: `MONGODB_URI` lookup raises an unfriendly raw `KeyError`
 
 **File:** `scripts/seed_catalog.py:100`
-**Issue:** `mongodb_uri = os.environ["MONGODB_URI"]` raises a bare `KeyError: 'MONGODB_URI'` with a full traceback if the variable isn't set, rather than a clear, actionable message. Contrast with `tests/conftest.py:49-55`, which uses `os.environ.get("MONGODB_URI")` and emits a helpful `pytest.skip(...)` message pointing at Plan 02-02, and with the sibling `scripts/verify_ebay_access.py`, which uses `os.environ.get(..., default)`.
+**Issue:** `mongodb_uri = os.environ["MONGODB_URI"]` raises a bare `KeyError: 'MONGODB_URI'` with a full traceback if the variable isn't set, giving no actionable guidance. Contrast with `tests/conftest.py:49-55`, which uses `os.environ.get("MONGODB_URI")` and emits a clear `pytest.skip(...)` message pointing at the relevant setup plan.
 **Fix:**
 ```python
 mongodb_uri = os.environ.get("MONGODB_URI")
 if not mongodb_uri:
-    print("ERROR: MONGODB_URI not set. Copy .env.example to .env and fill it in.", file=sys.stderr)
+    print("ERROR: MONGODB_URI not set. Add it to .env before running python -m scripts.seed_catalog.", file=sys.stderr)
     return 1
 ```
 
-### IN-02: Compound index is not `unique`, leaving `(set_name, product_type)` uniqueness unenforced at the DB level
+### IN-02: Idempotent upsert never removes fields dropped from a catalog entry
 
-**File:** `db/init_collections.py:102-104`
-**Issue:** `seed_catalog.py`'s idempotency guarantee relies entirely on the *convention* that every writer computes `_id` as the `{set_name}_{product_type}` slug (Pattern 2). Nothing at the database level prevents a future writer (a direct `insert_one`, a different script, an eventual admin API) from inserting a duplicate `(set_name, product_type)` pair under a different `_id`, silently violating `CATALOG-01`'s "exactly one document per catalog entry" invariant that `test_catalog_completeness` checks for.
-**Fix:** Add `unique=True` to the compound index as a defense-in-depth guard:
-```python
-db.products.create_index(
-    [("set_name", ASCENDING), ("product_type", ASCENDING)],
-    unique=True,
-)
-```
+**File:** `scripts/seed_catalog.py:67-74`
+**Issue:** `UpdateOne({"_id": slug}, {"$set": doc}, upsert=True)` uses only `$set`, which adds/overwrites keys but never deletes ones absent from the new document. If a future edit to `scripts/catalog_data.py` removes a field from an entry (e.g. a corrected-away `image_url`, or a renamed field during a schema evolution), re-running the seed script will not remove the stale field from the already-persisted document. The module docstring frames this script as correcting entries "in place" (lines 3-9, 21-22 via D-02's "seed-now-correct-later" workflow), which holds for value changes but not field removals.
+**Fix:** Document the limitation explicitly, or diff against the existing document and add a corresponding `$unset` for keys no longer present in the new catalog entry.
 
-### IN-03: `release_date` is stored as a timezone-naive datetime
+### IN-03: Slug generation has no collision guard
 
-**File:** `scripts/seed_catalog.py:73`
-**Issue:** `datetime.fromisoformat("2026-05-22")` produces a naive `datetime(2026, 5, 22, 0, 0)`. PyMongo will serialize this as UTC midnight without any explicit timezone marker in the source. This works today since `release_date` is only ever compared/displayed as a date, but it's an implicit assumption that isn't documented anywhere in code (only inferable from BSON's UTC-storage behavior). Low risk for a date-only field, but worth a one-line comment for future maintainers who might later add time-of-day granularity.
-**Fix:** Add a short comment near the conversion noting the naive-datetime-is-treated-as-UTC assumption, or explicitly use `datetime.fromisoformat(...).replace(tzinfo=timezone.utc)` for clarity.
-
-### IN-04: Slug generation has no collision guard
-
-**File:** `scripts/seed_catalog.py:70`
-**Issue:** `slug = f"{doc['set_name']}_{doc['product_type']}".lower().replace(" ", "-")` has no sanitization beyond a single space→hyphen replacement. Given the current curated, hand-authored `CATALOG` list this is safe, but there's no validation preventing two distinct catalog entries from normalizing to the same slug (e.g. a future set name differing only by hyphen vs. space, or containing characters that collide after lowering), which would cause one entry to silently overwrite another via upsert with no error raised.
-**Fix:** Either add a cheap assertion in `seed_catalog()` that all generated slugs are unique before performing the bulk write, or add a comment acknowledging the current data-only mitigation:
+**File:** `scripts/seed_catalog.py:70-71`
+**Issue:** `slug = f"{doc['set_name']}_{doc['product_type']}".lower().replace(" ", "-")` performs no validation that all generated slugs are actually unique across `catalog`. Safe today given the small, hand-authored `CATALOG` list, but if two distinct entries were ever to normalize to the same slug (e.g. a set name differing only by a character that collapses under `.lower()`/space-replacement), one entry would silently overwrite the other via upsert with no error raised anywhere.
+**Fix:**
 ```python
 slugs = [f"{p['set_name']}_{p['product_type']}".lower().replace(" ", "-") for p in catalog]
 assert len(slugs) == len(set(slugs)), "duplicate catalog slug detected"
 ```
+
+### IN-04: Inconsistent `bsonType` representation for `verified`
+
+**File:** `db/init_collections.py:51`
+**Issue:** `"verified": {"bsonType": ["bool"]}` uses a single-element list for a scalar type, while sibling single-type fields such as `"set_name": {"bsonType": "string"}` (line 36) use a bare string. Functionally identical to MongoDB's validator, but inconsistent within the same schema object.
+**Fix:** `"verified": {"bsonType": "bool"}` for consistency.
 
 ---
 
