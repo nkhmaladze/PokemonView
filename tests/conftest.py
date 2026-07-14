@@ -55,21 +55,25 @@ def catalog_db():
         )
 
     client = MongoClient(mongodb_uri)
-    test_db = client[TEST_DB_NAME]
+    try:
+        test_db = client[TEST_DB_NAME]
 
-    # Start clean: never assume a prior run left the test DB empty.
-    test_db.drop_collection("products")
-    test_db.drop_collection("price_points")
+        # Start clean: never assume a prior run left the test DB empty.
+        test_db.drop_collection("products")
+        test_db.drop_collection("price_points")
 
-    # Lazy imports: keep collection off the module top level so
-    # `pytest --collect-only` succeeds before db/init_collections.py
-    # and scripts/seed_catalog.py exist.
-    from db.init_collections import init_collections
-    from scripts.seed_catalog import seed_catalog
-    from scripts.catalog_data import CATALOG
+        # Lazy imports: keep collection off the module top level so
+        # `pytest --collect-only` succeeds before db/init_collections.py
+        # and scripts/seed_catalog.py exist.
+        from db.init_collections import init_collections
+        from scripts.seed_catalog import seed_catalog
+        from scripts.catalog_data import CATALOG
 
-    init_collections(test_db)
-    seed_catalog(test_db, CATALOG)
+        init_collections(test_db)
+        seed_catalog(test_db, CATALOG)
+    except Exception:
+        client.close()
+        raise
 
     yield test_db
 
