@@ -1,14 +1,16 @@
 """Idempotent MongoDB collection bootstrap for the product catalog data model.
 
 Creates the `products` collection (with a `$jsonSchema` validator and a
-compound index) and the `price_points` time-series collection, both
-only if they don't already exist. This create-if-not-exists guard
-exists because MongoDB has no supported path to retrofit a
-`$jsonSchema` validator or `timeseries` options onto an
-already-existing plain collection — both are creation-time-only
-settings (Pitfall 1, 02-RESEARCH.md). Getting `price_points` right now
-(empty, reserved for Phase 3's ingestion worker) avoids a
-data-losing drop-and-recreate migration later.
+compound index) and the `price_points` time-series collection.
+`price_points` is only ever created if it doesn't already exist —
+`timeseries` options are a creation-time-only setting with no
+supported retrofit path (Pitfall 1, 02-RESEARCH.md), so getting it
+right now (empty, reserved for Phase 3's ingestion worker) avoids a
+data-losing drop-and-recreate migration later. The `products`
+validator, by contrast, IS mutable post-creation via `collMod` — this
+function applies it unconditionally (create on first run, `collMod` on
+every run after) so validator/index changes reach a collection that
+already existed before the change, not just fresh ones.
 
 The `products` validator deliberately allows `null` for release_date,
 msrp, and image_url (Pitfall 3, D-02) so Pitch Black's pre-release
@@ -34,6 +36,11 @@ PRODUCTS_JSON_SCHEMA = {
         "required_keywords",
     ],
     "properties": {
+        # Explicitly declared so upserts that set _id (see
+        # scripts/seed_catalog.py's deterministic slug _id) aren't
+        # rejected by additionalProperties: false — MongoDB validates
+        # the full resulting document, _id included, against this list.
+        "_id": {"bsonType": "string"},
         "set_name": {"bsonType": "string"},
         "product_type": {
             "enum": ["booster_pack", "booster_box", "etb", "booster_bundle"]
@@ -100,6 +107,31 @@ def init_collections(db):
             validationLevel="strict",
             validationAction="error",
         )
+    else:
+        # Unlike timeseries options, a validator IS mutable post-creation
+        # via collMod — apply it unconditionally so schema changes (e.g.
+        # additionalProperties: false) reach a collection that already
+        # existed before those changes were made, instead of silently
+        # never taking effect on it.
+        db.command(
+            "collMod",
+            "products",
+            validator={"$jsonSchema": PRODUCTS_JSON_SCHEMA},
+            validationLevel="strict",
+            validationAction="error",
+        )
+
+    # MongoDB refuses to redefine an existing index's options (e.g.
+    # non-unique -> unique) under the same auto-generated name — it
+    # raises IndexKeySpecsConflict rather than updating in place. Drop
+    # first if a stale non-unique version exists (e.g. from a
+    # pre-WR-03 deployment) so create_index below stays idempotent.
+    existing_indexes = db.products.index_information()
+    index_name = "set_name_1_product_type_1"
+    if index_name in existing_indexes and not existing_indexes[index_name].get(
+        "unique", False
+    ):
+        db.products.drop_index(index_name)
 
     db.products.create_index(
         [("set_name", ASCENDING), ("product_type", ASCENDING)],
