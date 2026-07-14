@@ -173,7 +173,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. eBay API Feasibility Gate | 3/4 | In Progress|  |
-| 2. Product Catalog & Data Model | 6/6 | Complete   | 2026-07-14 |
+| 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
 | 3. Active-Listing Ingestion Pipeline | 0/TBD | Not started | - |
 | 4. Listing Matching & Price Normalization | 0/TBD | Not started | - |
 | 5. Flask REST API (active-price serving) | 0/TBD | Not started | - |
