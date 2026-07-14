@@ -96,3 +96,8 @@ No dashboard configuration beyond the credential re-entry above is required.
 ---
 *Phase: 03-active-listing-ingestion-pipeline*
 *Completed: 2026-07-14*
+
+## Self-Check: PASSED
+
+- FOUND: `.planning/phases/03-active-listing-ingestion-pipeline/03-05-SUMMARY.md`
+- FOUND: `6bb69be` (docs(03-05) commit)
