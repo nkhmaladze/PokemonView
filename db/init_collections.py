@@ -99,9 +99,10 @@ def init_collections(db):
             validationLevel="strict",
             validationAction="error",
         )
-        db.products.create_index(
-            [("set_name", ASCENDING), ("product_type", ASCENDING)]
-        )
+
+    db.products.create_index(
+        [("set_name", ASCENDING), ("product_type", ASCENDING)]
+    )
 
     if "price_points" not in db.list_collection_names():
         db.create_collection(
