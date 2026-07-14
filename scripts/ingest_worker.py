@@ -250,7 +250,9 @@ def run_ingestion_once(db):
                 if result is not None:
                     listings_written += len(result.upserted_ids) + result.modified_count
             except Exception as e:  # noqa: BLE001 - isolate one product's failure
-                errors.append({"product_ref": product_ref, "error": str(e)})
+                errors.append(
+                    {"product_ref": product_ref, "error": f"{type(e).__name__}: {e}"}
+                )
 
         status = "success" if not errors else "partial"
     except Exception as e:  # noqa: BLE001 - an auth failure (or any other
@@ -258,7 +260,7 @@ def run_ingestion_once(db):
         # CATALOG entry) must still finalize the run doc as "failed"
         # rather than leaving status="running" forever (CR-02).
         status = "failed"
-        errors.append({"product_ref": None, "error": str(e)})
+        errors.append({"product_ref": None, "error": f"{type(e).__name__}: {e}"})
     finally:
         update_doc = {
             "finished_at": datetime.now(timezone.utc),
