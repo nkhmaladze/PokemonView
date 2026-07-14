@@ -61,7 +61,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Each catalog product carries canonical metadata — set, product type, and release info — usable by matching rules.
   3. The catalog is persisted in MongoDB and is queryable by set and product type, on a schema that reserves fields for both item-only and total (item + shipping) price points and time-series history.
 
-**Plans**: 4/6 plans executed
+**Plans**: 5/6 plans executed
 
 **Wave 1** *(independent — env + data curation in parallel)*
 
@@ -72,7 +72,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Wave 2** *(depends on Wave 1 env)*
 
 - [x] 02-04-PLAN.md — MongoDB schema: products ($jsonSchema validator + index) & price_points (time-series)
-- [ ] 02-05-PLAN.md — Test scaffold: conftest fixture + 4 catalog contract tests (pytest.ini)
+- [x] 02-05-PLAN.md — Test scaffold: conftest fixture + 4 catalog contract tests (pytest.ini)
 
 **Wave 3** *(depends on Wave 2)*
 
@@ -173,7 +173,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. eBay API Feasibility Gate | 3/4 | In Progress|  |
-| 2. Product Catalog & Data Model | 4/6 | In Progress|  |
+| 2. Product Catalog & Data Model | 5/6 | In Progress|  |
 | 3. Active-Listing Ingestion Pipeline | 0/TBD | Not started | - |
 | 4. Listing Matching & Price Normalization | 0/TBD | Not started | - |
 | 5. Flask REST API (active-price serving) | 0/TBD | Not started | - |
