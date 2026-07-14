@@ -253,6 +253,13 @@ def run_ingestion_once(db):
                 errors.append({"product_ref": product_ref, "error": str(e)})
 
         status = "success" if not errors else "partial"
+    except Exception as e:  # noqa: BLE001 - an auth failure (or any other
+        # unexpected failure outside the per-product loop, e.g. a bad
+        # CATALOG entry) must still finalize the run doc as "failed"
+        # rather than leaving status="running" forever (CR-02).
+        status = "failed"
+        errors.append({"product_ref": None, "error": str(e)})
+    finally:
         update_doc = {
             "finished_at": datetime.now(timezone.utc),
             "status": status,
@@ -262,9 +269,9 @@ def run_ingestion_once(db):
             "errors": errors,
         }
         db.ingestion_runs.update_one({"_id": run_id}, {"$set": update_doc})
-        return db.ingestion_runs.find_one({"_id": run_id})
-    finally:
         release_lock(db, run_id)
+
+    return db.ingestion_runs.find_one({"_id": run_id})
 
 
 def main() -> int:
