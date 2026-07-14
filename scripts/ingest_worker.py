@@ -144,6 +144,8 @@ def upsert_listings(db, product_ref, items, run_id, fetched_at):
             item_price = float(item["price"]["value"])
             price_total = total_cost(item)
             shipping_cost = round(price_total - item_price, 2)
+            categories = item.get("categories") or []
+            category_id = categories[0].get("categoryId") if categories else None
             doc = {
                 "_id": item["itemId"],
                 "product_ref": product_ref,
@@ -151,7 +153,7 @@ def upsert_listings(db, product_ref, items, run_id, fetched_at):
                 "item_price": item_price,
                 "shipping_cost": shipping_cost,
                 "total_price": price_total,
-                "category_id": item.get("categories", [{}])[0].get("categoryId"),
+                "category_id": category_id,
                 "fetched_at": fetched_at,
                 "run_id": run_id,
             }
