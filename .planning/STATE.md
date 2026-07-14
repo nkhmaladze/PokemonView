@@ -6,14 +6,14 @@ current_phase: 02
 current_phase_name: product-catalog-data-model
 status: executing
 stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-07-14T04:22:40.750Z"
+last_updated: "2026-07-14T04:27:30.631Z"
 last_activity: 2026-07-13
 last_activity_desc: Phase 02 execution started
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 10
-  completed_plans: 6
+  completed_plans: 7
   percent: 0
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 ## Current Position
 
 Phase: 02 (product-catalog-data-model) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 Status: Ready to execute
 Last activity: 2026-07-13 — Phase 02 execution started
 
@@ -61,6 +61,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02 P03 | 20min | 2 tasks | 2 files |
 | Phase 02 P01 | 5min | 2 tasks | 1 files |
 | Phase 02 P02 | 10min | 2 tasks | 1 files |
+| Phase 02 P04 | 8min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Approved pymongo==4.17.0 install after human review confirmed [SUS] verdict was a false positive from unresolved download-count telemetry
 - [Phase 02]: Used exact version pins (pymongo==4.17.0, pytest==8.4.2) per registry-verified research rather than unpinned ranges
 - [Phase 02-02]: User provisioned MongoDB Atlas M0 (free tier) as the MongoDB instance, matching documented stack choice over local Homebrew install
+- [Phase 02-04]: products $jsonSchema validator allows null on release_date/msrp/image_url (Pitfall 3, D-02) so Pitch Black's provisional pre-release documents seed cleanly
+- [Phase 02-04]: price_points created empty now with final timeseries options (timeField ts, metaField product_id, granularity hours) to avoid a data-losing drop-and-recreate migration in Phase 3
 
 ### Pending Todos
 
@@ -106,6 +109,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-14T04:22:40.744Z
+Last session: 2026-07-14T04:26:46.466Z
 Stopped at: Completed 02-02-PLAN.md
 Resume file: None
