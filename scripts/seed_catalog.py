@@ -99,25 +99,26 @@ def main() -> int:
     load_dotenv()
     mongodb_uri = os.environ["MONGODB_URI"]
     client = MongoClient(mongodb_uri)
-    db = client["pokemonview"]
+    try:
+        db = client["pokemonview"]
 
-    init_collections(db)
-    seed_catalog(db, CATALOG)
+        init_collections(db)
+        seed_catalog(db, CATALOG)
 
-    unverified_sets = sorted(
-        {product["set_name"] for product in CATALOG if not product.get("verified", True)}
-    )
-    if unverified_sets:
-        print(
-            f"WARNING: the following set(s) were seeded with provisional "
-            f"(verified=False) data: {', '.join(unverified_sets)}. Per D-02, "
-            "re-run `python -m scripts.seed_catalog` after the set's real "
-            "post-release data is confirmed and scripts/catalog_data.py is "
-            "updated, to correct these entries in place.",
-            file=sys.stderr,
+        unverified_sets = sorted(
+            {product["set_name"] for product in CATALOG if not product.get("verified", True)}
         )
-
-    client.close()
+        if unverified_sets:
+            print(
+                f"WARNING: the following set(s) were seeded with provisional "
+                f"(verified=False) data: {', '.join(unverified_sets)}. Per D-02, "
+                "re-run `python -m scripts.seed_catalog` after the set's real "
+                "post-release data is confirmed and scripts/catalog_data.py is "
+                "updated, to correct these entries in place.",
+                file=sys.stderr,
+            )
+    finally:
+        client.close()
     return 0
 
 
