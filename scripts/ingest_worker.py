@@ -164,3 +164,102 @@ def upsert_listings(db, product_ref, items, run_id, fetched_at):
     if not ops:
         return None
     return db.active_listings.bulk_write(ops)
+
+
+def run_ingestion_once(db):
+    """Orchestrate one full, lock-guarded ingestion run.
+
+    Ordered flow (03-RESEARCH.md System Architecture Diagram):
+      1. ensure_lock_index(db) — idempotent, safe to call every run.
+      2. acquire_lock(db, run_id) — if the lock is already held,
+         write a single status="skipped_locked" ingestion_runs
+         document and return immediately WITHOUT calling get_app_token
+         or search_sealed_listings (T-03-04, SC-2: a second concurrent
+         run issues zero eBay calls, protecting both data integrity
+         and the shared rate-limit budget).
+      3. Otherwise, insert a status="running" run-start document, then
+         (wrapped in try/finally so release_lock always runs, T-03-02
+         / Pitfall 5) fetch a token ONCE and reuse it across every
+         catalog product query (Anti-Patterns — never re-authenticate
+         per product).
+      4. For each product in CATALOG: build the query, search, and
+         upsert — wrapped in a per-product try/except so one product's
+         failure (e.g. an eBay 5xx) is recorded into errors[] and does
+         not abort the remaining products or leave the lock held
+         (T-03-03).
+      5. Update the run document with final counts/status/finished_at.
+
+    Returns:
+        The final ingestion_runs document (dict) for this run.
+    """
+    run_id = uuid.uuid4().hex
+    started_at = datetime.now(timezone.utc)
+
+    ensure_lock_index(db)
+
+    if not acquire_lock(db, run_id):
+        skipped_doc = {
+            "_id": run_id,
+            "started_at": started_at,
+            "finished_at": datetime.now(timezone.utc),
+            "status": "skipped_locked",
+            "products_queried": 0,
+            "listings_fetched": 0,
+            "listings_written": 0,
+            "errors": [],
+        }
+        db.ingestion_runs.insert_one(skipped_doc)
+        return skipped_doc
+
+    db.ingestion_runs.insert_one(
+        {
+            "_id": run_id,
+            "started_at": started_at,
+            "finished_at": None,
+            "status": "running",
+            "products_queried": 0,
+            "listings_fetched": 0,
+            "listings_written": 0,
+            "errors": [],
+        }
+    )
+
+    products_queried = 0
+    listings_fetched = 0
+    listings_written = 0
+    errors = []
+
+    try:
+        token = get_app_token()
+        access_token = token["access_token"]
+
+        for product in CATALOG:
+            product_ref = (
+                f"{product['set_name']}_{product['product_type']}".lower().replace(" ", "-")
+            )
+            try:
+                query = build_query(product)
+                items = search_sealed_listings(access_token, query)
+                result = upsert_listings(
+                    db, product_ref, items, run_id, fetched_at=started_at
+                )
+                products_queried += 1
+                listings_fetched += len(items)
+                if result is not None:
+                    listings_written += len(result.upserted_ids) + result.modified_count
+            except Exception as e:  # noqa: BLE001 - isolate one product's failure
+                errors.append({"product_ref": product_ref, "error": str(e)})
+
+        status = "success" if not errors else "partial"
+        update_doc = {
+            "finished_at": datetime.now(timezone.utc),
+            "status": status,
+            "products_queried": products_queried,
+            "listings_fetched": listings_fetched,
+            "listings_written": listings_written,
+            "errors": errors,
+        }
+        db.ingestion_runs.update_one({"_id": run_id}, {"$set": update_doc})
+        return db.ingestion_runs.find_one({"_id": run_id})
+    finally:
+        release_lock(db, run_id)
