@@ -23,7 +23,7 @@ or tests/conftest.py), mirroring the "no top-level side effects on
 import" discipline established in scripts/ebay_client.py.
 """
 
-from pymongo import ASCENDING
+from pymongo import ASCENDING, DESCENDING
 
 PRODUCTS_JSON_SCHEMA = {
     "bsonType": "object",
@@ -143,3 +143,34 @@ def init_collections(db):
             "price_points",
             timeseries=PRICE_POINTS_TIMESERIES_OPTIONS,
         )
+
+    # active_listings: a PLAIN collection (no timeseries option, no
+    # $jsonSchema validator) holding Phase 3's raw eBay listing output,
+    # keyed by _id=itemId (stable/unique per listing, so no separate
+    # unique index is needed). product_ref is provenance only (which
+    # catalog query found this listing), not a matched canonical
+    # product_id, so this collection is deliberately kept separate from
+    # price_points (Pitfall 1, 03-RESEARCH.md).
+    if "active_listings" not in db.list_collection_names():
+        db.create_collection("active_listings")
+    db.active_listings.create_index([("product_ref", ASCENDING)])
+
+    # ingestion_locks: a PLAIN collection providing the cross-process
+    # concurrency guard (T-03-02 / SC-2). The TTL index on expires_at
+    # with expireAfterSeconds=0 expires each lock document at the exact
+    # datetime stored in its own expires_at field (per-acquire explicit
+    # expiry, not a fixed N seconds after insertion) — this is the
+    # stale-lock self-heal safety net for a hard-killed worker that
+    # never reaches its finally release_lock (03-RESEARCH.md Pattern 2).
+    if "ingestion_locks" not in db.list_collection_names():
+        db.create_collection("ingestion_locks")
+    db.ingestion_locks.create_index("expires_at", expireAfterSeconds=0)
+
+    # ingestion_runs: a PLAIN collection recording per-run observability
+    # metadata (SC-4). The descending index on started_at supports the
+    # latest-run query
+    # (db.ingestion_runs.find_one(sort=[("started_at", -1)])) that
+    # Phase 7's staleness alerting will use.
+    if "ingestion_runs" not in db.list_collection_names():
+        db.create_collection("ingestion_runs")
+    db.ingestion_runs.create_index([("started_at", DESCENDING)])
