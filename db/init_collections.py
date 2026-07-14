@@ -102,7 +102,8 @@ def init_collections(db):
         )
 
     db.products.create_index(
-        [("set_name", ASCENDING), ("product_type", ASCENDING)]
+        [("set_name", ASCENDING), ("product_type", ASCENDING)],
+        unique=True,
     )
 
     if "price_points" not in db.list_collection_names():
