@@ -9,7 +9,7 @@ Requirements for initial release. Each maps to roadmap phases. Items tagged **(P
 
 ### Catalog
 
-- [x] **CATALOG-01**: Curated catalog of sealed English product (booster packs, booster boxes, ETBs) exists for the 2-3 most recent sets
+- [x] **CATALOG-01**: Curated catalog of sealed English product (booster packs, booster boxes, ETBs, booster bundles) exists for the 4 most recent sets (Ascended Heroes, Perfect Order, Chaos Rising, Pitch Black) — widened from the original "2-3 sets" framing per Phase 2 D-01
 - [x] **CATALOG-02**: Each catalog product has canonical metadata (set, product type, release info) used for matching
 
 ### Ingestion
@@ -96,4 +96,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-07-12*
-*Last updated: 2026-07-12 after roadmap creation (traceability mapped; contingent items re-tagged to Phase 8)*
+*Last updated: 2026-07-14 after Phase 2 completion (CATALOG-01 scope note widened from "2-3 sets" to 4 sets per Phase 2 D-01)*
