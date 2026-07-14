@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 3
-current_phase_name: Active-Listing Ingestion Pipeline
+current_phase: 03
+current_phase_name: active-listing-ingestion-pipeline
 status: executing
 stopped_at: Completed 02-06-PLAN.md
-last_updated: "2026-07-14T21:49:45.639Z"
+last_updated: "2026-07-14T22:03:09.291Z"
 last_activity: 2026-07-14
-last_activity_desc: Phase 02 complete, transitioned to Phase 3
+last_activity_desc: Phase 03 execution started
 progress:
   total_phases: 8
   completed_phases: 1
-  total_plans: 10
-  completed_plans: 9
+  total_plans: 15
+  completed_plans: 10
   percent: 13
 ---
 
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by both live eBay asking prices and actual sold-price history.
-**Current focus:** Phase 02 — product-catalog-data-model
+**Current focus:** Phase 03 — active-listing-ingestion-pipeline
 
 ## Current Position
 
-Phase: 3 — Active-Listing Ingestion Pipeline
-Plan: Not started
+Phase: 03 (active-listing-ingestion-pipeline) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-07-14 — Phase 02 complete, transitioned to Phase 3
+Last activity: 2026-07-14 — Phase 03 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -64,6 +64,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02 P04 | 8min | 2 tasks | 2 files |
 | Phase 02 P05 | 5min | 2 tasks | 3 files |
 | Phase 02 P06 | 10min | 2 tasks | 1 files |
+| Phase 03 P01 | 10min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,8 @@ Recent decisions affecting current work:
 - [Phase 02-05]: Deferred scripts.seed_catalog import into test_seed_idempotent function body (plan's fallback instruction) since scripts/seed_catalog.py does not exist until Plan 02-06 and top-level import would break --collect-only
 - [Phase 02-06]: Ran python -m scripts.seed_catalog directly against the real pokemonview Atlas database (not just the test DB) to prove idempotency end-to-end
 - [Phase 02-06]: D-02 Pitch Black post-release re-verification follow-up recorded in SUMMARY.md only (no .planning/todos/ directory exists yet)
+- [Phase 03-01]: Approved apscheduler==3.11.3 install after human review confirmed [SUS] verdict (T-03-SC) was a false positive from recent-release-date and missing download telemetry
+- [Phase 03-01]: Used exact version pin apscheduler==3.11.3 (registry-verified latest per 03-RESEARCH.md) matching project's existing pinning convention
 
 ### Pending Todos
 
@@ -114,6 +117,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-14T04:36:48.670Z
+Last session: 2026-07-14T22:02:02.566Z
 Stopped at: Completed 02-06-PLAN.md
 Resume file: None
