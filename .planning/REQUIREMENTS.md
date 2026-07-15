@@ -37,7 +37,7 @@ Requirements for initial release. Each maps to roadmap phases. Items tagged **(P
 ### Search & Browse
 
 - [x] **SEARCH-01**: User can search/browse catalog products by name or set
-- [ ] **SEARCH-02**: User can view a product detail page showing its price data
+- [x] **SEARCH-02**: User can view a product detail page showing its price data
 
 ## v2 Requirements
 
@@ -84,7 +84,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PRICE-05 | Phase 8 (contingent) | Pending |
 | PRICE-06 | Phase 8 (contingent) | Pending |
 | SEARCH-01 | Phase 6 | Complete |
-| SEARCH-02 | Phase 6 | Pending |
+| SEARCH-02 | Phase 6 | Complete |
 
 **Note:** Phases 1 (feasibility gate), 5 (Flask API serving layer), and 7 (launch & hardening) own no requirements directly. They are enabling/operational layers of the horizontal-layer build. Phase 5 serves the display requirements (PRICE-01/02/03, SEARCH-01/02) that become user-observable in Phase 6.
 
