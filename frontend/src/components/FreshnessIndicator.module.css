@@ -1,0 +1,11 @@
+/* FreshnessIndicator — Label-size, secondary-text caption rendering
+ * "Data as of {relative time}" (06-UI-SPEC.md Copywriting Contract, D-09).
+ * Detail-page only (D-10). */
+
+.freshness {
+  margin: 0;
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-label);
+  color: var(--text-secondary);
+}
