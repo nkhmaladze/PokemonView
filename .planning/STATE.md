@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 7
-current_phase_name: v1 active-price
+current_phase: 07
+current_phase_name: launch-hardening-v1-active-price
 status: executing
 stopped_at: Phase 7 context gathered
-last_updated: "2026-07-15T20:15:30.267Z"
+last_updated: "2026-07-15T20:27:41.886Z"
 last_activity: 2026-07-15
-last_activity_desc: Phase 06 complete, transitioned to Phase 7
+last_activity_desc: Phase 07 execution started
 progress:
   total_phases: 8
   completed_phases: 5
-  total_plans: 34
-  completed_plans: 33
+  total_plans: 39
+  completed_plans: 34
   percent: 63
 ---
 
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by both live eBay asking prices and actual sold-price history.
-**Current focus:** Phase 06 — react-spa-frontend-active-price-product
+**Current focus:** Phase 07 — launch-hardening-v1-active-price
 
 ## Current Position
 
-Phase: 7 — Launch & Hardening (v1 active-price)
-Plan: Not started
+Phase: 07 (launch-hardening-v1-active-price) — EXECUTING
+Plan: 2 of 5
 Status: Ready to execute
-Last activity: 2026-07-15 — Phase 06 complete, transitioned to Phase 7
+Last activity: 2026-07-15 — Phase 07 execution started
 
 Progress: [██████████] 97%
 
@@ -91,6 +91,7 @@ Progress: [██████████] 97%
 | Phase 06 P05 | ~6min | 2 tasks | 6 files |
 | Phase 06 P06 | ~10min | 1 tasks | 3 files |
 | Phase 06 P07 | ~8min | 3 tasks | 5 files |
+| Phase 07 P01 | 12min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -158,6 +159,7 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 06-05]: Placeholder thumbnail glyph derived from product_type via a small letter map (P/B/N/E) rather than an SVG icon asset
 - [Phase 06]: [Phase 06-06]: Fixed a bug in ProductDetailPage.test.jsx's own MSRP/release_date null-fallback assertions - exact-match getByText false-failed since those strings are part of larger text nodes; switched to regex matchers
 - [Phase 06-07]: Task 3 live end-to-end checkpoint approved by user against a real running Flask API (port 5001, Atlas-backed MongoDB) — browse/filter, detail (price/trend/freshness/sample-size), and 404 states all confirmed correct; dev servers stopped after approval since Task 3 writes no files
+- [Phase ?]: [Phase 07-01] Normalized naive datetimes read back from MongoDB to UTC-aware in check_and_alert_staleness before gap-hours subtraction (MongoClient not tz_aware, per Phase 04-04 precedent)
 
 ### Pending Todos
 
@@ -182,7 +184,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-15T19:35:47.960Z
+Last session: 2026-07-15T20:26:51.346Z
 Stopped at: Phase 7 context gathered
 Resume file: 
-.planning/phases/07-launch-hardening-v1-active-price/07-CONTEXT.md
+None

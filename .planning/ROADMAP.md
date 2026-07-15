@@ -225,11 +225,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. In production the ingestion worker runs automatically on its schedule, keeping displayed data current without manual intervention.
   3. An alert is triggered when ingestion data goes stale beyond roughly 2x the polling interval, so silent pipeline failures surface instead of showing users stale prices.
 
-**Plans**: 5 plans
+**Plans**: 1/5 plans executed
 
 **Wave 1** *(independent — code + containerization artifacts in parallel)*
 
-- [ ] 07-01-PLAN.md — Staleness alert: check_and_alert_staleness() + scheduled_job wiring + 5 Nyquist tests + DISCORD_WEBHOOK_URL env doc (SC-3, D-06/D-07)
+- [x] 07-01-PLAN.md — Staleness alert: check_and_alert_staleness() + scheduled_job wiring + 5 Nyquist tests + DISCORD_WEBHOOK_URL env doc (SC-3, D-06/D-07)
 - [ ] 07-02-PLAN.md — gunicorn==26.0.0 legitimacy gate + requirements.txt pin + wsgi.py gunicorn entrypoint (SC-1/SC-2)
 - [ ] 07-03-PLAN.md — Dockerfile + .dockerignore + fly.toml (one image, two always-on process types, no scale-to-zero) (SC-1/SC-2)
 
@@ -270,5 +270,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
 | 5. Flask REST API (active-price serving) | 7/7 | Complete    | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | 7/7 | Complete    | 2026-07-15 |
-| 7. Launch & Hardening (v1 active-price) | 0/5 | Planned | - |
+| 7. Launch & Hardening (v1 active-price) | 1/5 | In Progress|  |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
