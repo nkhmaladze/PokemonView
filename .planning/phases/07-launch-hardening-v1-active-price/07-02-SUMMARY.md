@@ -108,3 +108,11 @@ None - no external service configuration required for this plan. (Fly.io secrets
 ---
 *Phase: 07-launch-hardening-v1-active-price*
 *Completed: 2026-07-15*
+
+## Self-Check: PASSED
+
+- FOUND: requirements.txt contains `gunicorn==26.0.0`
+- FOUND: wsgi.py
+- FOUND: .planning/phases/07-launch-hardening-v1-active-price/07-02-SUMMARY.md
+- FOUND: commit fa930ab (feat(07-02): pin gunicorn + add wsgi.py entrypoint)
+- FOUND: commit fe6933f (docs(07-02): complete gunicorn pin + wsgi entrypoint plan)
