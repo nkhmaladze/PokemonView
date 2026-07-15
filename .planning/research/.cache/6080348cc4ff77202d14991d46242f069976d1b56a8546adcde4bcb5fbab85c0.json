@@ -1,0 +1,1 @@
+{"content":"fly secrets set injects encrypted secrets as env vars at Machine boot and triggers an automatic rolling restart/release by default (no manual fly deploy needed); --stage defers application until the next deploy.","source":"web","provider":"websearch","confidence":"MEDIUM","fetched_at":"2026-07-15T19:49:14.778Z","ttl":86400000,"kind":"web"}

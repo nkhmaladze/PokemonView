@@ -1,0 +1,1 @@
+{"content":"Fly.io defaults to auto_stop_machines=stop, auto_start_machines=true, min_machines_running=0 on fly launch; to force always-on, set auto_stop_machines=off (or keep stop/suspend paired with min_machines_running>=1) to prevent scale-to-zero.","source":"web","provider":"websearch","confidence":"MEDIUM","fetched_at":"2026-07-15T19:49:14.691Z","ttl":86400000,"kind":"web"}

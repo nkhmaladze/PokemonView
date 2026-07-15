@@ -1,0 +1,1 @@
+{"content":"Discord webhook alerts from Python use requests.post(url, json={content: msg}) returning 204 on success; 30 requests/minute rate limit per webhook.","source":"web","provider":"websearch","confidence":"MEDIUM","fetched_at":"2026-07-15T19:49:15.040Z","ttl":86400000,"kind":"web"}

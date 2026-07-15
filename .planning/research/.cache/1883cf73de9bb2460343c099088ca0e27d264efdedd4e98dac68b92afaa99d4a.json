@@ -1,0 +1,1 @@
+{"content":"Vercel CLI (vercel --prod) auto-detects Vite with zero config; Netlify CLI needs an extra ntl init step; Cloudflare Pages needs wrangler login plus wrangler pages deploy dist. All three work without git integration.","source":"web","provider":"websearch","confidence":"MEDIUM","fetched_at":"2026-07-15T19:49:15.128Z","ttl":86400000,"kind":"web"}
