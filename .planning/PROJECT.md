@@ -13,11 +13,11 @@ A user can look up a specific pack/box/ETB and see whether it's priced fairly ri
 ### Validated
 
 - [x] Curated product catalog for v1: sealed product (booster packs, booster boxes, booster bundles, ETBs) across the 4 most recent English sets (Ascended Heroes, Perfect Order, Chaos Rising, Pitch Black) — validated in Phase 2, persisted on a schema-validated, indexed MongoDB collection
+- [x] Matching/normalization service maps messy raw eBay listing titles to canonical catalog products via keyword-based matching rules — validated in Phase 4 (two-tier exact + bounded RapidFuzz matching, lot/damaged/counterfeit exclusion, statistical outlier filtering, per-product price_points aggregation), wired into the Phase 3 ingestion worker
 
 ### Active
 
 - [ ] Scheduled ingestion worker pulls active + sold eBay listings via the official eBay API (Browse API for active, Marketplace Insights API for sold) on a periodic schedule (every X hours, via cron/script — no task broker)
-- [ ] Matching/normalization service maps messy raw eBay listing titles to canonical catalog products via keyword-based matching rules
 - [ ] Flask REST API serves current active-listing prices and historical sold-price trends per catalog product
 - [ ] React SPA frontend displays current price + price-trend charts per product, poe.ninja-style
 - [ ] MongoDB is the shared data store across all services
@@ -54,7 +54,7 @@ A user can look up a specific pack/box/ETB and see whether it's priced fairly ri
 | Track both active and sold eBay prices | Active = live asking price; sold = true market value, mirroring how poe.ninja shows real trade data | — Pending |
 | Official eBay APIs only, no scraping | Legal, stable data source; avoids ToS violations and scraper fragility | — Pending |
 | Flask over Django | MongoDB doesn't benefit from Django's ORM; JSON API + custom matching logic fits Flask better | — Pending |
-| Curated catalog + keyword matching for listings | eBay titles are messy free text; need a canonical product mapping step | — Pending |
+| Curated catalog + keyword matching for listings | eBay titles are messy free text; need a canonical product mapping step | Validated (Phase 4) |
 | Simple cron/script over Celery for scheduled ingestion | Keeps microservice count reasonable; avoids broker/queue infra for a periodic pull | — Pending |
 | Four services: ingestion, matching, API, frontend | Separates concerns without over-fragmenting into unnecessary microservices | — Pending |
 | v1 catalog widened to 4 sets, incl. pre-release Pitch Black | User explicitly chose to include the newest set even though not yet released (Jul 17, 2026); seeded now with best-available info, to be verified/corrected post-release | Validated (Phase 2) |
@@ -80,4 +80,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-14 after Phase 2 completion (product-catalog-data-model)*
+*Last updated: 2026-07-15 after Phase 4 completion (listing-matching-price-normalization)*
