@@ -27,7 +27,7 @@ Requirements for initial release. Each maps to roadmap phases. Items tagged **(P
 
 ### Pricing Display
 
-- [ ] **PRICE-01**: User can view a product's current price, led by estimated total price (item + shipping) with pre-shipping item price shown as secondary detail
+- [x] **PRICE-01**: User can view a product's current price, led by estimated total price (item + shipping) with pre-shipping item price shown as secondary detail
 - [ ] **PRICE-02**: User can see a "data as of [timestamp]" freshness indicator
 - [ ] **PRICE-03**: User can see a price-trend badge (7d/30d % change) based on active-price history
 - [ ] **PRICE-04** (Phase 8, contingent): User can see a historical sold-price trend chart
@@ -77,7 +77,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MATCH-01 | Phase 4 | Complete |
 | MATCH-02 | Phase 4 | Complete |
 | MATCH-03 | Phase 4 | Complete |
-| PRICE-01 | Phase 6 | Pending |
+| PRICE-01 | Phase 6 | Complete |
 | PRICE-02 | Phase 6 | Pending |
 | PRICE-03 | Phase 6 | Pending |
 | PRICE-04 | Phase 8 (contingent) | Pending |
