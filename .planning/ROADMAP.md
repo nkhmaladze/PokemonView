@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 1: eBay API Feasibility Gate** - De-risk sold-price API access and prove Browse API + OAuth before building
 - [x] **Phase 2: Product Catalog & Data Model** - Curated v1 catalog and the shared MongoDB schema everything builds on (completed 2026-07-14)
 - [ ] **Phase 3: Active-Listing Ingestion Pipeline** - Scheduled, idempotent worker pulls active eBay listings via the Browse API (5/5 plans done, pending human verification — see 03-UAT.md)
-- [ ] **Phase 4: Listing Matching & Price Normalization** - Map messy titles to catalog products and clean them into trustworthy prices
+- [x] **Phase 4: Listing Matching & Price Normalization** - Map messy titles to catalog products and clean them into trustworthy prices (completed 2026-07-15)
 - [ ] **Phase 5: Flask REST API (active-price serving)** - Read-only API serves catalog, search, current price, freshness, and trend data
 - [ ] **Phase 6: React SPA Frontend (active-price product)** - Users browse products and see whether one is priced fairly right now
 - [ ] **Phase 7: Launch & Hardening (v1 active-price)** - Deploy, monitor for stale data, and take the active-price product live
@@ -121,7 +121,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Statistical price outliers (far from the rolling median) are excluded so the aggregate reflects the true market, not noise.
   4. For a given product, the computed current price is derived only from included listings (matched, non-excluded, non-outlier).
 
-**Plans**: 4/5 plans executed
+**Plans**: 5/5 plans complete
 
 **Wave 1** *(independent — dependency install + Nyquist RED scaffold in parallel)*
 
@@ -138,7 +138,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 4** *(depends on Wave 3)*
 
-- [ ] 04-05-PLAN.md — Wire run_matching_once into ingest_worker.py + D-04 ingestion_runs match counts
+- [x] 04-05-PLAN.md — Wire run_matching_once into ingest_worker.py + D-04 ingestion_runs match counts
 
 ### Phase 5: Flask REST API (active-price serving)
 
@@ -209,7 +209,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. eBay API Feasibility Gate | 3/4 | In Progress|  |
 | 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
 | 3. Active-Listing Ingestion Pipeline | 5/5 | Verifying (human) |  |
-| 4. Listing Matching & Price Normalization | 4/5 | In Progress|  |
+| 4. Listing Matching & Price Normalization | 5/5 | Complete   | 2026-07-15 |
 | 5. Flask REST API (active-price serving) | 0/TBD | Not started | - |
 | 6. React SPA Frontend (active-price product) | 0/TBD | Not started | - |
 | 7. Launch & Hardening (v1 active-price) | 0/TBD | Not started | - |
