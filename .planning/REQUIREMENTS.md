@@ -27,17 +27,17 @@ Requirements for initial release. Each maps to roadmap phases. Items tagged **(P
 
 ### Pricing Display
 
-- [ ] **PRICE-01**: User can view a product's current price, led by estimated total price (item + shipping) with pre-shipping item price shown as secondary detail
-- [ ] **PRICE-02**: User can see a "data as of [timestamp]" freshness indicator
-- [ ] **PRICE-03**: User can see a price-trend badge (7d/30d % change) based on active-price history
+- [x] **PRICE-01**: User can view a product's current price, led by estimated total price (item + shipping) with pre-shipping item price shown as secondary detail
+- [x] **PRICE-02**: User can see a "data as of [timestamp]" freshness indicator
+- [x] **PRICE-03**: User can see a price-trend badge (7d/30d % change) based on active-price history
 - [ ] **PRICE-04** (Phase 8, contingent): User can see a historical sold-price trend chart
 - [ ] **PRICE-05** (Phase 8, contingent): User can see an active-vs-sold spread indicator ("asking X% above last sale")
 - [ ] **PRICE-06** (Phase 8, contingent): User can see a sold-volume/liquidity indicator ("N sold in last 7 days")
 
 ### Search & Browse
 
-- [ ] **SEARCH-01**: User can search/browse catalog products by name or set
-- [ ] **SEARCH-02**: User can view a product detail page showing its price data
+- [x] **SEARCH-01**: User can search/browse catalog products by name or set
+- [x] **SEARCH-02**: User can view a product detail page showing its price data
 
 ## v2 Requirements
 
@@ -77,14 +77,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | MATCH-01 | Phase 4 | Complete |
 | MATCH-02 | Phase 4 | Complete |
 | MATCH-03 | Phase 4 | Complete |
-| PRICE-01 | Phase 6 | Pending |
-| PRICE-02 | Phase 6 | Pending |
-| PRICE-03 | Phase 6 | Pending |
+| PRICE-01 | Phase 6 | Complete |
+| PRICE-02 | Phase 6 | Complete |
+| PRICE-03 | Phase 6 | Complete |
 | PRICE-04 | Phase 8 (contingent) | Pending |
 | PRICE-05 | Phase 8 (contingent) | Pending |
 | PRICE-06 | Phase 8 (contingent) | Pending |
-| SEARCH-01 | Phase 6 | Pending |
-| SEARCH-02 | Phase 6 | Pending |
+| SEARCH-01 | Phase 6 | Complete |
+| SEARCH-02 | Phase 6 | Complete |
 
 **Note:** Phases 1 (feasibility gate), 5 (Flask API serving layer), and 7 (launch & hardening) own no requirements directly. They are enabling/operational layers of the horizontal-layer build. Phase 5 serves the display requirements (PRICE-01/02/03, SEARCH-01/02) that become user-observable in Phase 6.
 
