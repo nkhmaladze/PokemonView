@@ -13,7 +13,7 @@ import styles from './TrendBadge.module.css'
  * 4-state table), then on the sign of `pct_change` for the "ok" case.
  */
 export default function TrendBadge({ trend }) {
-  if (trend.status === 'insufficient_data') {
+  if (!trend || trend.status === 'insufficient_data' || typeof trend.pct_change !== 'number') {
     return (
       <span
         className={`${styles['trend-badge']} ${styles['trend-badge--muted']}`}

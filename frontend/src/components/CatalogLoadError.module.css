@@ -1,0 +1,28 @@
+/* CatalogLoadError — the `/` route errorElement (CR-01, WR-05). Mirrors
+ * ProductNotFound's centered, token-driven layout for visual consistency
+ * between the app's two error states. No hardcoded colors/spacing. */
+
+.loadError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-3xl) var(--space-lg);
+  text-align: center;
+}
+
+.loadError__heading {
+  margin: 0;
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  color: var(--text-primary);
+}
+
+.loadError__body {
+  margin: 0;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  color: var(--text-secondary);
+}
