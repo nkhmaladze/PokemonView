@@ -52,13 +52,21 @@ def create_app(mongodb_uri=None, db_name=Config.DB_NAME):
     app.config["DB"] = client[db_name]
     app.config["DB_NAME"] = db_name
 
+    cors_origins_raw = os.environ.get("CORS_ORIGINS", Config.CORS_ORIGINS_DEV_DEFAULT)
+    # The literal "*" wildcard dev default stays a single-element list
+    # (Flask-CORS treats ["*"] as allow-all); a comma-separated
+    # production value becomes a real per-origin list so the
+    # documented multi-origin format actually matches real Origin
+    # headers (CR-02).
+    cors_origins = (
+        [cors_origins_raw]
+        if cors_origins_raw == "*"
+        else [origin.strip() for origin in cors_origins_raw.split(",") if origin.strip()]
+    )
+
     CORS(
         app,
-        resources={
-            r"/products*": {
-                "origins": os.environ.get("CORS_ORIGINS", Config.CORS_ORIGINS_DEV_DEFAULT)
-            }
-        },
+        resources={r"/products*": {"origins": cors_origins}},
     )
 
     @app.errorhandler(Exception)
@@ -68,12 +76,14 @@ def create_app(mongodb_uri=None, db_name=Config.DB_NAME):
         HTTPExceptions (explicit 400/404/etc. raised via abort() or
         route logic) pass through unchanged so their intended status
         code and body are preserved. Any other unhandled exception is
-        converted to a generic 500 JSON body with NO stack trace or
-        exception class name — DEBUG is always False, so Flask's
-        debug traceback page never renders.
+        logged server-side (WR-04, T-05-04) and converted to a generic
+        500 JSON body with NO stack trace or exception class name —
+        DEBUG is always False, so Flask's debug traceback page never
+        renders, and the logged detail never reaches the response body.
         """
         if isinstance(error, HTTPException):
             return error
+        app.logger.exception("Unhandled exception in request")
         return jsonify({"error": "internal_error"}), 500
 
     from api.blueprints.products import products_bp
