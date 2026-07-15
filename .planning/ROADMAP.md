@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Listing Matching & Price Normalization** - Map messy titles to catalog products and clean them into trustworthy prices (completed 2026-07-15)
 - [x] **Phase 5: Flask REST API (active-price serving)** - Read-only API serves catalog, search, current price, freshness, and trend data (completed 2026-07-15)
 - [x] **Phase 6: React SPA Frontend (active-price product)** - Users browse products and see whether one is priced fairly right now (completed 2026-07-15)
-- [ ] **Phase 7: Launch & Hardening (v1 active-price)** - Deploy, monitor for stale data, and take the active-price product live
+- [x] **Phase 7: Launch & Hardening (v1 active-price)** - Deploy, monitor for stale data, and take the active-price product live (completed 2026-07-15)
 - [ ] **Phase 8: Sold-Price Integration (contingent on MI API access)** - Add real sold-price history and active-vs-sold differentiators
 
 ## Phase Details
@@ -225,7 +225,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. In production the ingestion worker runs automatically on its schedule, keeping displayed data current without manual intervention.
   3. An alert is triggered when ingestion data goes stale beyond roughly 2x the polling interval, so silent pipeline failures surface instead of showing users stale prices.
 
-**Plans**: 4/5 plans executed
+**Plans**: 5/5 plans complete
 
 **Wave 1** *(independent — code + containerization artifacts in parallel)*
 
@@ -239,7 +239,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 3** *(depends on Wave 2 — SPA build needs the live Fly API URL)*
 
-- [ ] 07-05-PLAN.md — vercel legitimacy gate + frontend/.env.production + SPA deploy to Vercel + CORS_ORIGINS wired to the Vercel origin + no-CORS-error verification (SC-1 end-to-end)
+- [x] 07-05-PLAN.md — vercel legitimacy gate + frontend/.env.production + SPA deploy to Vercel + CORS_ORIGINS wired to the Vercel origin + no-CORS-error verification (SC-1 end-to-end)
 
 ### Phase 8: Sold-Price Integration (contingent on MI API access)
 
@@ -270,5 +270,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
 | 5. Flask REST API (active-price serving) | 7/7 | Complete    | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | 7/7 | Complete    | 2026-07-15 |
-| 7. Launch & Hardening (v1 active-price) | 4/5 | In Progress|  |
+| 7. Launch & Hardening (v1 active-price) | 5/5 | Complete   | 2026-07-15 |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
