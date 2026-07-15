@@ -16,11 +16,13 @@ A user can look up a specific pack/box/ETB and see whether it's priced fairly ri
 - [x] Matching/normalization service maps messy raw eBay listing titles to canonical catalog products via keyword-based matching rules — validated in Phase 4 (two-tier exact + bounded RapidFuzz matching, lot/damaged/counterfeit exclusion, statistical outlier filtering, per-product price_points aggregation), wired into the Phase 3 ingestion worker
 - [x] Flask REST API serves current active-listing prices per catalog product — validated in Phase 6 (now user-observable end-to-end via the React SPA built in this phase; Phase 5 built the serving layer, Phase 6 is what made it user-facing)
 - [x] React SPA frontend displays current active price + 7d/30d trend indicators per product, with search/filter browse and a detail view — validated in Phase 6 (CatalogPage + ProductDetailPage, live E2E-verified against the Flask API). Scope note: this validates *active-price* display only — full historical price-trend line charts and sold-price data remain future scope, pending Marketplace Insights API approval (still unresolved; see Context)
+- [x] Scheduled active-listing ingestion worker runs unattended in production on its locked schedule (every X hours, via APScheduler in-process — no task broker) — validated in Phase 7 (deployed to Fly.io as an always-on process, scale-to-zero disabled; silent-failure risk covered by a Discord staleness alert)
+- [x] MongoDB is the shared data store across all services, including the live production deployment — validated in Phase 7 (Atlas M0, Network Access opened for the deployed Fly.io app)
+- [x] The v1 active-price product is deployed and publicly reachable end-to-end — validated in Phase 7 (Flask API on Fly.io at a public `.fly.dev` URL, React SPA on Vercel, CORS wired between them, live-verified with no CORS errors)
 
 ### Active
 
-- [ ] Scheduled ingestion worker pulls active + sold eBay listings via the official eBay API (Browse API for active, Marketplace Insights API for sold) on a periodic schedule (every X hours, via cron/script — no task broker)
-- [ ] MongoDB is the shared data store across all services
+- [ ] Sold-listing ingestion via the Marketplace Insights API — contingent on eBay Application Growth Check approval (Phase 8); active-listing ingestion (above) does not depend on this
 
 ### Out of Scope
 
@@ -61,6 +63,10 @@ A user can look up a specific pack/box/ETB and see whether it's priced fairly ri
 | Added `booster_bundle` as a distinct product type | Meaningfully different price point from both single packs and full boxes; must not be conflated with either in catalog or downstream matching | Validated (Phase 2) |
 | Claude curates catalog data via direct web research, no third-party TCG API | Avoids an added external data-source dependency; catalog is static/curated, not live-synced | Validated (Phase 2) |
 | Catalog images linked directly to official/public CDN URLs, no self-hosting | Avoids file-storage infra for v1; accepts dependency on those URLs staying stable | Validated (Phase 2) |
+| Split-PaaS deployment: Fly.io (API + worker, one image/two process types) + Vercel (static SPA) | User explicitly chose Fly.io over the recommended Render/Railway, accepting the Dockerfile requirement; Vercel picked as simplest static-host wiring for a repo without required git-integration deploy | Validated (Phase 7) |
+| Always-on Fly machines (`auto_stop_machines="off"`, `min_machines_running=1`), no free/scale-to-zero tier | A sleeping/cold-starting worker would silently break the locked 4h ingestion cadence; budgeted ~$5-15/mo explicitly for this | Validated (Phase 7) |
+| Deploy v1 now with eBay credentials still absent; ingestion fails loud, one alert code path covers both "never succeeded" and "went stale" | Avoids blocking launch on an external credential-recovery process with no ETA; self-resolves once real credentials are added via `fly secrets set` with no redeploy | Validated (Phase 7) |
+| Discord webhook for staleness alerting, over email or a manual status page | Simplest to stand up from scratch (no existing Slack workspace); ~2x-polling-interval threshold per RESEARCH.md's "fail loud on stale runs" guidance | Validated (Phase 7) |
 
 ## Evolution
 
@@ -80,4 +86,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-15 after Phase 6 completion (react-spa-frontend-active-price-product) — the v1 active-price product surface (browse, search, detail, live trend badges) is now shippable end-to-end; next is Phase 7 (launch & hardening)*
+*Last updated: 2026-07-15 after Phase 7 completion (launch-hardening-v1-active-price) — the v1 active-price product is deployed and publicly live (Flask API on Fly.io, React SPA on Vercel), the ingestion worker runs unattended on schedule, and a Discord alert covers silent staleness/failure. v1 ships regardless of Marketplace Insights API status; next is Phase 8 (sold-price integration, contingent on that access)*
