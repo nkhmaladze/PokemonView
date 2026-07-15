@@ -246,10 +246,17 @@ def run_ingestion_once(db):
         access_token = token["access_token"]
 
         for product in CATALOG:
-            product_ref = (
-                f"{product['set_name']}_{product['product_type']}".lower().replace(" ", "-")
-            )
+            # product_ref default (WR-02): computed inside the try so a
+            # malformed CATALOG entry (missing set_name/product_type)
+            # raises inside this per-product guard instead of escaping
+            # to the outer try and aborting every remaining product.
+            product_ref = None
             try:
+                product_ref = (
+                    f"{product['set_name']}_{product['product_type']}"
+                    .lower()
+                    .replace(" ", "-")
+                )
                 query = build_query(product)
                 items = search_sealed_listings(access_token, query)
                 result = upsert_listings(
