@@ -214,19 +214,6 @@ def run_ingestion_once(db):
         db.ingestion_runs.insert_one(skipped_doc)
         return skipped_doc
 
-    db.ingestion_runs.insert_one(
-        {
-            "_id": run_id,
-            "started_at": started_at,
-            "finished_at": None,
-            "status": "running",
-            "products_queried": 0,
-            "listings_fetched": 0,
-            "listings_written": 0,
-            "errors": [],
-        }
-    )
-
     products_queried = 0
     listings_fetched = 0
     listings_written = 0
@@ -238,6 +225,23 @@ def run_ingestion_once(db):
     }
 
     try:
+        # Inside the try (CR-01): if this insert itself fails (transient
+        # Mongo error, validator failure, etc.), the exception is caught
+        # below and `release_lock` still runs in `finally` — the lock
+        # can never leak just because the run-start write failed.
+        db.ingestion_runs.insert_one(
+            {
+                "_id": run_id,
+                "started_at": started_at,
+                "finished_at": None,
+                "status": "running",
+                "products_queried": 0,
+                "listings_fetched": 0,
+                "listings_written": 0,
+                "errors": [],
+            }
+        )
+
         token = get_app_token()
         access_token = token["access_token"]
 
@@ -277,6 +281,7 @@ def run_ingestion_once(db):
         errors.append({"product_ref": None, "error": f"{type(e).__name__}: {e}"})
     finally:
         update_doc = {
+            "started_at": started_at,
             "finished_at": datetime.now(timezone.utc),
             "status": status,
             "products_queried": products_queried,
@@ -287,7 +292,13 @@ def run_ingestion_once(db):
             "listings_unmatched": match_counts["listings_unmatched"],
             "listings_excluded": match_counts["listings_excluded"],
         }
-        db.ingestion_runs.update_one({"_id": run_id}, {"$set": update_doc})
+        # upsert=True (CR-01): guarantees a run document exists even if
+        # the initial "running" insert_one above never completed, so a
+        # transient write failure still leaves a "failed" audit-trail
+        # document instead of no run doc at all.
+        db.ingestion_runs.update_one(
+            {"_id": run_id}, {"$set": update_doc}, upsert=True
+        )
         release_lock(db, run_id)
 
     return db.ingestion_runs.find_one({"_id": run_id})
