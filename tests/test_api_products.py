@@ -11,6 +11,7 @@ Status codes and JSON envelopes assert against the exact "## API
 Response Contract" shape.
 """
 
+import os
 from datetime import datetime, timedelta, timezone
 
 
@@ -213,3 +214,30 @@ def test_cors_header_present(client):
     response = client.get("/products")
 
     assert "Access-Control-Allow-Origin" in response.headers
+
+
+def test_multi_origin_cors_matches_each_origin(api_db, monkeypatch):
+    """Gap #12: a comma-separated CORS_ORIGINS
+    value (the documented production format) produces a matching
+    Access-Control-Allow-Origin header for each configured origin, and
+    does NOT reflect an unconfigured origin.
+
+    This test FAILS against the pre-fix raw-string code (the header is
+    absent/incorrect for each origin, since flask-cors 6.0.5
+    literal-wraps the whole unsplit string as one origin) and PASSES
+    only once CORS_ORIGINS is comma-split into a real list before being
+    passed to Flask-CORS's origins= argument.
+    """
+    monkeypatch.setenv("CORS_ORIGINS", "https://a.example,https://b.example")
+
+    from api.app import create_app
+
+    app = create_app(mongodb_uri=os.environ["MONGODB_URI"], db_name="pokemonview_test")
+    c = app.test_client()
+
+    for origin in ("https://a.example", "https://b.example"):
+        resp = c.get("/products", headers={"Origin": origin})
+        assert resp.headers.get("Access-Control-Allow-Origin") == origin
+
+    resp = c.get("/products", headers={"Origin": "https://evil.example"})
+    assert resp.headers.get("Access-Control-Allow-Origin") != "https://evil.example"
