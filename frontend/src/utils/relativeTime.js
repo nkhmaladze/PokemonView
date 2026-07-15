@@ -23,6 +23,8 @@ const UNITS = [
 export function formatRelativeTime(isoString) {
   const diffSeconds = (new Date(isoString).getTime() - Date.now()) / 1000
 
+  if (!Number.isFinite(diffSeconds)) return 'an unknown time'
+
   for (const [unit, secondsInUnit] of UNITS) {
     if (Math.abs(diffSeconds) >= secondsInUnit || unit === 'second') {
       return rtf.format(Math.round(diffSeconds / secondsInUnit), unit)
