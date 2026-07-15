@@ -158,9 +158,12 @@ def upsert_listings(db, product_ref, items, run_id, fetched_at):
                 "fetched_at": fetched_at,
                 "run_id": run_id,
             }
-        except (KeyError, ValueError, TypeError):
+        except (KeyError, ValueError, TypeError, AttributeError):
             # Malformed/unexpected shape on this one item — skip it,
-            # never abort the rest of the batch (T-03-03).
+            # never abort the rest of the batch (T-03-03). AttributeError
+            # is included (WR-01) because a malformed `categories` entry
+            # (e.g. a non-dict item like None or a bare string) raises
+            # AttributeError from `.get(...)`, not KeyError/TypeError.
             continue
         ops.append(UpdateOne({"_id": doc["_id"]}, {"$set": doc}, upsert=True))
 
