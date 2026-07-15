@@ -225,7 +225,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. In production the ingestion worker runs automatically on its schedule, keeping displayed data current without manual intervention.
   3. An alert is triggered when ingestion data goes stale beyond roughly 2x the polling interval, so silent pipeline failures surface instead of showing users stale prices.
 
-**Plans**: 3/5 plans executed
+**Plans**: 4/5 plans executed
 
 **Wave 1** *(independent — code + containerization artifacts in parallel)*
 
@@ -235,7 +235,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 2** *(depends on Wave 1 — deploy needs all committed artifacts)*
 
-- [ ] 07-04-PLAN.md — Deploy Fly app (API web + worker): flyctl launch/deploy, Atlas Network Access, fly secrets set (MONGODB_URI/DISCORD_WEBHOOK_URL; eBay creds deferred per D-05), verify API reachable + machines always-on (SC-1, SC-2)
+- [x] 07-04-PLAN.md — Deploy Fly app (API web + worker): flyctl launch/deploy, Atlas Network Access, fly secrets set (MONGODB_URI/DISCORD_WEBHOOK_URL; eBay creds deferred per D-05), verify API reachable + machines always-on (SC-1, SC-2)
 
 **Wave 3** *(depends on Wave 2 — SPA build needs the live Fly API URL)*
 
@@ -270,5 +270,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
 | 5. Flask REST API (active-price serving) | 7/7 | Complete    | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | 7/7 | Complete    | 2026-07-15 |
-| 7. Launch & Hardening (v1 active-price) | 3/5 | In Progress|  |
+| 7. Launch & Hardening (v1 active-price) | 4/5 | In Progress|  |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
