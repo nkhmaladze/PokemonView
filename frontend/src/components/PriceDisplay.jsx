@@ -1,7 +1,7 @@
 import styles from './PriceDisplay.module.css'
 
 function formatCurrency(value) {
-  return `$${value.toFixed(2)}`
+  return typeof value === 'number' ? `$${value.toFixed(2)}` : '—'
 }
 
 /**
@@ -24,6 +24,14 @@ export default function PriceDisplay({ currentPrice, variant = 'heading' }) {
     variant === 'display'
       ? `${styles.price__total} ${styles['price__total--display']}`
       : styles.price__total
+
+  if (!currentPrice) {
+    return (
+      <div className={styles.price}>
+        <span className={totalClassName}>{'—'}</span>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.price}>
