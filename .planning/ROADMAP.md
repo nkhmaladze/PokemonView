@@ -152,7 +152,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The API exposes each product's data-freshness timestamp from the last successful ingestion (enables PRICE-02).
   4. The API returns each product's 7d/30d active-price percent change (enables PRICE-03).
 
-**Plans**: 6/6 plans complete
+**Plans**: 7 plans (6 complete + 1 gap-closure)
 
 **Wave 1** *(independent — dependency install + Phase-4 writer change in parallel)*
 
@@ -174,6 +174,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Wave 5** *(depends on Wave 4)*
 
 - [x] 05-06-PLAN.md — api/app.py create_app + config + db + products blueprint (CORS, DEBUG=False error handler); turns HTTP suite GREEN
+
+**Gap Closure** *(closes 05-VERIFICATION.md blockers CR-01/CR-02)*
+
+- [ ] 05-07-PLAN.md — CR-01: InvalidProductTypeError so internal ValueErrors surface as 500 not masked 400; CR-02: comma-split CORS_ORIGINS so prod multi-origin config works; + 2 regression tests
 
 ### Phase 6: React SPA Frontend (active-price product)
 
