@@ -37,7 +37,7 @@
   --size-thumbnail-row: 32px; /* list-row thumbnail, coincides with --space-xl */
   --size-thumbnail-detail: 96px; /* detail-page hero thumbnail, 2x --space-2xl */
   --size-row-min-height: 48px;
-  --size-tap-target-min: 44px; /* chips / search-clear min tap target, WCAG comfort minimum */
+  --size-tap-target-min: 44px; /* chips min tap target, WCAG comfort minimum */
 
   /* Typography */
   --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
