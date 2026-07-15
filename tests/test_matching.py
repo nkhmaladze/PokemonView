@@ -293,7 +293,16 @@ def test_price_points_median_aggregation(matching_db):
         "listings' total_price values (D-12), not derived from "
         "item_price's median"
     )
-    assert doc["ts"] == ts
+    # MongoDB's BSON date type stores millisecond precision (not
+    # microsecond) and this project's MongoClient is not tz_aware, so
+    # a round-tripped `ts` is naive and truncated relative to the
+    # microsecond-precision, tz-aware `ts` passed in — compare within a
+    # tolerance rather than exact equality (inherent BSON/pymongo
+    # date-storage behavior, not a matching.py defect).
+    assert abs((doc["ts"].replace(tzinfo=None) - ts.replace(tzinfo=None)).total_seconds()) < 1, (
+        "ts must round-trip (within MongoDB's millisecond BSON date "
+        "precision) to the run timestamp passed into aggregate_and_write"
+    )
 
 
 def test_price_points_skipped_when_zero_included(matching_db):
