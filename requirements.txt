@@ -3,3 +3,4 @@ python-dotenv==1.2.2
 pymongo==4.17.0
 pytest==8.4.2
 apscheduler==3.11.3
+rapidfuzz==3.14.5
