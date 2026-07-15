@@ -35,7 +35,9 @@ mitigation — no `(a+)+`-style nesting).
 
 import re
 import statistics
+from datetime import datetime, timezone
 
+from pymongo import UpdateOne
 from rapidfuzz import fuzz, process
 
 from scripts.catalog_data import CATALOG
@@ -273,3 +275,99 @@ def aggregate_and_write(db, product_id: str, included: list[dict], ts) -> bool:
         }
     )
     return True
+
+
+def run_matching_once(db, run_id: str, ts) -> dict:
+    """Orchestrates matching, exclusion, outlier filtering, and price
+    aggregation over every `active_listings` document this run touched
+    (D-04, D-16).
+
+    1. Reads the run-scoped batch: db.active_listings.find({"run_id":
+       run_id}) — only listings Phase 3's upsert_listings stamped with
+       this run_id (D-15/A5), never the full historical collection.
+    2. Per listing: normalize() -> match_listing() -> check_exclusion(),
+       building one UpdateOne per listing (match_status,
+       matched_product_id, match_method, match_score, exclusion_reason,
+       matched_at), batched into a single bulk_write (mirrors
+       upsert_listings' idempotent bulk-write-by-_id idiom). A
+       listing with a missing/None/malformed `title` is isolated by a
+       per-item try/except so it cannot abort the run (T-04-01) — it
+       is still updated with match_status="unmatched".
+    3. Matched-and-not-keyword-excluded listings are grouped by
+       matched_product_id and each group is outlier-filtered
+       (filter_outliers); statistically-excluded listings get
+       exclusion_reason="outlier" (D-16) via a second batched
+       bulk_write; the final included set per product is
+       median-aggregated into price_points (aggregate_and_write).
+
+    Returns {"listings_matched": int, "listings_unmatched": int,
+    "listings_excluded": int} (D-04) for the caller to merge into the
+    ingestion_runs document (Plan 04-05).
+
+    Never logs full listing `title` strings at info level (data
+    hygiene, mirrors scripts/ingest_worker.py)."""
+    listings = list(db.active_listings.find({"run_id": run_id}))
+
+    match_ops = []
+    by_product: dict[str, list[dict]] = {}
+    listings_matched = listings_unmatched = listings_excluded = 0
+
+    for listing in listings:
+        try:
+            normalized = normalize(listing["title"])
+            result = match_listing(normalized)
+            exclusion_reason = check_exclusion(normalized)
+        except (KeyError, ValueError, TypeError, AttributeError):
+            # Missing ("title" key absent -> KeyError), None, or
+            # otherwise malformed title (e.g. non-str -> AttributeError
+            # from .lower()) — isolate this one listing rather than
+            # aborting the whole run's matching stage (T-04-01). Still
+            # stored as unmatched so it remains queryable/auditable
+            # (D-02), never silently dropped.
+            result = {
+                "match_status": "unmatched",
+                "matched_product_id": None,
+                "match_method": None,
+                "match_score": None,
+            }
+            exclusion_reason = None
+
+        update = {
+            **result,
+            "exclusion_reason": exclusion_reason,
+            "matched_at": datetime.now(timezone.utc),
+        }
+        match_ops.append(UpdateOne({"_id": listing["_id"]}, {"$set": update}))
+
+        if result["match_status"] == "matched":
+            listings_matched += 1
+            if exclusion_reason is None:
+                by_product.setdefault(result["matched_product_id"], []).append(
+                    {**listing, **update}
+                )
+            else:
+                listings_excluded += 1
+        else:
+            listings_unmatched += 1
+
+    if match_ops:
+        db.active_listings.bulk_write(match_ops)
+
+    outlier_ops = []
+    for product_id, group in by_product.items():
+        included, excluded = filter_outliers(group)
+        listings_excluded += len(excluded)
+        for listing in excluded:
+            outlier_ops.append(
+                UpdateOne({"_id": listing["_id"]}, {"$set": {"exclusion_reason": "outlier"}})
+            )
+        aggregate_and_write(db, product_id, included, ts)
+
+    if outlier_ops:
+        db.active_listings.bulk_write(outlier_ops)
+
+    return {
+        "listings_matched": listings_matched,
+        "listings_unmatched": listings_unmatched,
+        "listings_excluded": listings_excluded,
+    }
