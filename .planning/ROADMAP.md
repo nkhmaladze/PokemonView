@@ -152,7 +152,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The API exposes each product's data-freshness timestamp from the last successful ingestion (enables PRICE-02).
   4. The API returns each product's 7d/30d active-price percent change (enables PRICE-03).
 
-**Plans**: 7 plans (6 complete + 1 gap-closure)
+**Plans**: 7/7 plans complete
 
 **Wave 1** *(independent — dependency install + Phase-4 writer change in parallel)*
 
@@ -177,7 +177,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Gap Closure** *(closes 05-VERIFICATION.md blockers CR-01/CR-02)*
 
-- [ ] 05-07-PLAN.md — CR-01: InvalidProductTypeError so internal ValueErrors surface as 500 not masked 400; CR-02: comma-split CORS_ORIGINS so prod multi-origin config works; + 2 regression tests
+- [x] 05-07-PLAN.md — CR-01: InvalidProductTypeError so internal ValueErrors surface as 500 not masked 400; CR-02: comma-split CORS_ORIGINS so prod multi-origin config works; + 2 regression tests
 
 ### Phase 6: React SPA Frontend (active-price product)
 
@@ -235,7 +235,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
 | 3. Active-Listing Ingestion Pipeline | 5/5 | Verifying (human) |  |
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
-| 5. Flask REST API (active-price serving) | 6/6 | Complete   | 2026-07-15 |
+| 5. Flask REST API (active-price serving) | 7/7 | Complete   | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | 0/TBD | Not started | - |
 | 7. Launch & Hardening (v1 active-price) | 0/TBD | Not started | - |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |

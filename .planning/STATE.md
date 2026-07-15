@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 05
 current_phase_name: flask-rest-api-active-price-serving
 status: executing
-stopped_at: Completed 05-06-PLAN.md (final plan of phase 05)
-last_updated: "2026-07-15T04:02:40.380Z"
+stopped_at: Completed 05-07-PLAN.md (gap-closure, final plan of phase 05)
+last_updated: "2026-07-15T04:13:52.195Z"
 last_activity: 2026-07-15
-last_activity_desc: Phase 05 execution started
+last_activity_desc: Completed 05-07-PLAN.md (gap-closure, final plan of phase 05)
 progress:
   total_phases: 8
   completed_phases: 4
-  total_plans: 26
-  completed_plans: 25
+  total_plans: 27
+  completed_plans: 26
   percent: 50
 ---
 
@@ -28,10 +28,10 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 
 ## Current Position
 
-Phase: 05 (flask-rest-api-active-price-serving) — EXECUTING
-Plan: 6 of 6
-Status: Ready to execute
-Last activity: 2026-07-15 — Phase 05 execution started
+Phase: 05 (flask-rest-api-active-price-serving) — COMPLETE
+Plan: 7 of 7
+Status: All plans complete, including 05-07 gap-closure (CR-01/CR-02); ready to advance to Phase 06
+Last activity: 2026-07-15 — Completed 05-07-PLAN.md (gap-closure, final plan of phase 05)
 
 Progress: [██░░░░░░░░] 13%
 
@@ -81,6 +81,7 @@ Progress: [██░░░░░░░░] 13%
 | Phase 05 P04 | 8 | 2 tasks | 3 files |
 | Phase 05 P05 | 15min | 2 tasks | 1 files |
 | Phase 05 P06 | 10min | 2 tasks | 5 files |
+| Phase 05 P07 | 12min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 05-05]: msrp descending secondary sort key
 - [Phase 05-06]: Requirements SEARCH-01/02, PRICE-01/02/03 remain unmarked in REQUIREMENTS.md by Phase 5 (enabling/serving layer) per established convention; marked complete in Phase 6 (user-observable)
 - [Phase 05-06]: create_app(mongodb_uri=None, db_name=Config.DB_NAME) uses Config.DB_NAME as the literal default expression, matching the plan's locked signature exactly
+- [Phase 05]: InvalidProductTypeError(ValueError) subclass introduced so the products route can catch only the deliberate V5 enum-validation failure, letting internal ValueErrors (e.g. unregistered set_name) surface as 500 instead of being masked as 400 (CR-01)
+- [Phase 05]: CORS_ORIGINS comma-split into a real per-origin list before Flask-CORS init, with the '*' wildcard dev default preserved as a single-element list, so the documented production multi-origin format actually works (CR-02)
 
 ### Pending Todos
 
@@ -157,7 +160,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-15T03:20:26.358Z
+Last session: 2026-07-15T04:13:00.617Z
 Stopped at: Completed 05-06-PLAN.md (final plan of phase 05)
 Resume file: 
 None
