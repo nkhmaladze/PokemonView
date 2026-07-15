@@ -1,0 +1,26 @@
+/* SearchBar — accent focus ring per UI-SPEC Color contract (accent
+ * reserved for active chip bg / search-input focus border / links /
+ * detail heading underline). 44px min tap target (UI-SPEC Spacing). */
+
+.search {
+  width: 100%;
+  min-height: var(--size-tap-target-min);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+}
+
+.search::placeholder {
+  color: var(--text-secondary);
+}
+
+.search:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
