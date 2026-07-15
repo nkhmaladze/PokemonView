@@ -270,5 +270,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
 | 5. Flask REST API (active-price serving) | 7/7 | Complete    | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | 7/7 | Complete    | 2026-07-15 |
-| 7. Launch & Hardening (v1 active-price) | 5/5 | Complete   | 2026-07-15 |
+| 7. Launch & Hardening (v1 active-price) | 5/5 | Complete    | 2026-07-15 |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
