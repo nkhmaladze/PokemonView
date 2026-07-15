@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 05
 current_phase_name: flask-rest-api-active-price-serving
 status: executing
-stopped_at: Completed 05-03-PLAN.md
-last_updated: "2026-07-15T02:59:00.662Z"
+stopped_at: Completed 05-04-PLAN.md
+last_updated: "2026-07-15T03:05:50.883Z"
 last_activity: 2026-07-15
 last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 8
   completed_phases: 3
   total_plans: 26
-  completed_plans: 22
+  completed_plans: 23
   percent: 38
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 ## Current Position
 
 Phase: 05 (flask-rest-api-active-price-serving) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 Status: Ready to execute
 Last activity: 2026-07-15 — Phase 05 execution started
 
@@ -78,6 +78,7 @@ Progress: [██░░░░░░░░] 13%
 | Phase 05 P01 | 11min | 2 tasks | 1 files |
 | Phase 05 P02 | 10min | 2 tasks | 2 files |
 | Phase 05 P03 | 4min | 3 tasks | 4 files |
+| Phase 05 P04 | 8 | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -125,6 +126,8 @@ Recent decisions affecting current work:
 - [Phase 05-03]: api_db fixture leaves price_points initialized-but-empty (unlike catalog_db's full seed) so each test controls its own gap/tolerance-window price_points scenario
 - [Phase 05-03]: list_products/get_product_detail response dicts use the exact JSON Response Contract field names (id, not _id) since routes jsonify() them with no further transformation
 - [Phase 05-03]: requirements SEARCH-01/02, PRICE-01/02/03 not marked complete by Plan 05-03 — REQUIREMENTS.md's traceability table maps them to Phase 6 (user-observable), not Phase 5 (enabling/serving layer)
+- [Phase ?]: [Phase 05-04]: Split the single-file price_service.py implementation across two commits matching the plan's Task 1/Task 2 TDD boundary to preserve atomic per-task commit granularity
+- [Phase ?]: [Phase 05-04]: Kept get_current_price and get_trend_baseline as two distinctly-named functions rather than one parameterized helper, per 05-RESEARCH.md Pitfall 2, so window-less vs windowed behavior can never be silently conflated
 
 ### Pending Todos
 
@@ -149,6 +152,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-15T02:59:00.657Z
-Stopped at: Completed 05-03-PLAN.md
+Last session: 2026-07-15T03:05:50.877Z
+Stopped at: Completed 05-04-PLAN.md
 Resume file: 
