@@ -237,7 +237,20 @@ def filter_outliers(
     "total_price", the canonical landed-cost field (never bare
     `item_price`). Excluded listings still
     carry their full document; the caller sets
-    exclusion_reason="outlier" on them."""
+    exclusion_reason="outlier" on them.
+
+    Known/accepted precision tradeoff (matches the documented method exactly,
+    as locked — NOT a deviation from spec): `sd` is a population stdev
+    computed from the arithmetic mean over the SAME `listings` set that
+    still includes the candidate outlier(s), not a median-absolute-
+    deviation. A single large outlier inflates both the mean and `sd`,
+    raising the exclusion threshold and potentially letting a more
+    moderate outlier (~1.5-2x the cluster price, vs. the ~3x+ this
+    module's tests exercise) self-mask and slip through. A MAD-based or
+    trimmed approach would be less susceptible to this, but the method is locked to
+    2-population-stdev-from-median, so this module keeps it
+    as-is; see test_outlier_filter_excludes_moderate_outlier for
+    coverage of a more realistic (non-extreme) outlier ratio."""
     if len(listings) < OUTLIER_MIN_COUNT:
         return listings, []
 
