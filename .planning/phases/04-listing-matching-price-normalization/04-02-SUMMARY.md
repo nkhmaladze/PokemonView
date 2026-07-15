@@ -117,3 +117,12 @@ None - no external service configuration required. (Note: `rapidfuzz==3.14.5` in
 ---
 *Phase: 04-listing-matching-price-normalization*
 *Completed: 2026-07-15*
+
+## Self-Check: PASSED
+
+- FOUND: tests/conftest.py
+- FOUND: tests/test_matching.py
+- FOUND: .planning/phases/04-listing-matching-price-normalization/04-02-SUMMARY.md
+- FOUND commit: 4302ea7
+- FOUND commit: 348dbd2
+- FOUND commit: ed48c65
