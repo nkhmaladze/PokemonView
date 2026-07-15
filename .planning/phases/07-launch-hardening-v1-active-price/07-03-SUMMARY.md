@@ -131,3 +131,13 @@ None - no external service configuration required by this plan. Actual `fly laun
 ---
 *Phase: 07-launch-hardening-v1-active-price*
 *Completed: 2026-07-15*
+
+## Self-Check: PASSED
+
+- FOUND: Dockerfile
+- FOUND: .dockerignore
+- FOUND: fly.toml
+- FOUND: .planning/phases/07-launch-hardening-v1-active-price/07-03-SUMMARY.md
+- FOUND commit: 6336fef (Task 1)
+- FOUND commit: 6089246 (Task 2)
+- FOUND commit: f8e7e6c (plan-complete docs commit)
