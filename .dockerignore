@@ -1,0 +1,20 @@
+# Secrets — never bake a real .env into the build context/image layers
+.env
+.env.*
+!.env.example
+
+# Git
+.git/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+.venv/
+*.egg-info/
+
+# Frontend (built/deployed separately to Vercel, not part of the Docker image)
+frontend/node_modules/
+frontend/dist/
+node_modules/
