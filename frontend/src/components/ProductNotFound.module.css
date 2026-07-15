@@ -1,0 +1,40 @@
+/* ProductNotFound — the /products/:productId route errorElement
+ * (06-UI-SPEC.md Copywriting Contract "Error state — product not found").
+ * Centered, token-driven, no hardcoded colors/spacing. */
+
+.notFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-3xl) var(--space-lg);
+  text-align: center;
+}
+
+.notFound__heading {
+  margin: 0;
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  color: var(--text-primary);
+}
+
+.notFound__body {
+  margin: 0;
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-body);
+  color: var(--text-secondary);
+}
+
+.notFound__link {
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.notFound__link:hover {
+  text-decoration: underline;
+}
