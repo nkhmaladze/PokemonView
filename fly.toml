@@ -7,7 +7,7 @@ primary_region = "iad"
 
 [processes]
 web = "gunicorn --bind 0.0.0.0:8080 --workers 1 --timeout 30 wsgi:app"
-worker = "python -m scripts.ingest_worker"
+worker = "python -u -m scripts.ingest_worker"  # -u: unbuffered stdout so `fly logs` shows the worker's startup/status prints immediately instead of them sitting in Python's default block-buffer for a non-TTY pipe
 
 [http_service]
 internal_port = 8080
