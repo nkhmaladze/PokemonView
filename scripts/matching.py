@@ -1,4 +1,5 @@
-"""Deterministic + fuzzy title matching for active listings (MATCH-01).
+"""Deterministic + fuzzy title matching (MATCH-01) and lot/damaged/
+counterfeit exclusion (MATCH-02) for active listings.
 
 Pure, DB-free functions consumed by the orchestration layer
 (`run_matching_once`, Plan 04-04). No top-level side effects on import:
@@ -25,6 +26,11 @@ Matching design is two-tier and strict/precision-first (D-01):
     discrimination — 04-RESEARCH.md Pitfall 3). Only accepted when the
     top score clears both an absolute floor (FUZZY_SCORE_CUTOFF) and a
     margin over the runner-up (FUZZY_MARGIN) — otherwise unmatched.
+
+`check_exclusion()` is an independent keyword/regex pass (lot,
+damaged, counterfeit) run regardless of match outcome. Every pattern
+uses simple, non-nested, bounded quantifiers only (T-04-02 ReDoS
+mitigation — no `(a+)+`-style nesting).
 """
 
 import re
@@ -139,3 +145,67 @@ def match_listing(normalized_title: str) -> dict:
         "match_method": None,
         "match_score": top_score,
     }
+
+
+LOT_PATTERNS = [
+    re.compile(r"\blot\s+of\b"),
+    re.compile(r"\bjob\s*lot\b"),
+    re.compile(r"\bwholesale\b"),
+    re.compile(r"\bset\s+of\s+\d+\b"),
+    re.compile(r"\bx\s?[2-9]\d*\b"),  # "x2", "x 3" — quantity, not the letter x alone
+    re.compile(r"\b[2-9]\d*\s?x\b"),  # "2x", "3 x"
+    re.compile(r"\b[2-9]\d*\s*(boxes|etbs)\b"),
+    # Deliberately NOT "packs"/"bundles" in the quantity-noun group, and
+    # deliberately NOT the bare word "bundle" alone — catalog display
+    # names legitimately contain "(6 Packs)" (booster_bundle) and
+    # "(36 Packs)" (booster_box); a naive "N packs"/"N bundles"/"bundle"
+    # check would exclude every real booster_bundle/booster_box listing
+    # that echoes its own official product description (04-RESEARCH.md
+    # Pitfall 1; deviation from the literal RESEARCH.md pattern list,
+    # which included "packs|bundles" here — that literal list conflicts
+    # with test_exclusion_does_not_flag_legitimate_bundle).
+]
+
+DAMAGED_PATTERNS = [
+    re.compile(r"\bdented\b"),
+    re.compile(r"\bresealed\b"),
+    re.compile(r"\bopened\b"),
+    re.compile(r"\bempty\s+box\b"),
+    re.compile(r"\bno\s+cards?\b"),
+    re.compile(r"\bdamaged\b"),
+    re.compile(r"\bcrushed\b"),
+    re.compile(r"\btorn\s+seal\b"),
+    re.compile(r"\bbroken\s+seal\b"),
+    re.compile(r"\bseal\s+broken\b"),
+    # D-08: deliberately does NOT include "shelf wear", "corner ding",
+    # "minor wear", "light wear" — cosmetic language must not exclude.
+]
+
+COUNTERFEIT_PATTERNS = [
+    re.compile(r"\breplica\b"),
+    re.compile(r"\bcustom\b"),
+    re.compile(r"\bfan\s?made\b"),
+    re.compile(r"\bproxy\b"),
+    re.compile(r"\breproduction\b"),
+    re.compile(r"\brepro\b"),
+    re.compile(r"\bbootleg\b"),
+    re.compile(r"\bnot\s+authentic\b"),
+    re.compile(r"\bunofficial\b"),
+]
+
+
+def check_exclusion(normalized_title: str) -> str | None:
+    """MATCH-02: returns "lot" | "damaged" | "counterfeit" | None,
+    precedence lot -> damaged -> counterfeit. Runs independently of
+    match outcome, on every listing touched this run.
+
+    Every pattern above uses simple, non-nested, bounded quantifiers
+    only (no `(a+)+`-style nesting) so an adversarially long title
+    cannot trigger catastrophic backtracking (T-04-02, ReDoS)."""
+    if any(p.search(normalized_title) for p in LOT_PATTERNS):
+        return "lot"
+    if any(p.search(normalized_title) for p in DAMAGED_PATTERNS):
+        return "damaged"
+    if any(p.search(normalized_title) for p in COUNTERFEIT_PATTERNS):
+        return "counterfeit"
+    return None
