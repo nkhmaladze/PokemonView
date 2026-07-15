@@ -121,7 +121,24 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Statistical price outliers (far from the rolling median) are excluded so the aggregate reflects the true market, not noise.
   4. For a given product, the computed current price is derived only from included listings (matched, non-excluded, non-outlier).
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+**Wave 1** *(independent — dependency install + Nyquist RED scaffold in parallel)*
+
+- [ ] 04-01-PLAN.md — Install rapidfuzz==3.14.5 (package-legitimacy human gate + pin)
+- [ ] 04-02-PLAN.md — Nyquist RED scaffold: matching_db fixture + failing MATCH-01/02/03 + end-to-end tests
+
+**Wave 2** *(depends on Wave 1)*
+
+- [ ] 04-03-PLAN.md — scripts/matching.py core: normalize, two-tier match_listing (keyword→fuzzy), check_exclusion
+
+**Wave 3** *(depends on Wave 2)*
+
+- [ ] 04-04-PLAN.md — scripts/matching.py: filter_outliers, aggregate_and_write, run_matching_once (D-09..D-16, D-04 counts)
+
+**Wave 4** *(depends on Wave 3)*
+
+- [ ] 04-05-PLAN.md — Wire run_matching_once into ingest_worker.py + D-04 ingestion_runs match counts
 
 ### Phase 5: Flask REST API (active-price serving)
 
@@ -192,7 +209,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. eBay API Feasibility Gate | 3/4 | In Progress|  |
 | 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
 | 3. Active-Listing Ingestion Pipeline | 5/5 | Verifying (human) |  |
-| 4. Listing Matching & Price Normalization | 0/TBD | Not started | - |
+| 4. Listing Matching & Price Normalization | 0/5 | Planned | - |
 | 5. Flask REST API (active-price serving) | 0/TBD | Not started | - |
 | 6. React SPA Frontend (active-price product) | 0/TBD | Not started | - |
 | 7. Launch & Hardening (v1 active-price) | 0/TBD | Not started | - |
