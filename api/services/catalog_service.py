@@ -15,7 +15,11 @@ never a MongoDB query operator built from raw user text. `get_product_detail` co
 never returns a raw price_points series.
 """
 
-from api.services.price_service import get_current_price
+from api.services.price_service import (
+    compute_pct_change,
+    get_current_price,
+    get_trend_baseline,
+)
 
 SET_ORDER = ["Pitch Black", "Chaos Rising", "Perfect Order", "Ascended Heroes"]
 VALID_PRODUCT_TYPES = {"booster_pack", "booster_box", "etb", "booster_bundle"}  # V5 enum
@@ -127,3 +131,53 @@ def list_products(db, filters):
     filtered.sort(key=sort_key)
 
     return [_product_summary(db, p) for p in filtered]
+
+
+def get_product_detail(db, product_id):
+    """Assemble a single product's detail: catalog metadata + current
+    price + 7d/30d trend.
+
+    Never includes a raw price_points series/array — only the
+    single current_price object and the two trend objects. Returns
+    None for an unknown id (the blueprint translates this to a 404).
+
+    Args:
+        db: An already-connected pymongo Database handle.
+        product_id: The canonical catalog product slug.
+
+    Returns:
+        dict | None: the detail dict, or None when product_id is
+        unknown.
+    """
+    product = db.products.find_one({"_id": product_id})
+    if product is None:
+        return None
+
+    detail = _product_summary(db, product)
+
+    if detail["current_price"] is None:
+        # No data yet — both trends are explicitly insufficient
+        # data, never omitted/None-the-whole-response.
+        detail["trend_7d"] = {"pct_change": None, "status": "insufficient_data"}
+        detail["trend_30d"] = {"pct_change": None, "status": "insufficient_data"}
+        return detail
+
+    current_total = detail["current_price"]["total_price"]
+    current_point = get_current_price(db, product_id)
+    current_ts = current_point["ts"]
+
+    trend_key_by_days = {7: "trend_7d", 30: "trend_30d"}
+    for days in TREND_WINDOWS:
+        key = trend_key_by_days[days]
+        baseline = get_trend_baseline(db, product_id, current_ts, days)
+        if baseline is None:
+            detail[key] = {"pct_change": None, "status": "insufficient_data"}
+            continue
+        # Trend uses total_price only.
+        pct = compute_pct_change(current_total, baseline["total_price"])
+        if pct is None:
+            detail[key] = {"pct_change": None, "status": "insufficient_data"}
+        else:
+            detail[key] = {"pct_change": pct, "status": "ok"}
+
+    return detail
