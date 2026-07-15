@@ -1,0 +1,44 @@
+/* CatalogPage — browse route (06-UI-SPEC.md Layout & Component Notes ->
+ * Catalog page). Header order: title, search, chip rows, then the flat
+ * dense list (D-02) or the empty state. */
+
+.catalog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--space-md) var(--space-2xl);
+}
+
+.title {
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--color-divider);
+}
+
+.empty {
+  padding: var(--space-2xl) var(--space-md);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.empty h2 {
+  color: var(--text-primary);
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-semibold);
+  margin: 0 0 var(--space-sm);
+}
+
+.empty p {
+  font-size: var(--font-size-body);
+  margin: 0;
+}
