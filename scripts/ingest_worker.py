@@ -443,6 +443,19 @@ def main() -> int:
             max_instances=1,
             coalesce=True,
             misfire_grace_time=300,
+            # next_run_time (bug fix, D-06): APScheduler 3.11.3's IntervalTrigger
+            # defaults an unset start_date to `now + interval` (verified by
+            # reading apscheduler/triggers/interval.py directly), NOT `now` as
+            # 07-RESEARCH.md assumed. Left unset, the very first scheduled run
+            # — and therefore the very first check_and_alert_staleness() call —
+            # would silently wait a full interval_hours before firing at all,
+            # which in production meant no ingestion_runs doc and no staleness
+            # alert for the first ~4h post-deploy. next_run_time overrides the
+            # trigger's own start_date math for this one call and forces the
+            # first run to fire immediately on scheduler.start(); every
+            # subsequent run still follows the normal interval cadence off its
+            # own previous_fire_time.
+            next_run_time=datetime.now(timezone.utc),
         )
         print(f"ingestion worker started — interval_hours={interval_hours}")
         scheduler.start()
