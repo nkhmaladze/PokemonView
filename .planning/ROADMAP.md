@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Product Catalog & Data Model** - Curated v1 catalog and the shared MongoDB schema everything builds on (completed 2026-07-14)
 - [ ] **Phase 3: Active-Listing Ingestion Pipeline** - Scheduled, idempotent worker pulls active eBay listings via the Browse API (5/5 plans done, pending human verification — see 03-UAT.md)
 - [x] **Phase 4: Listing Matching & Price Normalization** - Map messy titles to catalog products and clean them into trustworthy prices (completed 2026-07-15)
-- [ ] **Phase 5: Flask REST API (active-price serving)** - Read-only API serves catalog, search, current price, freshness, and trend data
+- [x] **Phase 5: Flask REST API (active-price serving)** - Read-only API serves catalog, search, current price, freshness, and trend data (completed 2026-07-15)
 - [ ] **Phase 6: React SPA Frontend (active-price product)** - Users browse products and see whether one is priced fairly right now
 - [ ] **Phase 7: Launch & Hardening (v1 active-price)** - Deploy, monitor for stale data, and take the active-price product live
 - [ ] **Phase 8: Sold-Price Integration (contingent on MI API access)** - Add real sold-price history and active-vs-sold differentiators
@@ -152,7 +152,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The API exposes each product's data-freshness timestamp from the last successful ingestion (enables PRICE-02).
   4. The API returns each product's 7d/30d active-price percent change (enables PRICE-03).
 
-**Plans**: 5/6 plans executed
+**Plans**: 6/6 plans complete
 
 **Wave 1** *(independent — dependency install + Phase-4 writer change in parallel)*
 
@@ -173,7 +173,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 5** *(depends on Wave 4)*
 
-- [ ] 05-06-PLAN.md — api/app.py create_app + config + db + products blueprint (CORS, DEBUG=False error handler); turns HTTP suite GREEN
+- [x] 05-06-PLAN.md — api/app.py create_app + config + db + products blueprint (CORS, DEBUG=False error handler); turns HTTP suite GREEN
 
 ### Phase 6: React SPA Frontend (active-price product)
 
@@ -231,7 +231,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
 | 3. Active-Listing Ingestion Pipeline | 5/5 | Verifying (human) |  |
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
-| 5. Flask REST API (active-price serving) | 5/6 | In Progress|  |
+| 5. Flask REST API (active-price serving) | 6/6 | Complete   | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | 0/TBD | Not started | - |
 | 7. Launch & Hardening (v1 active-price) | 0/TBD | Not started | - |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
