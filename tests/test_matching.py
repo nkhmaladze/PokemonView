@@ -258,6 +258,37 @@ def test_outlier_filter_excludes_far_listings():
         assert listing["_id"] not in excluded_ids
 
 
+def test_outlier_filter_excludes_moderate_outlier():
+    """WR-03 regression: unlike test_outlier_filter_excludes_far_listings'
+    extreme 3x+ outlier, this exercises a more realistic ~1.5x outlier
+    ratio against a tight cluster to confirm the documented D-13
+    2-population-stdev-from-median threshold still behaves as intended
+    at this less extreme, more realistic magnitude (known/accepted
+    precision tradeoff — see filter_outliers' WR-03 docstring note)."""
+    from scripts.matching import filter_outliers
+
+    tight_cluster = [
+        {"_id": "v1|A|0", "total_price": 150.00, "item_price": 145.00},
+        {"_id": "v1|B|0", "total_price": 152.00, "item_price": 147.00},
+        {"_id": "v1|C|0", "total_price": 148.00, "item_price": 143.00},
+        {"_id": "v1|D|0", "total_price": 151.00, "item_price": 146.00},
+    ]
+    moderate_outlier = {
+        "_id": "v1|E|0",
+        "total_price": 225.00,  # 1.5x the ~150 cluster price
+        "item_price": 220.00,
+    }
+    listings = tight_cluster + [moderate_outlier]
+
+    included, excluded = filter_outliers(listings)
+
+    excluded_ids = {l["_id"] for l in excluded}
+    assert moderate_outlier["_id"] in excluded_ids, (
+        "a ~1.5x moderate outlier against this tight a cluster must "
+        "still clear the 2-std-dev threshold and be excluded"
+    )
+
+
 def test_outlier_filter_skipped_when_too_few():
     """MATCH-03, D-14: below the min-count threshold, filtering is
     skipped entirely — all listings are returned in `included` with an
