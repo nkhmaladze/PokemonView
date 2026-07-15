@@ -152,7 +152,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The API exposes each product's data-freshness timestamp from the last successful ingestion (enables PRICE-02).
   4. The API returns each product's 7d/30d active-price percent change (enables PRICE-03).
 
-**Plans**: 4/6 plans executed
+**Plans**: 5/6 plans executed
 
 **Wave 1** *(independent — dependency install + Phase-4 writer change in parallel)*
 
@@ -169,7 +169,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 4** *(depends on Wave 3)*
 
-- [ ] 05-05-PLAN.md — api/services/catalog_service.py: list_products (D-08/09/10 + V5 enum), get_product_detail (D-01/11/12)
+- [x] 05-05-PLAN.md — api/services/catalog_service.py: list_products (D-08/09/10 + V5 enum), get_product_detail (D-01/11/12)
 
 **Wave 5** *(depends on Wave 4)*
 
@@ -231,7 +231,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
 | 3. Active-Listing Ingestion Pipeline | 5/5 | Verifying (human) |  |
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
-| 5. Flask REST API (active-price serving) | 4/6 | In Progress|  |
+| 5. Flask REST API (active-price serving) | 5/6 | In Progress|  |
 | 6. React SPA Frontend (active-price product) | 0/TBD | Not started | - |
 | 7. Launch & Hardening (v1 active-price) | 0/TBD | Not started | - |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
