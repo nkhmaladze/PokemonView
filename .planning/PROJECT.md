@@ -18,7 +18,7 @@ A user can look up a specific pack/box/ETB and see whether it's priced fairly ri
 ### Active
 
 - [ ] Scheduled ingestion worker pulls active + sold eBay listings via the official eBay API (Browse API for active, Marketplace Insights API for sold) on a periodic schedule (every X hours, via cron/script — no task broker)
-- [ ] Flask REST API serves current active-listing prices and historical sold-price trends per catalog product
+- [ ] Flask REST API serves current active-listing prices and historical sold-price trends per catalog product — active-price serving layer built in Phase 5 (price/catalog services, product list/detail endpoints); not yet user-observable until the Phase 6 frontend consumes it, so this stays Active rather than Validated
 - [ ] React SPA frontend displays current price + price-trend charts per product, poe.ninja-style
 - [ ] MongoDB is the shared data store across all services
 
@@ -80,4 +80,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-15 after Phase 4 completion (listing-matching-price-normalization)*
+*Last updated: 2026-07-15 after Phase 5 completion (flask-rest-api-active-price-serving)*
