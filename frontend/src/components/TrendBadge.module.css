@@ -1,0 +1,35 @@
+/* TrendBadge — 4-state color-coded percent-change badge (06-UI-SPEC.md
+ * Color section "Semantic trend colors"). Filled chips for up/down/flat;
+ * the insufficient-data state is text-only with no chip background,
+ * kept visually quieter than the flat state on purpose (D-07). */
+
+.trend-badge {
+  display: inline-block;
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  font-weight: var(--font-weight-regular);
+  font-variant-numeric: tabular-nums;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--space-xs);
+}
+
+.trend-badge--up {
+  background: var(--trend-up);
+  color: var(--color-bg);
+}
+
+.trend-badge--down {
+  background: var(--trend-down);
+  color: var(--color-bg);
+}
+
+.trend-badge--flat {
+  background: var(--trend-flat);
+  color: var(--color-bg);
+}
+
+.trend-badge--muted {
+  background: none;
+  color: var(--trend-insufficient);
+  padding: 0;
+}
