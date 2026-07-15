@@ -6,14 +6,14 @@ current_phase: 04
 current_phase_name: listing-matching-price-normalization
 status: executing
 stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-07-15T00:26:58.632Z"
+last_updated: "2026-07-15T00:32:59.628Z"
 last_activity: 2026-07-15
 last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 8
   completed_phases: 2
   total_plans: 20
-  completed_plans: 16
+  completed_plans: 17
   percent: 25
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 ## Current Position
 
 Phase: 04 (listing-matching-price-normalization) — EXECUTING
-Plan: 3 of 5
+Plan: 4 of 5
 Status: Ready to execute
 Last activity: 2026-07-15 — Phase 04 execution started
 
@@ -71,6 +71,7 @@ Progress: [██░░░░░░░░] 13%
 | Phase 03 P05 | 2min | 1 tasks | 0 files |
 | Phase 04 P02 | 15min | 3 tasks | 2 files |
 | Phase 04 P01 | 5min | 2 tasks | 1 files |
+| Phase 04 P03 | 12min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -108,6 +109,7 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 04-02]: lot/damaged/counterfeit synthetic end-to-end test titles include all of the target product's required_keywords so match resolution is deterministic (Tier-1), decoupled from untested Tier-2 fuzzy scoring
 - [Phase ?]: [Phase 04-02]: end-to-end run_matching_once count contract (listings_matched includes later-excluded matched listings) derived by tracing RESEARCH.md's own code example literally
 - [Phase 04]: [Phase 04-01]: Approved rapidfuzz==3.14.5 install after human review confirmed [SUS]/unknown-downloads verdict was the same telemetry-gap false-positive class already approved for apscheduler and pymongo
+- [Phase ?]: [Phase 04-03]: Removed 'packs'/'bundles' from LOT_PATTERNS' quantity-noun group (RESEARCH.md's literal pattern) because catalog display_name text legitimately contains '(6 Packs)'/'(36 Packs)', which would have falsely triggered lot-exclusion on real booster_bundle/booster_box listings and broken the locked test_exclusion_does_not_flag_legitimate_bundle test
 
 ### Pending Todos
 
@@ -132,6 +134,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-15T00:26:58.626Z
+Last session: 2026-07-15T00:32:27.249Z
 Stopped at: Completed 04-01-PLAN.md
 Resume file: 
+None
