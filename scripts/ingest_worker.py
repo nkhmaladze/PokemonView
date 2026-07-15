@@ -34,6 +34,7 @@ import sys
 import uuid
 from datetime import datetime, timedelta, timezone
 
+import requests
 from dotenv import load_dotenv
 from pymongo import MongoClient, UpdateOne
 from pymongo.errors import DuplicateKeyError
@@ -58,6 +59,11 @@ PRODUCT_TYPE_SEARCH_TERMS = {
 
 LOCK_ID = "active_listing_ingestion"
 LOCK_TTL_SECONDS = 900  # generously longer than one run should ever take
+
+# ~2x the INGESTION_INTERVAL_HOURS default of 4 (D-07) — the staleness
+# alert fires once the last successful/partial run is more than two
+# scheduled cycles old.
+STALENESS_THRESHOLD_HOURS = 8
 
 
 def build_query(product: dict) -> str:
@@ -314,6 +320,73 @@ def run_ingestion_once(db):
     return db.ingestion_runs.find_one({"_id": run_id})
 
 
+def check_and_alert_staleness(db, threshold_hours: float = STALENESS_THRESHOLD_HOURS) -> None:
+    """Query ingestion_runs for the most recent successful/partial run and
+    POST a best-effort Discord alert if the gap since then exceeds
+    threshold_hours (D-06/D-07/D-08).
+
+    Called once per scheduled ingestion attempt, right after
+    run_ingestion_once() finalizes its run document — no new collection,
+    no new scheduled job, no debounce state. A credentials-absent run (or
+    any other failure) never writes status="success"/"partial", so "no
+    successful run yet" and "genuinely stale" share exactly one code path
+    (D-06) rather than being special-cased separately.
+
+    Never raises and never crashes the worker: a missing
+    DISCORD_WEBHOOK_URL is read via os.environ.get (not bracket access)
+    and simply no-ops, and any Discord-side network failure
+    (requests.RequestException) is caught and swallowed, mirroring
+    run_ingestion_once's own per-failure-domain isolation discipline.
+
+    The alert message carries only counts/timestamps — never the webhook
+    URL, MONGODB_URI, or eBay credentials (T-07-01, V7).
+    """
+    last_good = db.ingestion_runs.find_one(
+        {"status": {"$in": ["success", "partial"]}},
+        sort=[("started_at", -1)],
+    )
+    now = datetime.now(timezone.utc)
+    if last_good is None:
+        gap_hours = float("inf")
+        last_desc = "no successful run yet"
+    else:
+        last_ts = last_good.get("finished_at") or last_good["started_at"]
+        # This project's MongoClient is not tz_aware (Phase 04-04 decision),
+        # so datetimes round-tripped through Mongo come back offset-naive
+        # even though they were inserted as UTC-aware — treat a naive
+        # value as UTC rather than letting the subtraction below raise.
+        if last_ts.tzinfo is None:
+            last_ts = last_ts.replace(tzinfo=timezone.utc)
+        gap_hours = (now - last_ts).total_seconds() / 3600
+        last_desc = f"{gap_hours:.1f}h ago ({last_ts.isoformat()})"
+
+    if gap_hours <= threshold_hours:
+        return
+
+    webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
+    if not webhook_url:
+        return  # not configured yet — never crash the worker over it
+
+    message = (
+        f":rotating_light: PokemonView ingestion stale — last successful "
+        f"run: {last_desc}. Threshold: {threshold_hours}h."
+    )
+    try:
+        requests.post(webhook_url, json={"content": message}, timeout=10)
+    except requests.RequestException:
+        pass  # Discord outage must never crash the ingestion worker
+
+
+def scheduled_job(db) -> None:
+    """Scheduler-only wrapper: run one ingestion pass, then check
+    staleness (D-06/D-07). Kept separate from run_ingestion_once so its
+    return-value contract (used by --once and by the existing test suite)
+    is untouched — the --once path intentionally does NOT call
+    check_and_alert_staleness (manual/CI runs don't need alerting)."""
+    run_ingestion_once(db)
+    check_and_alert_staleness(db)
+
+
 def main() -> int:
     """Entrypoint: `--once` for a single manual/CI run, else a
     BlockingScheduler + IntervalTrigger firing run_ingestion_once every
@@ -364,7 +437,7 @@ def main() -> int:
         signal.signal(signal.SIGINT, shutdown)
 
         scheduler.add_job(
-            run_ingestion_once,
+            scheduled_job,
             trigger=IntervalTrigger(hours=interval_hours),
             args=[db],
             max_instances=1,
