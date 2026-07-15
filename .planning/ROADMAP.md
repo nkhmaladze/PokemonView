@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 3: Active-Listing Ingestion Pipeline** - Scheduled, idempotent worker pulls active eBay listings via the Browse API (5/5 plans done, pending human verification — see 03-UAT.md)
 - [x] **Phase 4: Listing Matching & Price Normalization** - Map messy titles to catalog products and clean them into trustworthy prices (completed 2026-07-15)
 - [x] **Phase 5: Flask REST API (active-price serving)** - Read-only API serves catalog, search, current price, freshness, and trend data (completed 2026-07-15)
-- [ ] **Phase 6: React SPA Frontend (active-price product)** - Users browse products and see whether one is priced fairly right now
+- [x] **Phase 6: React SPA Frontend (active-price product)** - Users browse products and see whether one is priced fairly right now (completed 2026-07-15)
 - [ ] **Phase 7: Launch & Hardening (v1 active-price)** - Deploy, monitor for stale data, and take the active-price product live
 - [ ] **Phase 8: Sold-Price Integration (contingent on MI API access)** - Add real sold-price history and active-vs-sold differentiators
 
@@ -192,7 +192,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The user sees a "data as of [timestamp]" freshness indicator on the price data.
   5. The user sees a 7d/30d price-trend badge based on active-price history.
 
-**Plans**: 6/7 plans executed
+**Plans**: 7/7 plans complete
 **UI hint**: yes
 
 **Wave 1** *(foundation — scaffold, install, test harness, API client)*
@@ -212,7 +212,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 4** *(wiring + live verification)*
 
-- [ ] 06-07-PLAN.md — router.jsx + main.jsx + ProductNotFound errorElement + full-suite/build + live end-to-end checkpoint (SEARCH-01/02)
+- [x] 06-07-PLAN.md — router.jsx + main.jsx + ProductNotFound errorElement + full-suite/build + live end-to-end checkpoint (SEARCH-01/02)
 
 ### Phase 7: Launch & Hardening (v1 active-price)
 
@@ -255,6 +255,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 3. Active-Listing Ingestion Pipeline | 5/5 | Verifying (human) |  |
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
 | 5. Flask REST API (active-price serving) | 7/7 | Complete    | 2026-07-15 |
-| 6. React SPA Frontend (active-price product) | 6/7 | In Progress|  |
+| 6. React SPA Frontend (active-price product) | 7/7 | Complete   | 2026-07-15 |
 | 7. Launch & Hardening (v1 active-price) | 0/TBD | Not started | - |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
