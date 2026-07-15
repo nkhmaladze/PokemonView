@@ -165,6 +165,29 @@ def test_product_type_enum_validation(client):
     assert response.get_json() == {"error": "invalid_product_type"}
 
 
+def test_unregistered_set_name_returns_500_not_400(client, api_db, monkeypatch):
+    """CR-01/VERIFICATION.md gap #11: an internal data-integrity
+    ValueError (SET_ORDER.index() failing on an unregistered
+    set_name) must surface as a generic 500 {"error": "internal_error"},
+    NEVER masked as a client-facing 400 {"error": "invalid_product_type"}.
+
+    Monkeypatching SET_ORDER to an empty list makes every seeded
+    product's set_name unregistered, so sort_key's SET_ORDER.index()
+    raises a plain base ValueError (not InvalidProductTypeError) during
+    GET /products. This test FAILS against the pre-fix broad-except
+    code (it would return 400) and PASSES only once the route narrows
+    its except clause to catalog_service.InvalidProductTypeError.
+    """
+    from api.services import catalog_service
+
+    monkeypatch.setattr(catalog_service, "SET_ORDER", [])
+
+    response = client.get("/products")
+
+    assert response.status_code == 500
+    assert response.get_json() == {"error": "internal_error"}
+
+
 def test_error_handler_no_traceback(client, monkeypatch):
     """T-05-02: an unhandled internal exception (simulated by
     monkeypatching the catalog service to raise) is caught by the

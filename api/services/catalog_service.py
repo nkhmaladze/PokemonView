@@ -24,6 +24,14 @@ from api.services.price_service import (
     get_trend_baseline,
 )
 
+class InvalidProductTypeError(ValueError):
+    """Raised ONLY for an unrecognized `?product_type` filter value (V5
+    enum check) — never for any other internal ValueError (e.g. an
+    unregistered set_name inside sort_key's SET_ORDER.index() lookup),
+    so the products blueprint can narrow its except clause to this
+    subclass without masking unrelated server-side bugs (CR-01)."""
+
+
 SET_ORDER = ["Pitch Black", "Chaos Rising", "Perfect Order", "Ascended Heroes"]  # D-10
 VALID_PRODUCT_TYPES = {"booster_pack", "booster_box", "etb", "booster_bundle"}  # V5 enum
 TREND_WINDOWS = (7, 30)  # D-05
@@ -96,12 +104,13 @@ def list_products(db, filters):
         product, sorted per D-10.
 
     Raises:
-        ValueError: if filters["product_type"] is not None and not a
-            member of VALID_PRODUCT_TYPES (V5).
+        InvalidProductTypeError: a ValueError subclass, if
+            filters["product_type"] is not None and not a member of
+            VALID_PRODUCT_TYPES (V5).
     """
     product_type = filters.get("product_type")
     if product_type is not None and product_type not in VALID_PRODUCT_TYPES:
-        raise ValueError(f"invalid product_type: {product_type!r}")
+        raise InvalidProductTypeError(f"invalid product_type: {product_type!r}")
 
     set_name = filters.get("set_name")
     q = filters.get("q")

@@ -5,11 +5,13 @@
 Routes parse request args, delegate to a single catalog_service
 function, and `jsonify()` the returned dict/list with no further
 transformation — no pymongo calls happen in this module. Only a
-`ValueError` (V5/T-05-01, invalid `?product_type`) and a `None`
-detail-lookup result (unknown product id) are translated here into
-400/404 JSON envelopes; any other unexpected exception is left to
-propagate to the app-level global error handler (api/app.py) so it
-becomes a generic 500 instead of a leaked partial response.
+`catalog_service.InvalidProductTypeError` (V5/T-05-01, invalid
+`?product_type`) and a `None` detail-lookup result (unknown product
+id) are translated here into 400/404 JSON envelopes; any other
+unexpected exception (including an internal base `ValueError`, e.g.
+from an unregistered set_name) is left to propagate to the app-level
+global error handler (api/app.py) so it becomes a generic 500 instead
+of a leaked partial response or a misleading 400 (CR-01).
 
 No top-level side effects on import: no MongoClient construction, no
 os.environ read, no route registration outside this module's
@@ -31,8 +33,10 @@ def list_products():
 
     Honors ?set, ?product_type, ?q (D-08, combinable). Returns 200 +
     JSON array on success; 400 {"error": "invalid_product_type"} when
-    catalog_service raises ValueError for an unrecognized product_type
-    (V5/T-05-01).
+    catalog_service raises InvalidProductTypeError for an unrecognized
+    product_type (V5/T-05-01). Any other exception (e.g. an internal
+    base ValueError from an unregistered set_name) is NOT caught here
+    and propagates to the global error handler as a 500 (CR-01).
     """
     filters = {
         "set_name": request.args.get("set"),
@@ -42,7 +46,7 @@ def list_products():
 
     try:
         result = catalog_service.list_products(get_db(), filters)
-    except ValueError:
+    except catalog_service.InvalidProductTypeError:
         return jsonify({"error": "invalid_product_type"}), 400
 
     return jsonify(result)
