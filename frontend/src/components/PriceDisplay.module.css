@@ -1,0 +1,31 @@
+/* PriceDisplay — total-led headline with an always-visible item-price
+ * secondary line (06-UI-SPEC.md Typography + Layout notes item 3, D-05).
+ * The secondary line is a normal DOM element rendered unconditionally —
+ * never gated behind :hover/:focus. */
+
+.price {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.price__total {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+  font-size: var(--font-size-heading);
+  line-height: var(--line-height-heading);
+}
+
+.price__total--display {
+  font-size: var(--font-size-display);
+  line-height: var(--line-height-display);
+}
+
+.price__secondary {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--text-secondary);
+}

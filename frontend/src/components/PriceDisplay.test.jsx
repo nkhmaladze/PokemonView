@@ -18,7 +18,8 @@ describe('PriceDisplay', () => {
 
   it('does not render listing_count', () => {
     render(<PriceDisplay currentPrice={currentPrice} />)
-    expect(screen.queryByText(/5/)).not.toBeInTheDocument()
+    expect(screen.queryByText('5', { exact: true })).not.toBeInTheDocument()
+    expect(screen.queryByText(/listing/i)).not.toBeInTheDocument()
   })
 
   it('does not throw when listing_count is null/absent', () => {
