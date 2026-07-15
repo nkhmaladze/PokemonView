@@ -43,16 +43,22 @@ from rapidfuzz import fuzz, process
 from scripts.catalog_data import CATALOG
 
 FILLER_WORDS = [
-    "new",
-    "sealed",
+    # CR-02: multi-word phrases must be listed BEFORE any single word
+    # they contain — normalize() applies these substitutions in list
+    # order, so if "new"/"sealed" ran first they would consume the
+    # single-word occurrences inside "brand new"/"factory sealed"
+    # first, leaving "brand"/"factory" as orphaned noise tokens and
+    # the multi-word entries permanently unmatchable.
     "factory sealed",
+    "brand new",
     "fast ship",
     "fast shipping",
     "free shipping",
-    "brand new",
     "in hand",
     "ready to ship",
     "same day ship",
+    "new",
+    "sealed",
 ]
 
 FUZZY_SCORE_CUTOFF = 90  # [ASSUMED — precision-first per D-01]
