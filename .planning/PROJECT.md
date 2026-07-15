@@ -14,12 +14,12 @@ A user can look up a specific pack/box/ETB and see whether it's priced fairly ri
 
 - [x] Curated product catalog for v1: sealed product (booster packs, booster boxes, booster bundles, ETBs) across the 4 most recent English sets (Ascended Heroes, Perfect Order, Chaos Rising, Pitch Black) — validated in Phase 2, persisted on a schema-validated, indexed MongoDB collection
 - [x] Matching/normalization service maps messy raw eBay listing titles to canonical catalog products via keyword-based matching rules — validated in Phase 4 (two-tier exact + bounded RapidFuzz matching, lot/damaged/counterfeit exclusion, statistical outlier filtering, per-product price_points aggregation), wired into the Phase 3 ingestion worker
+- [x] Flask REST API serves current active-listing prices per catalog product — validated in Phase 6 (now user-observable end-to-end via the React SPA built in this phase; Phase 5 built the serving layer, Phase 6 is what made it user-facing)
+- [x] React SPA frontend displays current active price + 7d/30d trend indicators per product, with search/filter browse and a detail view — validated in Phase 6 (CatalogPage + ProductDetailPage, live E2E-verified against the Flask API). Scope note: this validates *active-price* display only — full historical price-trend line charts and sold-price data remain future scope, pending Marketplace Insights API approval (still unresolved; see Context)
 
 ### Active
 
 - [ ] Scheduled ingestion worker pulls active + sold eBay listings via the official eBay API (Browse API for active, Marketplace Insights API for sold) on a periodic schedule (every X hours, via cron/script — no task broker)
-- [ ] Flask REST API serves current active-listing prices and historical sold-price trends per catalog product — active-price serving layer built in Phase 5 (price/catalog services, product list/detail endpoints); not yet user-observable until the Phase 6 frontend consumes it, so this stays Active rather than Validated
-- [ ] React SPA frontend displays current price + price-trend charts per product, poe.ninja-style
 - [ ] MongoDB is the shared data store across all services
 
 ### Out of Scope
@@ -80,4 +80,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-07-15 after Phase 5 completion (flask-rest-api-active-price-serving)*
+*Last updated: 2026-07-15 after Phase 6 completion (react-spa-frontend-active-price-product) — the v1 active-price product surface (browse, search, detail, live trend badges) is now shippable end-to-end; next is Phase 7 (launch & hardening)*
