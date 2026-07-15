@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 6
-current_phase_name: active-price product
-status: completed
-stopped_at: Phase 06 UI-SPEC approved
-last_updated: "2026-07-15T05:12:10.547Z"
+current_phase: 06
+current_phase_name: react-spa-frontend-active-price-product
+status: executing
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-07-15T17:46:27.756Z"
 last_activity: 2026-07-15
-last_activity_desc: Phase 05 complete, transitioned to Phase 6
+last_activity_desc: Phase 06 execution started
 progress:
   total_phases: 8
   completed_phases: 4
-  total_plans: 27
-  completed_plans: 26
+  total_plans: 34
+  completed_plans: 27
   percent: 50
 ---
 
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by both live eBay asking prices and actual sold-price history.
-**Current focus:** Phase 05 — flask-rest-api-active-price-serving
+**Current focus:** Phase 06 — react-spa-frontend-active-price-product
 
 ## Current Position
 
-Phase: 6 — React SPA Frontend (active-price product)
-Plan: Not started
-Status: All plans complete, including 05-07 gap-closure (CR-01/CR-02); ready to advance to Phase 06
-Last activity: 2026-07-15 — Phase 05 complete, transitioned to Phase 6
+Phase: 06 (react-spa-frontend-active-price-product) — EXECUTING
+Plan: 2 of 7
+Status: Ready to execute
+Last activity: 2026-07-15 — Phase 06 execution started
 
 Progress: [██░░░░░░░░] 13%
 
@@ -83,6 +83,7 @@ Progress: [██░░░░░░░░] 13%
 | Phase 05 P05 | 15min | 2 tasks | 1 files |
 | Phase 05 P06 | 10min | 2 tasks | 5 files |
 | Phase 05 P07 | 12min | 2 tasks | 4 files |
+| Phase 06 P01 | 15min | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -137,6 +138,9 @@ Recent decisions affecting current work:
 - [Phase 05-06]: create_app(mongodb_uri=None, db_name=Config.DB_NAME) uses Config.DB_NAME as the literal default expression, matching the plan's locked signature exactly
 - [Phase 05]: InvalidProductTypeError(ValueError) subclass introduced so the products route can catch only the deliberate V5 enum-validation failure, letting internal ValueErrors (e.g. unregistered set_name) surface as 500 instead of being masked as 400 (CR-01)
 - [Phase 05]: CORS_ORIGINS comma-split into a real per-origin list before Flask-CORS init, with the '*' wildcard dev default preserved as a single-element list, so the documented production multi-origin format actually works (CR-02)
+- [Phase ?]: [Phase 06-01]: Approved vite@8.1.4, @vitejs/plugin-react@6.0.3, react-router@7.18.1 (version-7 line, unified package not react-router-dom), vitest@4.1.10 after human re-verification against live npm registry confirmed [SUS] too-new verdicts were false positives
+- [Phase ?]: [Phase 06-01]: Deleted orphaned public/icons.svg alongside plan-listed Vite boilerplate (App.jsx/App.css/assets/, template index.css) since it was exclusively referenced by deleted App.jsx
+- [Phase ?]: [Phase 06-01]: Reworded api/client.js doc comment to avoid the literal string "axios" so the plan's own acceptance-criteria grep (no-axios check) passes against the whole file including comments
 
 ### Pending Todos
 
@@ -161,7 +165,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-15T05:12:10.541Z
-Stopped at: Phase 06 UI-SPEC approved
+Last session: 2026-07-15T17:46:27.751Z
+Stopped at: Completed 06-01-PLAN.md
 Resume file: 
-.planning/phases/06-react-spa-frontend-active-price-product/06-UI-SPEC.md

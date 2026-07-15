@@ -192,12 +192,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. The user sees a "data as of [timestamp]" freshness indicator on the price data.
   5. The user sees a 7d/30d price-trend badge based on active-price history.
 
-**Plans**: 7 plans
+**Plans**: 1/7 plans executed
 **UI hint**: yes
 
 **Wave 1** *(foundation — scaffold, install, test harness, API client)*
 
-- [ ] 06-01-PLAN.md — Vite/React/React-Router scaffold + dep install (package-legitimacy gate) + Vitest harness + design tokens + api/client.js
+- [x] 06-01-PLAN.md — Vite/React/React-Router scaffold + dep install (package-legitimacy gate) + Vitest harness + design tokens + api/client.js
 
 **Wave 2** *(leaf presentation components — parallel)*
 
@@ -255,6 +255,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 3. Active-Listing Ingestion Pipeline | 5/5 | Verifying (human) |  |
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
 | 5. Flask REST API (active-price serving) | 7/7 | Complete    | 2026-07-15 |
-| 6. React SPA Frontend (active-price product) | 0/7 | Planned | - |
+| 6. React SPA Frontend (active-price product) | 1/7 | In Progress|  |
 | 7. Launch & Hardening (v1 active-price) | 0/TBD | Not started | - |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
