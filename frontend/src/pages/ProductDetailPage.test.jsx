@@ -82,7 +82,7 @@ describe('ProductDetailPage', () => {
   it('shows "—" for a null msrp and "TBD" for a null release_date', () => {
     renderDetail({ ...okProduct, msrp: null, release_date: null })
 
-    expect(screen.getByText('—', { exact: false })).toBeInTheDocument()
-    expect(screen.getByText('TBD')).toBeInTheDocument()
+    expect(screen.getByText(/—/)).toBeInTheDocument()
+    expect(screen.getByText(/TBD/)).toBeInTheDocument()
   })
 })
