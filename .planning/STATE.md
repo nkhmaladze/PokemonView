@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 5
-current_phase_name: active-price serving
+current_phase: 05
+current_phase_name: flask-rest-api-active-price-serving
 status: executing
 stopped_at: Phase 5 context gathered
-last_updated: "2026-07-15T02:25:31.572Z"
+last_updated: "2026-07-15T02:41:23.982Z"
 last_activity: 2026-07-15
-last_activity_desc: Phase 04 complete, transitioned to Phase 5
+last_activity_desc: Phase 05 execution started
 progress:
   total_phases: 8
   completed_phases: 3
-  total_plans: 20
-  completed_plans: 19
+  total_plans: 26
+  completed_plans: 20
   percent: 38
 ---
 
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by both live eBay asking prices and actual sold-price history.
-**Current focus:** Phase 04 — listing-matching-price-normalization
+**Current focus:** Phase 05 — flask-rest-api-active-price-serving
 
 ## Current Position
 
-Phase: 5 — Flask REST API (active-price serving)
-Plan: Not started
+Phase: 05 (flask-rest-api-active-price-serving) — EXECUTING
+Plan: 2 of 6
 Status: Ready to execute
-Last activity: 2026-07-15 — Phase 04 complete, transitioned to Phase 5
+Last activity: 2026-07-15 — Phase 05 execution started
 
 Progress: [██░░░░░░░░] 13%
 
@@ -75,6 +75,7 @@ Progress: [██░░░░░░░░] 13%
 | Phase 04 P03 | 12min | 2 tasks | 1 files |
 | Phase 04 P04 | 6min | 2 tasks | 2 files |
 | Phase 04 P05 | 5min | 1 tasks | 1 files |
+| Phase 05 P01 | 11min | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -116,6 +117,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 04-04]: Extended run_matching_once's per-item isolation to catch AttributeError (title=None) alongside KeyError/ValueError/TypeError, since the plan's own behavior spec requires isolating missing/None titles
 - [Phase ?]: [Phase 04-04]: Fixed a pre-existing test_price_points_median_aggregation bug (exact ts equality) to a tolerance comparison — MongoDB BSON dates truncate to millisecond precision and this project's MongoClient is not tz_aware, so exact equality against a microsecond-precision aware datetime could never pass regardless of implementation
 - [Phase ?]: None beyond the plan as written for 04-05 - implementation matched 04-PATTERNS.md's insertion point and flat-field convention exactly
+- [Phase ?]: [Phase 05-01]: Approved flask==3.1.3 and flask-cors==6.0.5 install after human review confirmed [SUS]/unknown-downloads verdict was the same telemetry-gap false-positive class already approved for pymongo, apscheduler, and rapidfuzz
+- [Phase ?]: [Phase 05-01]: Used registry-verified flask-cors==6.0.5 (not stale STACK.md 5.x) and deliberately skipped pytest-flask and gunicorn per 05-RESEARCH.md
 
 ### Pending Todos
 
@@ -140,7 +143,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-15T01:28:58.027Z
+Last session: 2026-07-15T02:40:23.413Z
 Stopped at: Phase 5 context gathered
 Resume file: 
-.planning/phases/05-flask-rest-api-active-price-serving/05-CONTEXT.md
+None
