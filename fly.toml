@@ -1,0 +1,26 @@
+# Source: fly.io/docs/reference/configuration/, fly.io/docs/app-guides/multiple-processes/,
+# fly.io/docs/launch/processes/, fly.io/docs/launch/autostop-autostart/
+app = "pokemonview"
+primary_region = "iad"
+
+[build]
+
+[processes]
+web = "gunicorn --bind 0.0.0.0:8080 --workers 1 --timeout 30 wsgi:app"
+worker = "python -m scripts.ingest_worker"
+
+[http_service]
+internal_port = 8080
+processes = ["web"]          # this service block applies ONLY to the web process group
+force_https = true
+auto_stop_machines = "off"    # D-03: never scale to zero
+auto_start_machines = false
+min_machines_running = 1
+
+[[vm]]
+size = "shared-cpu-1x"
+memory = "512mb"
+# Fly's default `fly launch` scaffolding applies a top-level [[vm]] to every
+# process group unless a per-group override is added. [ASSUMED — verify the
+# exact per-process-group vm-override syntax against `fly config validate`
+# at deploy time; see 07-RESEARCH.md Assumption A1.]
