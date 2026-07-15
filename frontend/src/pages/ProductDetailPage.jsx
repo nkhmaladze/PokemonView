@@ -11,6 +11,16 @@ const PRODUCT_TYPE_GLYPH = {
   etb: 'E',
 }
 
+// Human-readable labels for the raw snake_case product_type enum, mirroring
+// FilterChips.jsx's PRODUCT_TYPE_OPTIONS label set (WR-03) — never render
+// the raw API enum value directly to the user.
+const PRODUCT_TYPE_LABELS = {
+  booster_pack: 'Booster Pack',
+  booster_box: 'Booster Box',
+  booster_bundle: 'Booster Bundle',
+  etb: 'ETB',
+}
+
 function formatMsrp(msrp) {
   return typeof msrp === 'number' ? `$${msrp.toFixed(2)}` : '—'
 }
@@ -73,7 +83,9 @@ export default function ProductDetailPage() {
         <div className={styles.detail__headerInfo}>
           <h1 className={styles.detail__title}>{product.display_name}</h1>
           <span className={styles.detail__badge}>{product.set_name}</span>
-          <span className={styles.detail__badge}>{product.product_type}</span>
+          <span className={styles.detail__badge}>
+            {PRODUCT_TYPE_LABELS[product.product_type] ?? product.product_type}
+          </span>
         </div>
       </div>
 
