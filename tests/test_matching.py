@@ -358,6 +358,38 @@ def test_price_points_median_aggregation(matching_db):
     )
 
 
+def test_price_points_records_listing_count(matching_db):
+    """Plan 05-02, Option A (sample-size gap resolution): aggregate_and_write()
+    writes a `listing_count` field on the written price_points document equal
+    to len(included) — the exact sample size the medians were computed over.
+    Uses N=3 (>= OUTLIER_MIN_COUNT) so this scenario stays consistent with the
+    sibling median-aggregation test and remains deterministic. This is purely
+    additive: the existing item_price/total_price median assertions are not
+    duplicated here (already locked by test_price_points_median_aggregation)."""
+    from scripts.matching import aggregate_and_write
+
+    ts = datetime.now(timezone.utc)
+    included = [
+        {"_id": "v1|A|0", "item_price": 140.00, "total_price": 150.00},
+        {"_id": "v1|B|0", "item_price": 145.00, "total_price": 155.00},
+        {"_id": "v1|C|0", "item_price": 150.00, "total_price": 160.00},
+    ]
+
+    result = aggregate_and_write(
+        matching_db, "perfect-order_booster_box", included, ts
+    )
+
+    assert result is True
+
+    doc = matching_db.price_points.find_one(
+        {"product_id": "perfect-order_booster_box"}
+    )
+    assert doc["listing_count"] == len(included) == 3, (
+        "listing_count must equal the exact number of included listings the "
+        "medians were computed over (Option A, 05-02)"
+    )
+
+
 def test_price_points_skipped_when_zero_included(matching_db):
     """MATCH-03, D-11: an empty included set skips the write entirely
     (gap, not carry-forward) — aggregate_and_write() returns False and
