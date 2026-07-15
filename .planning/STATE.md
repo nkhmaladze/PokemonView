@@ -5,15 +5,15 @@ milestone_name: milestone
 current_phase: 06
 current_phase_name: react-spa-frontend-active-price-product
 status: executing
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-07-15T18:07:11.353Z"
+stopped_at: Completed 06-04-PLAN.md
+last_updated: "2026-07-15T18:12:34.744Z"
 last_activity: 2026-07-15
 last_activity_desc: Phase 06 execution started
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 34
-  completed_plans: 29
+  completed_plans: 30
   percent: 50
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 ## Current Position
 
 Phase: 06 (react-spa-frontend-active-price-product) — EXECUTING
-Plan: 4 of 7
+Plan: 5 of 7
 Status: Ready to execute
 Last activity: 2026-07-15 — Phase 06 execution started
 
@@ -86,6 +86,7 @@ Progress: [██░░░░░░░░] 13%
 | Phase 06 P01 | 15min | 3 tasks | 10 files |
 | Phase 06 P02 | 4min | 2 tasks | 6 files |
 | Phase 06 P03 | 3min | 2 tasks | 5 files |
+| Phase 06 P04 | 10min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -146,6 +147,8 @@ Recent decisions affecting current work:
 - [Phase 06-02]: Reworded PriceDisplay.jsx doc comment to avoid literal string 'listing_count' so the plan's own acceptance-criteria grep passes against the whole file including comments
 - [Phase 06-02]: Fixed a bug in this plan's own PriceDisplay.test.jsx 'does not render listing_count' assertion (loose /5/ regex false-matched inside rendered $150.00); tightened to exact-match + /listing/i queries
 - [Phase ?]: [Phase 06-03]: No deviations required - RESEARCH.md's formatRelativeTime code example and UI-SPEC's Copywriting Contract for FreshnessIndicator were followed exactly with no ambiguity
+- [Phase 06-04]: PRODUCT_TYPE_OPTIONS/SET_OPTIONS raw values copied verbatim from api/services/catalog_service.py's VALID_PRODUCT_TYPES/SET_ORDER (no invented product types) — Guarantees FilterChips emits byte-exact API vocabulary per plan's key_links requirement
+- [Phase 06-04]: SearchBar.test.jsx uses a local stateful ControlledSearchBar test wrapper so userEvent.type can drive real keystroke behavior — A static value/no-op-onChange fixture would revert the DOM value after every simulated keystroke, making multi-character typing untestable
 
 ### Pending Todos
 
@@ -170,7 +173,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-15T18:05:46.046Z
-Stopped at: Completed 06-01-PLAN.md
+Last session: 2026-07-15T18:12:34.738Z
+Stopped at: Completed 06-04-PLAN.md
 Resume file: 
 None
