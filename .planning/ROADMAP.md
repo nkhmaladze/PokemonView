@@ -152,7 +152,28 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The API exposes each product's data-freshness timestamp from the last successful ingestion (enables PRICE-02).
   4. The API returns each product's 7d/30d active-price percent change (enables PRICE-03).
 
-**Plans**: TBD
+**Plans**: 6 plans
+
+**Wave 1** *(independent — dependency install + Phase-4 writer change in parallel)*
+
+- [ ] 05-01-PLAN.md — Install flask==3.1.3 + flask-cors==6.0.5 (package-legitimacy human gate)
+- [ ] 05-02-PLAN.md — Sample-size gap Option A: add `listing_count` to price_points (`scripts/matching.py` aggregate_and_write) + regression test
+
+**Wave 2** *(depends on Wave 1 install)*
+
+- [ ] 05-03-PLAN.md — Nyquist Wave 0 scaffold: api_db/app/client fixtures + RED test_price_service.py, test_catalog_service.py, test_api_products.py
+
+**Wave 3** *(depends on Wave 2)*
+
+- [ ] 05-04-PLAN.md — api/services/price_service.py: get_current_price (D-02), get_trend_baseline (D-05/06), compute_pct_change (D-07)
+
+**Wave 4** *(depends on Wave 3)*
+
+- [ ] 05-05-PLAN.md — api/services/catalog_service.py: list_products (D-08/09/10 + V5 enum), get_product_detail (D-01/11/12)
+
+**Wave 5** *(depends on Wave 4)*
+
+- [ ] 05-06-PLAN.md — api/app.py create_app + config + db + products blueprint (CORS, DEBUG=False error handler); turns HTTP suite GREEN
 
 ### Phase 6: React SPA Frontend (active-price product)
 
@@ -210,7 +231,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
 | 3. Active-Listing Ingestion Pipeline | 5/5 | Verifying (human) |  |
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
-| 5. Flask REST API (active-price serving) | 0/TBD | Not started | - |
+| 5. Flask REST API (active-price serving) | 0/6 | Planned | - |
 | 6. React SPA Frontend (active-price product) | 0/TBD | Not started | - |
 | 7. Launch & Hardening (v1 active-price) | 0/TBD | Not started | - |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
