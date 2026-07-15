@@ -41,6 +41,7 @@ from pymongo.errors import DuplicateKeyError
 from db.init_collections import init_collections
 from scripts.catalog_data import CATALOG
 from scripts.ebay_client import get_app_token, search_sealed_listings, total_cost
+from scripts.matching import run_matching_once
 
 # Maps a catalog product_type to the Browse API search phrase used by
 # build_query(). Deliberately NOT the same as a catalog product's
@@ -230,6 +231,11 @@ def run_ingestion_once(db):
     listings_fetched = 0
     listings_written = 0
     errors = []
+    match_counts = {
+        "listings_matched": 0,
+        "listings_unmatched": 0,
+        "listings_excluded": 0,
+    }
 
     try:
         token = get_app_token()
@@ -255,6 +261,14 @@ def run_ingestion_once(db):
                 )
 
         status = "success" if not errors else "partial"
+
+        # Phase 4 matching stage: runs once, as a second stage over this
+        # run's whole batch, AFTER the per-product fetch loop completes
+        # (never per-listing inside the loop above — 04-PATTERNS.md
+        # Performance Trap). `started_at` is passed as `ts` so every
+        # price_points doc this run writes aligns with the run's
+        # active_listings.fetched_at.
+        match_counts = run_matching_once(db, run_id, started_at)
     except Exception as e:  # noqa: BLE001 - an auth failure (or any other
         # unexpected failure outside the per-product loop, e.g. a bad
         # CATALOG entry) must still finalize the run doc as "failed"
@@ -269,6 +283,9 @@ def run_ingestion_once(db):
             "listings_fetched": listings_fetched,
             "listings_written": listings_written,
             "errors": errors,
+            "listings_matched": match_counts["listings_matched"],
+            "listings_unmatched": match_counts["listings_unmatched"],
+            "listings_excluded": match_counts["listings_excluded"],
         }
         db.ingestion_runs.update_one({"_id": run_id}, {"$set": update_doc})
         release_lock(db, run_id)
