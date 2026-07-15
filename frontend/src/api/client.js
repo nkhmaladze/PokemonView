@@ -32,4 +32,5 @@ export const getProducts = (filters = {}) => {
 }
 
 /** GET /products/<product_id> — single-product detail assembly. */
-export const getProductDetail = (productId) => request(`/products/${productId}`)
+export const getProductDetail = (productId) =>
+  request(`/products/${encodeURIComponent(productId)}`)
