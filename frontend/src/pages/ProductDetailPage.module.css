@@ -1,0 +1,131 @@
+/* ProductDetailPage — single-product route (06-UI-SPEC.md Layout &
+ * Component Notes -> Product detail page). 96px hero thumbnail, Display-
+ * size (28/600) total price as the true headline, side-by-side 7d/30d
+ * trend badges, freshness + sample-size captions near the price block,
+ * null-safe MSRP/release-date metadata. No chart / price_points space
+ * reserved (D-11 of 05-CONTEXT.md). */
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-3xl) var(--space-md) var(--space-2xl);
+}
+
+.backLink {
+  align-self: flex-start;
+  font-size: var(--font-size-body);
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+.detail__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.detail__thumb {
+  flex-shrink: 0;
+  width: var(--size-thumbnail-detail);
+  height: var(--size-thumbnail-detail);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.detail__thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.detail__thumb--placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-divider);
+  color: var(--text-secondary);
+  font-size: var(--font-size-display);
+  font-weight: var(--font-weight-semibold);
+}
+
+.detail__headerInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
+.detail__title {
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  color: var(--text-primary);
+  margin: 0;
+  padding-bottom: var(--space-xs);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.detail__badge {
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  color: var(--text-secondary);
+  background: var(--color-divider);
+  padding: 2px var(--space-xs);
+  border-radius: 4px;
+}
+
+.detail__priceSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.detail__noData {
+  font-size: var(--font-size-display);
+  line-height: var(--line-height-display);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-disabled);
+  margin: 0;
+}
+
+.sampleSize {
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.detail__trendSection {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.trend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.trendLabel {
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  color: var(--text-secondary);
+}
+
+.detail__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  font-size: var(--font-size-body);
+  color: var(--text-primary);
+}
