@@ -1,0 +1,83 @@
+/**
+ * Design tokens (06-UI-SPEC.md: Design System, Spacing Scale, Typography, Color).
+ * Every later component's CSS module consumes these custom properties —
+ * do not hardcode colors/spacing/type values elsewhere.
+ */
+
+:root {
+  /* Color — dark theme (poe.ninja-style dense-data aesthetic) */
+  --color-bg: #0B0D12; /* Dominant 60% — page background */
+  --color-surface: #171A21; /* Secondary 30% — list rows, cards, nav header, inactive chips */
+  --color-divider: #232833; /* Secondary 30% — hairline row dividers, inactive chip background */
+  --color-accent: #E8A33D; /* Accent 10% — active chip bg, focus ring, links, heading underline ONLY */
+  --color-destructive: #D92D20; /* reserved, unused this phase (no write actions) */
+  --color-hover: #1D212B; /* neutral row hover state (never accent) */
+
+  /* Text */
+  --text-primary: #F5F6F8;
+  --text-secondary: #9AA3B2;
+  --text-disabled: #6B7280;
+
+  /* Semantic trend colors (D-06/D-07, UI-SPEC Open Questions resolved) */
+  --trend-up: #34C759;
+  --trend-down: #FF5C5C;
+  --trend-flat: #8A94A6; /* status: "ok", pct_change === 0 */
+  --trend-insufficient: #5B6472; /* status: "insufficient_data", text-only, no chip fill */
+
+  /* Spacing scale (multiples of 4) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Fixed one-off sizes (not on the base scale, called out in UI-SPEC) */
+  --size-thumbnail-row: 32px; /* list-row thumbnail, coincides with --space-xl */
+  --size-thumbnail-detail: 96px; /* detail-page hero thumbnail, 2x --space-2xl */
+  --size-row-min-height: 48px;
+  --size-tap-target-min: 44px; /* chips / search-clear min tap target, WCAG comfort minimum */
+
+  /* Typography */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Helvetica, Arial, sans-serif;
+
+  --font-size-label: 12px;
+  --font-size-body: 14px;
+  --font-size-heading: 18px;
+  --font-size-display: 28px;
+
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+
+  --line-height-label: 1.5;
+  --line-height-body: 1.5;
+  --line-height-heading: 1.2;
+  --line-height-display: 1.2;
+}
+
+/* Tabular numerals for every price/percentage value so digits align in
+   the dense list (06-UI-SPEC.md Design System). Apply via
+   `class="tabular-nums"` on price/percentage-rendering elements. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--text-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+}
