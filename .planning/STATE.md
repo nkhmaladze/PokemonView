@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 03
-current_phase_name: active-listing-ingestion-pipeline
-status: human_needed
+current_phase: 04
+current_phase_name: listing-matching-price-normalization
+status: executing
 stopped_at: Phase 4 context gathered
-last_updated: "2026-07-14T23:28:00.736Z"
-last_activity: 2026-07-14
-last_activity_desc: Phase 03 all plans executed, code review fixes applied (CR-01/CR-02 + 3 warnings), phase verification ran
+last_updated: "2026-07-15T00:21:12.153Z"
+last_activity: 2026-07-15
+last_activity_desc: Phase 04 execution started
 progress:
   total_phases: 8
   completed_phases: 2
-  total_plans: 15
-  completed_plans: 14
+  total_plans: 20
+  completed_plans: 15
   percent: 25
 ---
 
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by both live eBay asking prices and actual sold-price history.
-**Current focus:** Phase 03 — active-listing-ingestion-pipeline
+**Current focus:** Phase 04 — listing-matching-price-normalization
 
 ## Current Position
 
-Phase: 03 (active-listing-ingestion-pipeline) — HUMAN VERIFICATION NEEDED
-Plan: 5 of 5 (all executed)
-Status: Verification returned human_needed (3/4 truths auto-verified) — see 03-UAT.md, run /gsd-verify-work 3
-Last activity: 2026-07-14 — Phase 03 all plans executed, code review fixes applied (CR-01/CR-02 + 3 warnings), phase verification ran
+Phase: 04 (listing-matching-price-normalization) — EXECUTING
+Plan: 2 of 5
+Status: Ready to execute
+Last activity: 2026-07-15 — Phase 04 execution started
 
 Progress: [██░░░░░░░░] 13%
 
@@ -69,6 +69,7 @@ Progress: [██░░░░░░░░] 13%
 | Phase 03 P03 | 2min | 2 tasks | 2 files |
 | Phase 03 P04 | 4min | 3 tasks | 2 files |
 | Phase 03 P05 | 2min | 1 tasks | 0 files |
+| Phase 04 P02 | 15min | 3 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -103,6 +104,8 @@ Recent decisions affecting current work:
 - [Phase ?]: [Phase 03-04]: Extracted access_token = token['access_token'] from get_app_token()'s dict return before calling search_sealed_listings, matching ebay_client.py's actual signature rather than the plan action text's shorthand
 - [Phase ?]: [Phase 03-04]: shipping_cost computed as round(total_cost(item) - item_price, 2) so total_price always equals ebay_client.total_cost(item) exactly, avoiding a second independent shipping-extraction code path
 - [Phase 03-05]: Deferred live eBay Production Browse API verification for INGEST-01/02/03 — EBAY_CLIENT_ID/EBAY_CLIENT_SECRET confirmed still absent from .env; deferral recorded per plan's explicit acceptable-terminal-state design, phase completes on Plan 03-04's automated proof
+- [Phase ?]: [Phase 04-02]: lot/damaged/counterfeit synthetic end-to-end test titles include all of the target product's required_keywords so match resolution is deterministic (Tier-1), decoupled from untested Tier-2 fuzzy scoring
+- [Phase ?]: [Phase 04-02]: end-to-end run_matching_once count contract (listings_matched includes later-excluded matched listings) derived by tracing RESEARCH.md's own code example literally
 
 ### Pending Todos
 
@@ -127,6 +130,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-14T23:28:00.730Z
+Last session: 2026-07-15T00:20:12.772Z
 Stopped at: Phase 4 context gathered
 Resume file: .planning/phases/04-listing-matching-price-normalization/04-CONTEXT.md

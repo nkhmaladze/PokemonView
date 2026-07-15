@@ -21,9 +21,9 @@ Requirements for initial release. Each maps to roadmap phases. Items tagged **(P
 
 ### Matching
 
-- [ ] **MATCH-01**: Raw eBay listing titles are matched to catalog products via keyword rules
-- [ ] **MATCH-02**: Listings with lot/bundle/damaged/counterfeit signals are excluded from price aggregates
-- [ ] **MATCH-03**: Statistical price outliers (far from rolling median) are excluded from displayed price
+- [x] **MATCH-01**: Raw eBay listing titles are matched to catalog products via keyword rules
+- [x] **MATCH-02**: Listings with lot/bundle/damaged/counterfeit signals are excluded from price aggregates
+- [x] **MATCH-03**: Statistical price outliers (far from rolling median) are excluded from displayed price
 
 ### Pricing Display
 
@@ -74,9 +74,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INGEST-02 | Phase 3 | Complete |
 | INGEST-03 | Phase 3 | Complete |
 | INGEST-04 | Phase 8 (contingent) | Pending |
-| MATCH-01 | Phase 4 | Pending |
-| MATCH-02 | Phase 4 | Pending |
-| MATCH-03 | Phase 4 | Pending |
+| MATCH-01 | Phase 4 | Complete |
+| MATCH-02 | Phase 4 | Complete |
+| MATCH-03 | Phase 4 | Complete |
 | PRICE-01 | Phase 6 | Pending |
 | PRICE-02 | Phase 6 | Pending |
 | PRICE-03 | Phase 6 | Pending |
