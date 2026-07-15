@@ -225,7 +225,21 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. In production the ingestion worker runs automatically on its schedule, keeping displayed data current without manual intervention.
   3. An alert is triggered when ingestion data goes stale beyond roughly 2x the polling interval, so silent pipeline failures surface instead of showing users stale prices.
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+**Wave 1** *(independent — code + containerization artifacts in parallel)*
+
+- [ ] 07-01-PLAN.md — Staleness alert: check_and_alert_staleness() + scheduled_job wiring + 5 Nyquist tests + DISCORD_WEBHOOK_URL env doc (SC-3, D-06/D-07)
+- [ ] 07-02-PLAN.md — gunicorn==26.0.0 legitimacy gate + requirements.txt pin + wsgi.py gunicorn entrypoint (SC-1/SC-2)
+- [ ] 07-03-PLAN.md — Dockerfile + .dockerignore + fly.toml (one image, two always-on process types, no scale-to-zero) (SC-1/SC-2)
+
+**Wave 2** *(depends on Wave 1 — deploy needs all committed artifacts)*
+
+- [ ] 07-04-PLAN.md — Deploy Fly app (API web + worker): flyctl launch/deploy, Atlas Network Access, fly secrets set (MONGODB_URI/DISCORD_WEBHOOK_URL; eBay creds deferred per D-05), verify API reachable + machines always-on (SC-1, SC-2)
+
+**Wave 3** *(depends on Wave 2 — SPA build needs the live Fly API URL)*
+
+- [ ] 07-05-PLAN.md — vercel legitimacy gate + frontend/.env.production + SPA deploy to Vercel + CORS_ORIGINS wired to the Vercel origin + no-CORS-error verification (SC-1 end-to-end)
 
 ### Phase 8: Sold-Price Integration (contingent on MI API access)
 
@@ -256,5 +270,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
 | 5. Flask REST API (active-price serving) | 7/7 | Complete    | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | 7/7 | Complete    | 2026-07-15 |
-| 7. Launch & Hardening (v1 active-price) | 0/TBD | Not started | - |
+| 7. Launch & Hardening (v1 active-price) | 0/5 | Planned | - |
 | 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
