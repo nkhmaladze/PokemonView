@@ -280,7 +280,14 @@ def aggregate_and_write(db, product_id: str, included: list[dict], ts) -> bool:
 
     `item_price` and `total_price` are each computed as their OWN
     independent statistics.median() over `included` — never
-    total_price derived from item_price's median."""
+    total_price derived from item_price's median.
+
+    `listing_count` (a deliberate choice for the sample-size gap, not a silent default) records
+    `len(included)`: the exact sample size the item_price/total_price
+    medians above were computed over. This is purely additive and
+    backward-compatible — price_points documents written before this
+    change simply lack the field; no median computation or the
+    empty-`included` gap-on-empty guard above is altered."""
     if not included:
         return False
     db.price_points.insert_one(
@@ -289,6 +296,7 @@ def aggregate_and_write(db, product_id: str, included: list[dict], ts) -> bool:
             "product_id": product_id,
             "item_price": statistics.median(listing["item_price"] for listing in included),
             "total_price": statistics.median(listing["total_price"] for listing in included),
+            "listing_count": len(included),
         }
     )
     return True
