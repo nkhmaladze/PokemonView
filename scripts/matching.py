@@ -34,6 +34,7 @@ mitigation — no `(a+)+`-style nesting).
 """
 
 import re
+import statistics
 
 from rapidfuzz import fuzz, process
 
@@ -207,3 +208,66 @@ def check_exclusion(normalized_title: str) -> str | None:
     if any(p.search(normalized_title) for p in COUNTERFEIT_PATTERNS):
         return "counterfeit"
     return None
+
+
+OUTLIER_N_STD = 2  # Locked: 2 population std devs from the median
+OUTLIER_MIN_COUNT = 3  # Below this, skip filtering entirely
+
+
+def filter_outliers(
+    listings: list[dict], price_field: str = "total_price"
+) -> tuple[list, list]:
+    """Returns (included, excluded).
+
+    Below OUTLIER_MIN_COUNT listings, filtering is skipped entirely and
+    everything is included — too few points to compute a
+    meaningful median/std-dev. Otherwise a listing is excluded iff its
+    `price_field` value is more than OUTLIER_N_STD population std devs
+    (statistics.pstdev) from the group's median — computed from ONLY
+    the passed `listings` (this run's own included group), never
+    a rolling historical window. `price_field` defaults to
+    "total_price", the canonical landed-cost field (never bare
+    `item_price`). Excluded listings still
+    carry their full document; the caller sets
+    exclusion_reason="outlier" on them."""
+    if len(listings) < OUTLIER_MIN_COUNT:
+        return listings, []
+
+    prices = [listing[price_field] for listing in listings]
+    med = statistics.median(prices)
+    sd = statistics.pstdev(prices)
+    if sd == 0:
+        # All identical prices — nothing is statistically an outlier.
+        return listings, []
+
+    included, excluded = [], []
+    for listing in listings:
+        bucket = (
+            excluded
+            if abs(listing[price_field] - med) > OUTLIER_N_STD * sd
+            else included
+        )
+        bucket.append(listing)
+    return included, excluded
+
+
+def aggregate_and_write(db, product_id: str, included: list[dict], ts) -> bool:
+    """Writes exactly one price_points
+    document for `product_id` when `included` is non-empty, returns
+    True. When `included` is empty, writes nothing and returns False
+    (leave a real gap, never carry forward a stale price).
+
+    `item_price` and `total_price` are each computed as their OWN
+    independent statistics.median() over `included` — never
+    total_price derived from item_price's median."""
+    if not included:
+        return False
+    db.price_points.insert_one(
+        {
+            "ts": ts,
+            "product_id": product_id,
+            "item_price": statistics.median(listing["item_price"] for listing in included),
+            "total_price": statistics.median(listing["total_price"] for listing in included),
+        }
+    )
+    return True
