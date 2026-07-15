@@ -5,7 +5,11 @@
  * r"/products*" only (CR-02).
  */
 
-const BASE = '' // relative — Vite dev proxy (or same-origin prod) handles routing
+// In dev, BASE stays '' so requests hit Vite's /products proxy (vite.config.js)
+// to localhost:5001. In production, VITE_API_BASE_URL is inlined at build time
+// (frontend/.env.production) so the SPA calls the deployed Fly API's absolute
+// origin instead of a same-origin path that doesn't exist on the static host.
+const BASE = import.meta.env.VITE_API_BASE_URL || ''
 
 async function request(path) {
   const res = await fetch(`${BASE}${path}`)
