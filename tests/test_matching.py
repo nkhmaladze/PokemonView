@@ -51,6 +51,28 @@ def test_normalize_word_boundary_preserves_resealed():
     )
 
 
+def test_normalize_strips_multiword_fillers_brand_new_factory_sealed():
+    """Regression: multi-word filler phrases ("brand new", "factory
+    sealed") must actually strip — FILLER_WORDS must list them before the
+    single words they contain ("new", "sealed"), otherwise the
+    single-word entries consume "new"/"sealed" first and leave "brand"/
+    "factory" behind as orphaned noise tokens that pollute Tier-2 fuzzy
+    matching."""
+    from scripts.matching import normalize
+
+    result = normalize("Chaos Rising ETB Brand New Factory Sealed")
+    assert "brand" not in result, (
+        "'brand new' must strip as a whole phrase, not leave 'brand' "
+        "behind as an orphaned noise token"
+    )
+    assert "factory" not in result, (
+        "'factory sealed' must strip as a whole phrase, not leave "
+        "'factory' behind as an orphaned noise token"
+    )
+    assert "new" not in result
+    assert "sealed" not in result
+
+
 def test_match_listing_keyword_exact():
     """a title containing all of a single product's
     required_keywords resolves via Tier 1 (exact keyword rule) to that
