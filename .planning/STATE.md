@@ -173,7 +173,13 @@ None yet.
 [Issues that affect future work]
 
 - [Phase 1 → Phase 8]: Marketplace Insights API access is approval-gated and may be denied; Phase 8 (sold-price) is contingent on the Phase 1 outcome.
-- [Phase 01 -> future eBay-dependent phases]: A prior continuation-agent crash overwrote .env, wiping the previously-entered EBAY_CLIENT_ID/EBAY_CLIENT_SECRET from Phase 1 Plan 01-04. User confirmed loss and does not yet have replacement values (pending eBay response). Non-blocking for Phase 2 (no eBay dependency), but EBAY_CLIENT_ID, EBAY_CLIENT_SECRET, and EBAY_ENV=production must be re-added to .env before any phase requiring live eBay API calls proceeds.
+- [Phase 01 -> future eBay-dependent phases]: A prior continuation-agent crash overwrote .env, wiping the previously-entered EBAY_CLIENT_ID/EBAY_CLIENT_SECRET from Phase 1 Plan 01-04. User confirmed loss and does not yet have replacement values (pending eBay response). Non-blocking for Phase 2 (no eBay dependency), but EBAY_CLIENT_ID, EBAY_CLIENT_SECRET, and EBAY_ENV=production must be re-added to .env before any phase requiring live eBay API calls proceeds. **Update 2026-07-18:** User obtained a real Production keyset (resolved the Marketplace Account Deletion exemption gate) and repopulated .env. First live run against real eBay Production data succeeded (OAuth OK, real listing with price=119.95 captured) but surfaced a real KeyError in `total_cost()` on a listing shape with no `shippingCost` key — fixed via quick task 260718-0a4. Phase 1's live verification (01-04-PLAN.md) is still outstanding — this only unblocks it, doesn't complete it.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260718-0a4 | Fix ebay_client.py total_cost() KeyError on missing shippingCost in a real Browse API shippingOptions entry | 2026-07-18 | 0c1364d | [260718-0a4-fix-ebay-client-py-total-cost-keyerror-o](./quick/260718-0a4-fix-ebay-client-py-total-cost-keyerror-o/) |
 
 ## Deferred Items
 
@@ -185,7 +191,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-15T20:26:51.346Z
-Stopped at: Phase 7 context gathered
+Last session: 2026-07-18T04:20:00.000Z
+Stopped at: Quick task 260718-0a4 complete — total_cost() shippingCost KeyError fixed; ready to re-run Phase 1 live verification (01-04-PLAN.md)
 Resume file: 
 None
