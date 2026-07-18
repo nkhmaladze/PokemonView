@@ -100,7 +100,12 @@ def total_cost(item: dict) -> float:
 
     Per Pitfall 2 (research/PITFALLS.md), raw item.price alone
     under-represents true cost for listings with separate shipping.
-    Shipping defaults to 0.0 when shippingOptions is empty/missing.
+    Shipping defaults to 0.0 whenever the shipping value is
+    absent/None — whether shippingOptions itself is empty/missing, or
+    shippingOptions is non-empty but its first entry has no
+    shippingCost (or shippingCost has no value), a real eBay Browse
+    API response shape seen for calculated/freight shipping without a
+    buyer postal code, or local-pickup-only options.
 
     Args:
         item: An itemSummary dict from search_sealed_listings().
@@ -110,7 +115,8 @@ def total_cost(item: dict) -> float:
     """
     item_price = float(item["price"]["value"])
     shipping_options = item.get("shippingOptions", [])
-    shipping_cost = (
-        float(shipping_options[0]["shippingCost"]["value"]) if shipping_options else 0.0
-    )
+    shipping_value = None
+    if shipping_options:
+        shipping_value = (shipping_options[0].get("shippingCost") or {}).get("value")
+    shipping_cost = float(shipping_value) if shipping_value is not None else 0.0
     return item_price + shipping_cost
