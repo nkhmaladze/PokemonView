@@ -1,16 +1,18 @@
 ---
 phase: 03-active-listing-ingestion-pipeline
 verified: 2026-07-14T22:44:20Z
-status: human_needed
+status: passed
 score: 3/4 must-haves verified
 behavior_unverified: 1 # SC-1's live Browse API pull is present + wired + mock-tested, but never exercised against real eBay Production data
 overrides_applied: 0
 behavior_unverified_items:
+
   - truth: "Running the ingestion worker pulls current active eBay listings for catalog products via the real Browse API and writes them to MongoDB (SC-1 / INGEST-01)"
     test: "Re-obtain EBAY_CLIENT_ID/EBAY_CLIENT_SECRET (blind-append to .env), run `python -m scripts.ingest_worker --once` against eBay Production, then inspect `active_listings` for a real document with populated item_price/shipping_cost/total_price and `ingestion_runs` for a completed status=success/partial doc."
     expected: "A real Browse API response is fetched and parsed into `item_price`/`shipping_cost`/`total_price` exactly as `scripts/ebay_client.py`'s and `scripts/ingest_worker.py`'s assumed field shapes (`price.value`, `shippingOptions[0].shippingCost.value`, `itemId`, `categories`) predict; no secret is printed to console."
     why_human: "Requires live eBay Production OAuth credentials outside this environment's control (EBAY_CLIENT_ID/EBAY_CLIENT_SECRET were lost in a prior .env incident per STATE.md Blockers and have not been re-obtained). All other code paths (build_query, locking, upsert idempotency, run orchestration/error isolation) are proven by 13 passing automated tests using synthetic/mocked eBay responses — only the real Browse API response-shape assumption is unconfirmed."
 human_verification:
+
   - test: "Re-obtain EBAY_CLIENT_ID/EBAY_CLIENT_SECRET (blind-append to .env only — never read/cat/grep/overwrite), then run `python -m scripts.ingest_worker --once` from the repo root against eBay Production."
     expected: "Console output shows the run completed with no traceback and non-zero listing counts for the higher-volume catalog products; `db.active_listings.find_one()` in the real `pokemonview` DB shows a document with populated `item_price`, `shipping_cost`, and `total_price`; `db.ingestion_runs.find_one(sort=[(\"started_at\", -1)])` shows a completed run with `status` success/partial and a `finished_at` timestamp; no secret (access token, MONGODB_URI) appears in console output."
     why_human: "Live external service integration (real eBay Production Browse API) — cannot be exercised without credentials that are not present in this environment, and even if present, judging real-world response shape correctness needs human inspection of a live sample document."
@@ -83,6 +85,7 @@ No orphaned requirements — REQUIREMENTS.md maps only INGEST-01/02/03 to Phase 
 None. Scanned `scripts/ingest_worker.py`, `db/init_collections.py`, `tests/test_ingest_worker.py`, `tests/conftest.py`, `requirements.txt` for `TODO|FIXME|XXX|TBD|HACK|PLACEHOLDER|placeholder|coming soon|not yet implemented|not available` — zero matches. No debt markers requiring the gate in Step 7.
 
 Code review (03-REVIEW.md) found 2 critical + 3 warning issues; 03-REVIEW-FIX.md fixed all 5, confirmed by:
+
 - CR-01 (uncaught IndexError on empty `categories` list): fix present in `scripts/ingest_worker.py` (`categories = item.get("categories") or []`); regression test `test_upsert_listings_skips_item_with_empty_categories_list` passes.
 - CR-02 (run stuck at status="running" on auth failure): fix present (`try/except/finally` restructure in `run_ingestion_once`); regression coverage via `test_run_ingestion_once_partial_on_product_error`.
 - WR-01/02/03: additional test coverage and error-context improvements confirmed present in the current test file and source.

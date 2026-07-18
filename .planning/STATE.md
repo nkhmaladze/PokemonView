@@ -5,10 +5,10 @@ milestone_name: milestone
 current_phase: 01
 current_phase_name: eBay API Feasibility Gate
 status: blocked
-stopped_at: Phase 01 verification — SC-2 gap (Growth Check not yet submitted)
-last_updated: "2026-07-18T04:45:00.000Z"
+stopped_at: Phase 01 verification — SC-2 gap (Growth Check submission deliberately delayed to 2026-07-19/20 for usage history); Phase 03 UAT closed same session
+last_updated: "2026-07-18T05:11:50.771Z"
 last_activity: 2026-07-18
-last_activity_desc: Phase 01 Plan 04 executed, code review fixed 6/7 findings, verification found 1 human-action gap (SC-2)
+last_activity_desc: Re-ran Phase 01 live verification (total_cost() fix confirmed, no KeyError), ran Phase 03 live ingestion UAT (pass), Phase 03 now complete. Phases 02-07 all complete. Only Phase 01 SC-2 (Growth Check submission) and contingent Phase 8 remain open.
 progress:
   total_phases: 7
   completed_phases: 6
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by both live eBay asking prices and actual sold-price history.
-**Current focus:** Phase 01 — eBay API Feasibility Gate
+**Current focus:** Phase 01 — eBay API Feasibility Gate (SC-2 gap only; Phases 2-7 all shipped)
 
 ## Current Position
 
 Phase: 01 (eBay API Feasibility Gate) — VERIFICATION: gaps_found (3/4 SC verified)
 Plan: 4 of 4 (all plans executed)
-Status: Blocked on one human-only action — SC-2 (Marketplace Insights Growth Check submission) — see 01-VERIFICATION.md
-Last activity: 2026-07-18 — Live eBay OAuth/Browse API proof captured (SC-1/SC-4), 3 critical + 3 warning code-review bugs fixed, phase verification found SC-2 unsubmitted
+Status: Blocked on one human-only action — SC-2 (Marketplace Insights Growth Check submission), deliberately delayed to 2026-07-19/20
+Last activity: 2026-07-18 — Re-ran Phase 01 live verification (KeyError fix confirmed with fresh 100-listing fixture capture); closed Phase 03's pending UAT test with a live local ingestion run (16 products queried, 800 listings fetched/written, DB writes confirmed); Phase 03 now complete
 
 Progress: [██████████] 97%
 
@@ -38,7 +38,7 @@ Progress: [██████████] 97%
 
 **Velocity:**
 
-- Total plans completed: 30
+- Total plans completed: 35
 - Average duration: — min
 - Total execution time: 0.0 hours
 
@@ -51,6 +51,7 @@ Progress: [██████████] 97%
 | 05 | 7 | - | - |
 | 06 | 7 | - | - |
 | 07 | 5 | - | - |
+| 03 | 5 | - | - |
 
 **Recent Trend:**
 

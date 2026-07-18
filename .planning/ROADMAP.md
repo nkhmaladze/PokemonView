@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: eBay API Feasibility Gate** - De-risk sold-price API access and prove Browse API + OAuth before building
 - [x] **Phase 2: Product Catalog & Data Model** - Curated v1 catalog and the shared MongoDB schema everything builds on (completed 2026-07-14)
-- [ ] **Phase 3: Active-Listing Ingestion Pipeline** - Scheduled, idempotent worker pulls active eBay listings via the Browse API (5/5 plans done, pending human verification — see 03-UAT.md)
+- [x] **Phase 3: Active-Listing Ingestion Pipeline** - Scheduled, idempotent worker pulls active eBay listings via the Browse API (5/5 plans done, live ingestion UAT passed) (completed 2026-07-18)
 - [x] **Phase 4: Listing Matching & Price Normalization** - Map messy titles to catalog products and clean them into trustworthy prices (completed 2026-07-15)
 - [x] **Phase 5: Flask REST API (active-price serving)** - Read-only API serves catalog, search, current price, freshness, and trend data (completed 2026-07-15)
 - [x] **Phase 6: React SPA Frontend (active-price product)** - Users browse products and see whether one is priced fairly right now (completed 2026-07-15)
@@ -266,7 +266,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. eBay API Feasibility Gate | 3/4 | In Progress|  |
 | 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
-| 3. Active-Listing Ingestion Pipeline | 5/5 | Verifying (human) |  |
+| 3. Active-Listing Ingestion Pipeline | 5/5 | Complete    | 2026-07-18 |
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |
 | 5. Flask REST API (active-price serving) | 7/7 | Complete    | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | 7/7 | Complete    | 2026-07-15 |
