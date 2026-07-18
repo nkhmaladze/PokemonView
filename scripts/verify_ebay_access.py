@@ -20,6 +20,7 @@ import os
 import sys
 from pathlib import Path
 
+import requests
 from dotenv import load_dotenv
 
 from ebay_client import get_app_token, search_sealed_listings, total_cost
@@ -55,7 +56,11 @@ def main() -> int:
             file=sys.stderr,
         )
 
-    token_resp = get_app_token(env=env)
+    try:
+        token_resp = get_app_token(env=env)
+    except requests.exceptions.RequestException as e:
+        print(f"ERROR: OAuth token request failed: {e}", file=sys.stderr)
+        return 1
     access_token = token_resp["access_token"]
     # Never print the full token — only metadata (threat T-01-02).
     print(
@@ -67,7 +72,15 @@ def main() -> int:
     seen_ids = set()
     shipping_proof_shown = False
     for query in CATALOG_QUERIES:
-        items = search_sealed_listings(access_token, query, limit=50, env=env)
+        try:
+            items = search_sealed_listings(access_token, query, limit=50, env=env)
+        except requests.exceptions.RequestException as e:
+            print(
+                f"ERROR: search_sealed_listings failed for query {query!r}: {e} "
+                "— skipping this query and continuing.",
+                file=sys.stderr,
+            )
+            continue
         for item in items:
             if "price" not in item:
                 continue  # require price present before recording (Pitfall 3)
