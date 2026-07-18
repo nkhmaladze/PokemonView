@@ -72,7 +72,8 @@ def main() -> int:
                 continue  # require price present before recording (Pitfall 3)
 
             shipping_options = item.get("shippingOptions") or [{}]
-            shipping_cost = shipping_options[0].get("shippingCost", {}).get("value", "0.00")
+            shipping_value = (shipping_options[0].get("shippingCost") or {}).get("value")
+            shipping_cost = shipping_value if shipping_value is not None else "0.00"
 
             record = {
                 "title": item["title"],
