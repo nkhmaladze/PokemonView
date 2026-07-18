@@ -64,12 +64,18 @@ def main() -> int:
     )
 
     captured = []
+    seen_ids = set()
     shipping_proof_shown = False
     for query in CATALOG_QUERIES:
         items = search_sealed_listings(access_token, query, limit=50, env=env)
         for item in items:
             if "price" not in item:
                 continue  # require price present before recording (Pitfall 3)
+
+            item_id = item.get("itemId")
+            if item_id in seen_ids:
+                continue  # skip duplicates across overlapping CATALOG_QUERIES
+            seen_ids.add(item_id)
 
             shipping_options = item.get("shippingOptions") or [{}]
             shipping_value = (shipping_options[0].get("shippingCost") or {}).get("value")
