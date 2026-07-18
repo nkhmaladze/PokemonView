@@ -59,7 +59,9 @@ def get_app_token(env: str = "production") -> dict:
     return resp.json()
 
 
-def search_sealed_listings(access_token: str, query: str, limit: int = 50) -> list[dict]:
+def search_sealed_listings(
+    access_token: str, query: str, limit: int = 50, env: str = "production"
+) -> list[dict]:
     """Search the Browse API for keyword matches and return itemSummaries.
 
     Keyword-only search (no category_ids) is used deliberately — no
@@ -73,13 +75,17 @@ def search_sealed_listings(access_token: str, query: str, limit: int = 50) -> li
         query: Keyword search string (e.g. "Pokemon Scarlet Violet Elite
             Trainer Box").
         limit: Max results to request from the Browse API.
+        env: "production" or "sandbox" — selects the API host, mirroring
+            get_app_token(). Must match the env the access_token was
+            issued for, or the API rejects the token (CR-03).
 
     Returns:
         List of itemSummary dicts, or an empty list if the response has
         none.
     """
+    host = "api.ebay.com" if env == "production" else "api.sandbox.ebay.com"
     resp = requests.get(
-        "https://api.ebay.com/buy/browse/v1/item_summary/search",
+        f"https://{host}/buy/browse/v1/item_summary/search",
         headers={
             "Authorization": f"Bearer {access_token}",
             "X-EBAY-C-MARKETPLACE-ID": "EBAY_US",

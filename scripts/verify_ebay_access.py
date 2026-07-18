@@ -66,7 +66,7 @@ def main() -> int:
     captured = []
     shipping_proof_shown = False
     for query in CATALOG_QUERIES:
-        items = search_sealed_listings(access_token, query, limit=50)
+        items = search_sealed_listings(access_token, query, limit=50, env=env)
         for item in items:
             if "price" not in item:
                 continue  # require price present before recording (Pitfall 3)
