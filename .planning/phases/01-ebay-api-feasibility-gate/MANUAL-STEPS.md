@@ -76,9 +76,11 @@ This is the single highest-risk unknown in the whole project (per `research/PITF
 
 Fill in this table once you submit the Growth Check in Step 4. This satisfies SC-2's requirement that status be tracked with a decision-by date.
 
+**Status as of 2026-07-18: intentionally delayed, not yet submitted.** eBay's own Application Growth Check form states it cannot approve applications "in beta or [with] no usage." Production had only one live ingestion run at the time this was raised. Decision: wait ~1-2 days (target 2026-07-19/20) so the always-on worker (4h cadence) accumulates several real runs of usage to cite in the application, then submit. See PROJECT.md Key Decisions table. This is a deliberate timing choice, not a blocker — submit as soon as there's a few days of real usage to point to.
+
 | Field | Value |
 |-------|-------|
-| Submitted date | *(fill in: YYYY-MM-DD)* |
+| Submitted date | *(fill in: YYYY-MM-DD — target 2026-07-19/20)* |
 | Ticket / reference ID | *(fill in: eBay's ticket/reference number from the confirmation screen or email)* |
 | Self-imposed decision-by date | *(fill in: ~14 days after submission — eBay publishes no SLA, so this is a self-imposed check-in date, not a promise from eBay)* |
 | Outcome | *(fill in: pending / approved / denied)* |
