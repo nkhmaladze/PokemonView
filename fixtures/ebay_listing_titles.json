@@ -14,13 +14,6 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon TCG Scarlet & Violet Destined Rivals Elite Trainer Box ETB New READ",
-    "item_price": "135.00",
-    "shipping_cost": "15.00",
-    "total_cost": 150.0,
-    "categoryId": "261044"
-  },
-  {
     "title": "Pokemon Scarlet and Violet Base Elite Trainer Box ETB Factory Sealed NEW",
     "item_price": "129.95",
     "shipping_cost": "0.00",
@@ -35,24 +28,10 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon Black Bolt - Elite Trainer Box ETB TCG Scarlet & Violet New Sealed",
-    "item_price": "159.95",
-    "shipping_cost": "0.00",
-    "total_cost": 159.95,
-    "categoryId": "261044"
-  },
-  {
     "title": "Pok\u00e9mon Surging Sparks Elite Trainer Box ETB New Factory Sealed Scarlet & Violet",
     "item_price": "119.99",
     "shipping_cost": "0.00",
     "total_cost": 119.99,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG Paldea Evolved ETB Scarlet & Violet Elite Trainer Box Sealed",
-    "item_price": "225.00",
-    "shipping_cost": "0.00",
-    "total_cost": 225.0,
     "categoryId": "261044"
   },
   {
@@ -63,10 +42,17 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon TCG Scarlet & Violet Miraidon Elite Trainer Box Sealed English 2023",
-    "item_price": "158.00",
+    "title": "Pok\u00e9mon TCG Paldea Evolved ETB Scarlet & Violet Elite Trainer Box Sealed",
+    "item_price": "225.00",
     "shipping_cost": "0.00",
-    "total_cost": 158.0,
+    "total_cost": 225.0,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon TCG Scarlet & Violet Surging Sparks Elite Trainer Box ETB Sealed",
+    "item_price": "135.00",
+    "shipping_cost": "0.00",
+    "total_cost": 135.0,
     "categoryId": "261044"
   },
   {
@@ -91,6 +77,20 @@
     "categoryId": "261044"
   },
   {
+    "title": "Pok\u00e9mon TCG Scarlet & Violet Miraidon Elite Trainer Box Sealed English 2023",
+    "item_price": "158.00",
+    "shipping_cost": "0.00",
+    "total_cost": 158.0,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pok\u00e9mon TCG Scarlet & Violet Destined Rivals Elite Trainer Box ETB Sealed",
+    "item_price": "164.49",
+    "shipping_cost": "0.00",
+    "total_cost": 164.49,
+    "categoryId": "261044"
+  },
+  {
     "title": "Pokemon TCG: Scarlet & Violet Paradox Rift Elite Trainer Box",
     "item_price": "159.99",
     "shipping_cost": "0.00",
@@ -105,10 +105,10 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon TCG Destined Rivals Elite Trainer Box ETB Unopened & Sealed",
-    "item_price": "160.00",
+    "title": "Pokemon Surging Sparks Scarlet & Violet Elite Trainer Box ETB SEALED - TCG",
+    "item_price": "134.99",
     "shipping_cost": "0.00",
-    "total_cost": 160.0,
+    "total_cost": 134.99,
     "categoryId": "261044"
   },
   {
@@ -119,10 +119,10 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon TCG Scarlet & Violet Surging Sparks Elite Trainer Box ETB Sealed",
-    "item_price": "135.00",
+    "title": "Pok\u00e9mon TCG-Scarlet & Violet White Flare Elite Trainer Box Sealed ETB",
+    "item_price": "150.00",
     "shipping_cost": "0.00",
-    "total_cost": 135.0,
+    "total_cost": 150.0,
     "categoryId": "261044"
   },
   {
@@ -133,45 +133,10 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon TCG-Scarlet & Violet White Flare Elite Trainer Box Sealed ETB",
-    "item_price": "150.00",
-    "shipping_cost": "0.00",
-    "total_cost": 150.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG Scarlet & Violet Elite Trainer Box English 2023 Koraidon Miraidon",
-    "item_price": "140.00",
-    "shipping_cost": "0.00",
-    "total_cost": 140.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Surging Sparks Scarlet & Violet Elite Trainer Box ETB SEALED - TCG",
-    "item_price": "134.99",
-    "shipping_cost": "0.00",
-    "total_cost": 134.99,
-    "categoryId": "261044"
-  },
-  {
     "title": "Pokemon TCG Scarlet and Violet ETB Elite Trainer Box Koraidon, New Sealed MINT*",
     "item_price": "140.00",
     "shipping_cost": "0.00",
     "total_cost": 140.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Surging Sparks Scarlet & Violet Elite Trainer Box ETB SEALED - TCG",
-    "item_price": "125.00",
-    "shipping_cost": "0.00",
-    "total_cost": 125.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG Scarlet & Violet Miraidon Elite Trainer Box ETB 9 Packs English 2023",
-    "item_price": "125.00",
-    "shipping_cost": "0.00",
-    "total_cost": 125.0,
     "categoryId": "261044"
   },
   {
@@ -182,6 +147,27 @@
     "categoryId": "261044"
   },
   {
+    "title": "Pokemon Surging Sparks Scarlet & Violet Elite Trainer Box ETB SEALED - TCG",
+    "item_price": "125.00",
+    "shipping_cost": "0.00",
+    "total_cost": 125.0,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon Scarlet & Violet White Flare ETB Elite Trainer Box FACTORY SEALED",
+    "item_price": "145.00",
+    "shipping_cost": "10.00",
+    "total_cost": 155.0,
+    "categoryId": "261044"
+  },
+  {
+    "title": "SEALED Scarlet & Violet Pokemon 151 Elite Trainer Box ETB",
+    "item_price": "599.00",
+    "shipping_cost": "20.00",
+    "total_cost": 619.0,
+    "categoryId": "261044"
+  },
+  {
     "title": "Pok\u00e9mon Scarlet & Violet Paldea Evolved Elite Trainer Box ETB Sealed with TEARS",
     "item_price": "210.00",
     "shipping_cost": "14.99",
@@ -189,10 +175,24 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon Surging Sparks Scarlet & Violet Elite Trainer Box ETB SEALED - TCG",
-    "item_price": "150.00",
+    "title": "Pokemon Scarlet & Violet Temporal Forces Elite Trainer Box ETB - New & Sealed",
+    "item_price": "124.49",
     "shipping_cost": "0.00",
-    "total_cost": 150.0,
+    "total_cost": 124.49,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pok\u00e9mon TCG Scarlet & Violet Elite Trainer Box English 2023 Koraidon Miraidon",
+    "item_price": "140.00",
+    "shipping_cost": "0.00",
+    "total_cost": 140.0,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon Destined Rivals Elite Trainer Box Scarlet & Violet SV10 ETB Sealed",
+    "item_price": "174.99",
+    "shipping_cost": "0.00",
+    "total_cost": 174.99,
     "categoryId": "261044"
   },
   {
@@ -224,38 +224,17 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon Scarlet & Violet Prismatic Evolutions Elite Trainer Box New Sealed ETB",
-    "item_price": "164.95",
-    "shipping_cost": "9.99",
-    "total_cost": 174.94,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Scarlet & Violet Temporal Forces Elite Trainer Box ETB - New & Sealed",
-    "item_price": "124.49",
-    "shipping_cost": "0.00",
-    "total_cost": 124.49,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Scarlet & Violet - Stellar Crown Elite Trainer Box - SEALED ETB \u2022NEW\u2022",
+    "title": "Pokemon Surging Sparks Scarlet & Violet Elite Trainer Box ETB SEALED - TCG",
     "item_price": "150.00",
     "shipping_cost": "0.00",
     "total_cost": 150.0,
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon Destined Rivals Elite Trainer Box Scarlet & Violet SV10 ETB Sealed",
-    "item_price": "174.99",
+    "title": "Pok\u00e9mon TCG Scarlet & Violet Miraidon Elite Trainer Box ETB 9 Packs English 2023",
+    "item_price": "125.00",
     "shipping_cost": "0.00",
-    "total_cost": 174.99,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG Scarlet & Violet Destined Rivals ETB Sealed Elite Trainer Box",
-    "item_price": "169.67",
-    "shipping_cost": "0.00",
-    "total_cost": 169.67,
+    "total_cost": 125.0,
     "categoryId": "261044"
   },
   {
@@ -263,6 +242,27 @@
     "item_price": "300.00",
     "shipping_cost": "7.29",
     "total_cost": 307.29,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon Scarlet & Violet Journey Together Elite Trainer Box ETB NEW SEALED",
+    "item_price": "152.95",
+    "shipping_cost": "0.00",
+    "total_cost": 152.95,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon Scarlet & Violet Destined Rivals Elite Trainer Box ETB - NEW SEALED",
+    "item_price": "165.00",
+    "shipping_cost": "15.00",
+    "total_cost": 180.0,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon Scarlet & Violet - Stellar Crown Elite Trainer Box - SEALED ETB \u2022NEW\u2022",
+    "item_price": "150.00",
+    "shipping_cost": "0.00",
+    "total_cost": 150.0,
     "categoryId": "261044"
   },
   {
@@ -280,20 +280,6 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon Scarlet & Violet Destined Rivals Elite Trainer Box ETB - NEW SEALED",
-    "item_price": "165.00",
-    "shipping_cost": "15.00",
-    "total_cost": 180.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Scarlet & Violet Journey Together Elite Trainer Box ETB NEW SEALED",
-    "item_price": "152.95",
-    "shipping_cost": "0.00",
-    "total_cost": 152.95,
-    "categoryId": "261044"
-  },
-  {
     "title": "Pokemon TCG Scarlet & Violet Elite Trainer Box ETB Koraidon Sealed 2023 EN",
     "item_price": "130.00",
     "shipping_cost": "0.00",
@@ -301,10 +287,38 @@
     "categoryId": "261044"
   },
   {
+    "title": "Pokemon Scarlet & Violet Prismatic Evolutions Elite Trainer Box New Sealed ETB",
+    "item_price": "164.95",
+    "shipping_cost": "9.99",
+    "total_cost": 174.94,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pok\u00e9mon TCG Scarlet & Violet Destined Rivals ETB Sealed Elite Trainer Box",
+    "item_price": "169.67",
+    "shipping_cost": "0.00",
+    "total_cost": 169.67,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon TCG Black Bolt Elite Trainer Box ETB NEW & SEALED Scarlet & Violet US",
+    "item_price": "175.00",
+    "shipping_cost": "0.00",
+    "total_cost": 175.0,
+    "categoryId": "261044"
+  },
+  {
     "title": "Pok\u00e9mon Scarlet & Violet \u2013 Pitch Black Elite Trainer Box (ETB) \u2013 IN HAND! \u2705",
     "item_price": "94.99",
     "shipping_cost": "0.00",
     "total_cost": 94.99,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon Scarlet & Violet White Flare ETB Elite Trainer Box FACTORY SEALED",
+    "item_price": "150.00",
+    "shipping_cost": "0.00",
+    "total_cost": 150.0,
     "categoryId": "261044"
   },
   {
@@ -319,20 +333,6 @@
     "item_price": "172.00",
     "shipping_cost": "0.00",
     "total_cost": 172.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Scarlet & Violet White Flare ETB Elite Trainer Box FACTORY SEALED",
-    "item_price": "150.00",
-    "shipping_cost": "0.00",
-    "total_cost": 150.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Scarlet & Violet White Flare ETB Elite Trainer Box FACTORY SEALED",
-    "item_price": "145.00",
-    "shipping_cost": "10.00",
-    "total_cost": 155.0,
     "categoryId": "261044"
   },
   {
@@ -371,25 +371,11 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon Scarlet & Violet Temporal Forces Elite Trainer Box ETB Walking Wake",
-    "item_price": "119.95",
+    "title": "Pok\u00e9mon TCG Scarlet & Violet White Flare Booster Bundle \u2013 SEALED Brand New",
+    "item_price": "67.99",
     "shipping_cost": "0.00",
-    "total_cost": 119.95,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG Scarlet & Violet Destined Rivals Elite Trainer Box ETB Sealed",
-    "item_price": "174.99",
-    "shipping_cost": "0.00",
-    "total_cost": 174.99,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon TCG Scarlet & Violet Destined Rivals Elite Trainer Box ETB New READ",
-    "item_price": "135.00",
-    "shipping_cost": "15.00",
-    "total_cost": 150.0,
-    "categoryId": "261044"
+    "total_cost": 67.99,
+    "categoryId": "183456"
   },
   {
     "title": "Pokemon Scarlet & Violet Paldean Fates 10 BOX BOOSTER BUNDLE DISPLAY BOX Sealed",
@@ -397,13 +383,6 @@
     "shipping_cost": "0.00",
     "total_cost": 1749.95,
     "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG Scarlet & Violet White Flare Booster Bundle \u2013 SEALED Brand New",
-    "item_price": "67.99",
-    "shipping_cost": "0.00",
-    "total_cost": 67.99,
-    "categoryId": "183456"
   },
   {
     "title": "Pokemon TCG Scarlet Violet Surging Sparks Booster Box English New Factory Sealed",
@@ -434,10 +413,24 @@
     "categoryId": "261044"
   },
   {
+    "title": "Pok\u00e9mon TCG  SV01  Scarlet &Violet  Booster Box  Base Set Factory Sealed",
+    "item_price": "315.00",
+    "shipping_cost": "0.00",
+    "total_cost": 315.0,
+    "categoryId": "261044"
+  },
+  {
     "title": "Nintendo Pokemon TCG Scarlet & Violet Booster Box - 36 Packs, only 1 for sale!",
     "item_price": "295.00",
     "shipping_cost": "0.00",
     "total_cost": 295.0,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pok\u00e9mon TCG Scarlet & Violet White Flare Booster Bundle, 6 Packs, English (6+)",
+    "item_price": "65.00",
+    "shipping_cost": "6.57",
+    "total_cost": 71.57,
     "categoryId": "261044"
   },
   {
@@ -448,24 +441,10 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon TCG Destined Rivals ETB Elite Trainer Box - Sealed Brand New",
-    "item_price": "165.00",
+    "title": "Pokemon - Scarlet & Violet Booster Box  SV01 - FACTORY SEALED CASE FRESH",
+    "item_price": "300.00",
     "shipping_cost": "0.00",
-    "total_cost": 165.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG Destined Rivals Elite Trainer Box ETB Unopened & Sealed",
-    "item_price": "160.00",
-    "shipping_cost": "0.00",
-    "total_cost": 160.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Scarlet and Violet Base Elite Trainer Box ETB Miraidon Factory Sealed",
-    "item_price": "129.95",
-    "shipping_cost": "0.00",
-    "total_cost": 129.95,
+    "total_cost": 300.0,
     "categoryId": "261044"
   },
   {
@@ -473,13 +452,6 @@
     "item_price": "150.00",
     "shipping_cost": "0.00",
     "total_cost": 150.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon - Scarlet & Violet Booster Box  SV01 - FACTORY SEALED CASE FRESH",
-    "item_price": "300.00",
-    "shipping_cost": "0.00",
-    "total_cost": 300.0,
     "categoryId": "261044"
   },
   {
@@ -497,45 +469,10 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon TCG: Scarlet & Violet - Paradox Rift Booster Box - New and Unopened!",
-    "item_price": "280.00",
-    "shipping_cost": "0.00",
-    "total_cost": 280.0,
-    "categoryId": "261044"
-  },
-  {
     "title": "Pok\u00e9mon TCG Scarlet & Violet 151 Booster Bundle Sealed Box 6 Packs English",
     "item_price": "175.00",
     "shipping_cost": "0.00",
     "total_cost": 175.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG  SV01  Scarlet &Violet  Booster Box  Base Set Factory Sealed",
-    "item_price": "315.00",
-    "shipping_cost": "0.00",
-    "total_cost": 315.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "POKEMON TCG SCARLET & VIOLET 151 BOOSTER BUNDLE BOX FACTORY SEALED NEW - QTY",
-    "item_price": "170.00",
-    "shipping_cost": "6.00",
-    "total_cost": 176.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG: Scarlet & Violet Destined Rivals Elite Trainer Box ETB (Retail)",
-    "item_price": "189.69",
-    "shipping_cost": "4.95",
-    "total_cost": 194.64,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG Scarlet & Violet Miraidon Elite Trainer Box Sealed English 2023",
-    "item_price": "158.00",
-    "shipping_cost": "0.00",
-    "total_cost": 158.0,
     "categoryId": "261044"
   },
   {
@@ -546,10 +483,24 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon TCG  SV05   Temporal Forces  Booster Box Factory Sealed",
-    "item_price": "309.99",
+    "title": "Pok\u00e9mon TCG: Scarlet & Violet - Paradox Rift Booster Box - New and Unopened!",
+    "item_price": "280.00",
     "shipping_cost": "0.00",
-    "total_cost": 309.99,
+    "total_cost": 280.0,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon TCG: Scarlet & Violet - Black Bolt Booster Box (Korean)",
+    "item_price": "68.99",
+    "shipping_cost": "0.00",
+    "total_cost": 68.99,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pok\u00e9mon TCG: Scarlet and Violet Paldea Evolved Booster Box Sealed 36 Case Incl.",
+    "item_price": "485.00",
+    "shipping_cost": "0.00",
+    "total_cost": 485.0,
     "categoryId": "261044"
   },
   {
@@ -560,6 +511,13 @@
     "categoryId": "261044"
   },
   {
+    "title": "Pok\u00e9mon TCG  SV05   Temporal Forces  Booster Box Factory Sealed",
+    "item_price": "309.99",
+    "shipping_cost": "0.00",
+    "total_cost": 309.99,
+    "categoryId": "261044"
+  },
+  {
     "title": "Pok\u00e9mon TCG Scarlet & Violet\u2014Paldean Fates Great Tusk/Iron Treads ex Box",
     "item_price": "245.00",
     "shipping_cost": "0.00",
@@ -567,31 +525,10 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon TCG Scarlet & Violet White Flare Booster Bundle, 6 Packs, English (6+)",
-    "item_price": "65.00",
-    "shipping_cost": "6.57",
-    "total_cost": 71.57,
-    "categoryId": "261044"
-  },
-  {
-    "title": "\ud83e\udeb6Pok\u00e9mon TCG: Scarlet & Violet Surging Sparks Booster Box (36 Packs) NEW SEALED",
-    "item_price": "315.00",
+    "title": "Pok\u00e9mon TCG: Scarlet & Violet - Crimson Haze Booster Box SV5a (Japanese) QTY",
+    "item_price": "120.00",
     "shipping_cost": "0.00",
-    "total_cost": 315.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Scarlet and Violet Base Elite Trainer Box ETB Factory Sealed NEW",
-    "item_price": "129.95",
-    "shipping_cost": "0.00",
-    "total_cost": 129.95,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon TCG: Scarlet & Violet - Black Bolt Booster Box (Korean)",
-    "item_price": "68.99",
-    "shipping_cost": "0.00",
-    "total_cost": 68.99,
+    "total_cost": 120.0,
     "categoryId": "261044"
   },
   {
@@ -609,38 +546,17 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon TCG: Scarlet and Violet Paldea Evolved Booster Box Sealed 36 Case Incl.",
-    "item_price": "485.00",
-    "shipping_cost": "0.00",
-    "total_cost": 485.0,
+    "title": "POKEMON TCG SCARLET & VIOLET 151 BOOSTER BUNDLE BOX FACTORY SEALED NEW - QTY",
+    "item_price": "170.00",
+    "shipping_cost": "6.00",
+    "total_cost": 176.0,
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon TCG: Scarlet & Violet - Crimson Haze Booster Box SV5a (Japanese) QTY",
-    "item_price": "120.00",
+    "title": "\ud83e\udeb6Pok\u00e9mon TCG: Scarlet & Violet Surging Sparks Booster Box (36 Packs) NEW SEALED",
+    "item_price": "315.00",
     "shipping_cost": "0.00",
-    "total_cost": 120.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "\ud83d\udc8eSuper Deal!\ud83d\udc8e 1- Scarlet and Violet: Destined Rivals  ETB Sealed",
-    "item_price": "169.00",
-    "shipping_cost": "0.00",
-    "total_cost": 169.0,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pokemon Scarlet & Violet Destined Rivals Booster Bundle Box Sealed",
-    "item_price": "82.99",
-    "shipping_cost": "0.00",
-    "total_cost": 82.99,
-    "categoryId": "261044"
-  },
-  {
-    "title": "Pok\u00e9mon TCG: Scarlet & Violet - Terastal Gathering Booster Box CSV9.5 (Chinese)",
-    "item_price": "103.99",
-    "shipping_cost": "0.00",
-    "total_cost": 103.99,
+    "total_cost": 315.0,
     "categoryId": "261044"
   },
   {
@@ -651,24 +567,31 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon TCG Scarlet Violet Journey Together Elite Trainer Box New Sealed",
-    "item_price": "125.00",
+    "title": "Pok\u00e9mon TCG Paldean Fates Great Tusk ex Premium Collection Box New Sealed",
+    "item_price": "255.00",
     "shipping_cost": "0.00",
-    "total_cost": 125.0,
+    "total_cost": 255.0,
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon TCG: Scarlet & Violet - Night Wanderer Booster Box (Japanese)",
-    "item_price": "99.99",
+    "title": "\ud83d\udc8eSuper Deal!\ud83d\udc8e 1- Scarlet and Violet: Destined Rivals  ETB Sealed",
+    "item_price": "169.00",
     "shipping_cost": "0.00",
-    "total_cost": 99.99,
+    "total_cost": 169.0,
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon Pok\u00e9mon TCG Scarlet & Violet Booster Box, English 2023, 360 Cards",
-    "item_price": "275.00",
+    "title": "Pok\u00e9mon TCG: Scarlet & Violet - Terastal Gathering Booster Box CSV9.5 (Chinese)",
+    "item_price": "103.99",
     "shipping_cost": "0.00",
-    "total_cost": 275.0,
+    "total_cost": 103.99,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon Scarlet & Violet Destined Rivals Booster Bundle Box Sealed",
+    "item_price": "82.99",
+    "shipping_cost": "0.00",
+    "total_cost": 82.99,
     "categoryId": "261044"
   },
   {
@@ -679,6 +602,13 @@
     "categoryId": "261044"
   },
   {
+    "title": "Pok\u00e9mon Pok\u00e9mon TCG Scarlet & Violet Booster Box, English 2023, 360 Cards",
+    "item_price": "275.00",
+    "shipping_cost": "0.00",
+    "total_cost": 275.0,
+    "categoryId": "261044"
+  },
+  {
     "title": "Pokemon TCG: Scarlet & Violet - Stellar Miracle Booster Box (Japanese)",
     "item_price": "99.99",
     "shipping_cost": "0.00",
@@ -686,17 +616,87 @@
     "categoryId": "261044"
   },
   {
-    "title": "Pok\u00e9mon TCG Paldean Fates Great Tusk ex Premium Collection Box New Sealed",
-    "item_price": "255.00",
+    "title": "(1) Pokemon Scarlet & Violet Paldea Evolved Booster Bundle - 6 Pks - Sealed!!",
+    "item_price": "124.95",
     "shipping_cost": "0.00",
-    "total_cost": 255.0,
+    "total_cost": 124.95,
+    "categoryId": "183456"
+  },
+  {
+    "title": "Pokemon TCG: Scarlet & Violet - Night Wanderer Booster Box (Japanese)",
+    "item_price": "99.99",
+    "shipping_cost": "0.00",
+    "total_cost": 99.99,
     "categoryId": "261044"
   },
   {
-    "title": "Pokemon TCG Scarlet & Violet Surging Sparks Booster Box Sealed 36 packs",
-    "item_price": "320.00",
-    "shipping_cost": "0.00",
-    "total_cost": 320.0,
+    "title": "Pok\u00e9mon 151 Booster Box - 20 Packs, Japanese (New/Sealed) US Seller",
+    "item_price": "299.00",
+    "shipping_cost": "15.00",
+    "total_cost": 314.0,
     "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon Card Scarlet & Violet Glory of the Team Rocket Booster 4Box KOREAN-Fedex",
+    "item_price": "198.45",
+    "shipping_cost": "0.00",
+    "total_cost": 198.45,
+    "categoryId": "261044"
+  },
+  {
+    "title": "Pokemon Scarlet & Violet Bimbingan Rasi Booster pack",
+    "item_price": "3.99",
+    "shipping_cost": "1.34",
+    "total_cost": 5.33,
+    "categoryId": "183456"
+  },
+  {
+    "title": "Pokemon TCG: Scarlet and Violet Destined Rivals  x1 Booster Pack NEW Sealed",
+    "item_price": "9.00",
+    "shipping_cost": "1.20",
+    "total_cost": 10.2,
+    "categoryId": "183456"
+  },
+  {
+    "title": "Pokemon Scarlet & Violet Paldean Fates Booster Pack Factory Sealed New",
+    "item_price": "22.00",
+    "shipping_cost": "0.00",
+    "total_cost": 22.0,
+    "categoryId": "183456"
+  },
+  {
+    "title": "Pokemon - Scarlet & Violet - Stellar Miracle Booster Pack (Korean)",
+    "item_price": "2.50",
+    "shipping_cost": "0.00",
+    "total_cost": 2.5,
+    "categoryId": "183456"
+  },
+  {
+    "title": "Pokemon TCG Scarlet & Violet Black Bolt Booster Bundle - NEW/FACTORY SEALED",
+    "item_price": "70.00",
+    "shipping_cost": "0.00",
+    "total_cost": 70.0,
+    "categoryId": "183456"
+  },
+  {
+    "title": "Pokemon TCG Scarlet Violet White Flare + Black Bolt Booster Bundle 2-Pack",
+    "item_price": "159.00",
+    "shipping_cost": "0.00",
+    "total_cost": 159.0,
+    "categoryId": "183456"
+  },
+  {
+    "title": "Pokemon Scarlet & Violet Temporal Forces Sleeved Booster Pack (Random Pack Art)",
+    "item_price": "10.49",
+    "shipping_cost": "0.00",
+    "total_cost": 10.49,
+    "categoryId": "183456"
+  },
+  {
+    "title": "Pokemon TCG: Scarlet and Violet Paradox Rift  x1 Booster Pack Sealed",
+    "item_price": "9.25",
+    "shipping_cost": "0.00",
+    "total_cost": 9.25,
+    "categoryId": "183456"
   }
 ]
