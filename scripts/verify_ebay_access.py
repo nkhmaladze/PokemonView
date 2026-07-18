@@ -75,12 +75,13 @@ def main() -> int:
             shipping_value = (shipping_options[0].get("shippingCost") or {}).get("value")
             shipping_cost = shipping_value if shipping_value is not None else "0.00"
 
+            categories = item.get("categories") or [{}]
             record = {
                 "title": item["title"],
                 "item_price": item["price"]["value"],
                 "shipping_cost": shipping_cost,
                 "total_cost": total_cost(item),
-                "categoryId": item.get("categories", [{}])[0].get("categoryId"),
+                "categoryId": categories[0].get("categoryId"),
             }
             captured.append(record)
 
