@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 01
-current_phase_name: eBay API Feasibility Gate
+current_phase: 08
+current_phase_name: Sold-Price Integration (contingent on MI API access)
 status: blocked
-stopped_at: Phase 01 SC-2 — Growth Check narrative updated with real usage (94 runs/15.3 days), user proceeding to submit via eBay portal now; awaiting user to report back submitted date/ticket ID
-last_updated: "2026-08-02T11:50:00.000Z"
+stopped_at: Phase 01 complete (SC-2 Growth Check submitted 2026-08-02, ticket 260802-000004, decision-by 2026-08-16). Phases 1-7 all complete. Phase 8 contingent on Growth Check outcome — not yet plannable.
+last_updated: "2026-08-02T12:10:00.000Z"
 last_activity: 2026-08-02
-last_activity_desc: Diagnosed Fly.io billing scare (not a bug — normal always-on cost, scaled web 2→1), added Discord heartbeat feature (deployed), updated Growth Check narrative with real production usage stats so the user can now submit SC-2. Phases 02-07 all complete. Only Phase 01 SC-2 (Growth Check submission, about to be submitted) and contingent Phase 8 remain open.
+last_activity_desc: Diagnosed Fly.io billing/Discord-silence scare (not a bug), shipped + deployed a Discord heartbeat feature, updated and submitted the Marketplace Insights Growth Check (ticket 260802-000004) with real usage evidence (94 runs/15.3 days), closed Phase 01's SC-2 gap and marked Phase 01 complete.
 progress:
   total_phases: 7
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 39
   completed_plans: 39
 ---
@@ -23,14 +23,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by both live eBay asking prices and actual sold-price history.
-**Current focus:** Phase 01 — eBay API Feasibility Gate (SC-2 gap only; Phases 2-7 all shipped)
+**Current focus:** Phase 8 — Sold-Price Integration, contingent on Marketplace Insights Growth Check outcome (submitted 2026-08-02, ticket 260802-000004, decision-by 2026-08-16). Phases 1-7 all shipped.
 
 ## Current Position
 
-Phase: 01 (eBay API Feasibility Gate) — VERIFICATION: gaps_found (3/4 SC verified)
-Plan: 4 of 4 (all plans executed)
-Status: Blocked on one human-only action — SC-2 (Marketplace Insights Growth Check submission), deliberately delayed to 2026-07-19/20
-Last activity: 2026-07-18 — Re-ran Phase 01 live verification (KeyError fix confirmed with fresh 100-listing fixture capture); closed Phase 03's pending UAT test with a live local ingestion run (16 products queried, 800 listings fetched/written, DB writes confirmed); Phase 03 now complete
+Phase: 08 — Sold-Price Integration (contingent on MI API access)
+Plan: Not started — blocked on Growth Check outcome
+Status: Blocked (external dependency, not actionable until 2026-08-16 decision-by date)
+Last activity: 2026-08-02 — Phase 01 complete; Growth Check submitted (ticket 260802-000004)
 
 Progress: [██████████] 97%
 
@@ -38,7 +38,7 @@ Progress: [██████████] 97%
 
 **Velocity:**
 
-- Total plans completed: 35
+- Total plans completed: 39
 - Average duration: — min
 - Total execution time: 0.0 hours
 
@@ -52,6 +52,7 @@ Progress: [██████████] 97%
 | 06 | 7 | - | - |
 | 07 | 5 | - | - |
 | 03 | 5 | - | - |
+| 01 | 4 | - | - |
 
 **Recent Trend:**
 

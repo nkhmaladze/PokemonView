@@ -13,7 +13,7 @@ PokemonView is built in horizontal technical layers, bottom-up: first de-risk th
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: eBay API Feasibility Gate** - De-risk sold-price API access and prove Browse API + OAuth before building
+- [x] **Phase 1: eBay API Feasibility Gate** - De-risk sold-price API access and prove Browse API + OAuth before building (completed 2026-08-02)
 - [x] **Phase 2: Product Catalog & Data Model** - Curated v1 catalog and the shared MongoDB schema everything builds on (completed 2026-07-14)
 - [x] **Phase 3: Active-Listing Ingestion Pipeline** - Scheduled, idempotent worker pulls active eBay listings via the Browse API (5/5 plans done, live ingestion UAT passed) (completed 2026-07-18)
 - [x] **Phase 4: Listing Matching & Price Normalization** - Map messy titles to catalog products and clean them into trustworthy prices (completed 2026-07-15)
@@ -48,7 +48,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 01-04-PLAN.md — Install dependencies & run live verification (package-legitimacy gate + 50-100 fixtures)
+- [x] 01-04-PLAN.md — Install dependencies & run live verification (package-legitimacy gate + 50-100 fixtures)
 
 ### Phase 2: Product Catalog & Data Model
 
@@ -264,7 +264,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. eBay API Feasibility Gate | 3/4 | In Progress|  |
+| 1. eBay API Feasibility Gate | 4/4 | Complete    | 2026-08-02 |
 | 2. Product Catalog & Data Model | 6/6 | Complete    | 2026-07-14 |
 | 3. Active-Listing Ingestion Pipeline | 5/5 | Complete    | 2026-07-18 |
 | 4. Listing Matching & Price Normalization | 5/5 | Complete    | 2026-07-15 |

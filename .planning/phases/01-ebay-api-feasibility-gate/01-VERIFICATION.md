@@ -1,27 +1,32 @@
 ---
 phase: 01-ebay-api-feasibility-gate
 verified: 2026-07-18T00:00:00Z
-status: gaps_found
-score: 3/4 must-haves verified
+reverified: 2026-08-02T00:00:00Z
+status: passed
+score: 4/4 must-haves verified
 behavior_unverified: 0
 overrides_applied: 0
-gaps:
-  - truth: "A Marketplace Insights API access request (Application Growth Check) has been submitted, with its status tracked and a decision-by date recorded (ROADMAP SC-2)"
-    status: failed
-    reason: "The submission kit (MANUAL-STEPS.md, GROWTH-CHECK-NARRATIVE.md) exists and is substantive, but the actual out-of-band submission has not happened (or is not evidenced): MANUAL-STEPS.md's 'Submission Tracking' table is entirely unfilled placeholder text (Submitted date, Ticket/reference ID, Self-imposed decision-by date, Outcome all read '*(fill in: ...)*'), and every box in the 'Summary Checklist' — including the Growth Check submission line itself — is unchecked. No other project artifact (STATE.md, 01-DISCUSSION-LOG.md) records a submission date, ticket ID, or decision-by date. SC-2 requires submission-with-tracked-status, not merely a prepared kit; that condition is not currently true."
-    artifacts:
-      - path: ".planning/phases/01-ebay-api-feasibility-gate/MANUAL-STEPS.md"
-        issue: "Submission Tracking table (lines 79-84) contains only unfilled '(fill in: ...)' placeholders; Summary Checklist (lines 90-96) has zero items checked"
-    missing:
-      - "User must complete Step 4 of MANUAL-STEPS.md (submit the Growth Check via the eBay portal using GROWTH-CHECK-NARRATIVE.md) and then fill in the Submission Tracking table with the actual submitted date, ticket/reference ID, and a self-imposed decision-by date"
+previous_status: gaps_found
+gaps: []
 ---
 
 # Phase 1: eBay API Feasibility Gate Verification Report
 
 **Phase Goal:** Resolve the two hard external unknowns — whether sold-price data will ever be available, and that active-price data plus OAuth actually work — before any layer is built on top of them.
 **Verified:** 2026-07-18
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Re-verified:** 2026-08-02 — SC-2 gap closed
+**Status:** passed
+**Re-verification:** Yes — SC-2 gap closed after the 2026-07-18 initial verification found the Growth Check submission kit prepared but not yet submitted
+
+## Re-verification note (2026-08-02)
+
+SC-2's original gap was that the Marketplace Insights Application Growth Check submission kit existed but the actual out-of-band portal submission had not happened — `MANUAL-STEPS.md`'s Submission Tracking table was unfilled placeholder text and the Summary Checklist was entirely unchecked.
+
+This is now resolved. Per the project's own deliberate delay decision (see PROJECT.md Key Decisions and STATE.md), the team waited for real production usage to accrue before submitting — eBay's Growth Check form states it cannot approve apps "in beta or with no usage." By 2026-08-02 the always-on Fly.io ingestion worker had accrued 15.3 continuous days and 94 successful/partial runs of real usage, so `GROWTH-CHECK-NARRATIVE.md` was updated with a "Usage to date" section citing those real numbers, and the user submitted the Growth Check via the eBay Developer Portal.
+
+`MANUAL-STEPS.md`'s Submission Tracking table now records: Submitted date 2026-08-02, Ticket/reference ID 260802-000004, self-imposed decision-by date 2026-08-16, Outcome pending. The Summary Checklist is fully checked.
+
+SC-2 requires submission-with-tracked-status, not an approval outcome — that condition is now true, so SC-2 is VERIFIED. The Outcome (approved/denied) remains pending and will be tracked separately; per `MANUAL-STEPS.md`'s own instruction, if still "pending" past 2026-08-16 it should be treated as effectively "denied for now" for planning purposes without blocking anything, per `FALLBACK-DECISION.md`.
 
 ## Goal Achievement
 
@@ -30,11 +35,11 @@ gaps:
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
 | SC-1 | An automated OAuth flow retrieves a valid Browse API token and a live test call returns real Pokemon sealed-product listings, including item-price and shipping-cost fields | ✓ VERIFIED | `scripts/ebay_client.py::get_app_token`/`search_sealed_listings` implement Client Credentials Grant + Browse API search reading credentials only from `os.environ`. Live run evidence in `01-04-SUMMARY.md`: OAuth OK against `api.ebay.com` (Production), sample listing `item_price=119.95`, a second record with real non-zero `shipping_cost=15.00`. Independently re-verified this session: `fixtures/ebay_listing_titles.json` contains 100 real records; one sampled record shows `item_price=135.00, shipping_cost=15.00` (non-defaulted, real value) proving the price+shipping requirement. |
-| SC-2 | A Marketplace Insights API access request (Application Growth Check) has been submitted, with its status tracked and a decision-by date recorded | ✗ FAILED | `MANUAL-STEPS.md`'s Submission Tracking table is unfilled placeholder text; Summary Checklist unchecked. See Gaps. |
+| SC-2 | A Marketplace Insights API access request (Application Growth Check) has been submitted, with its status tracked and a decision-by date recorded | ✓ VERIFIED (2026-08-02) | `MANUAL-STEPS.md`'s Submission Tracking table records Submitted date 2026-08-02, Ticket/reference ID 260802-000004, decision-by date 2026-08-16, Outcome pending. Summary Checklist fully checked. |
 | SC-3 | A documented fallback decision exists for the denied case: ship an active-only product as v1 and revisit sold-price in a later phase/milestone | ✓ VERIFIED | `FALLBACK-DECISION.md` is a substantive, non-stub decision record: states the active-only-v1 default, defers sold-price to contingent Phase 8, ranks PriceCharting as a licensed fallback requiring an explicit scope conversation (not silent substitution), and records the source-agnostic matching-design implication. Confirmed by direct read, not just grep-pattern presence. |
 | SC-4 | 50-100 real eBay Pokemon sealed-product listing titles are captured as fixtures for building and testing matching rules | ✓ VERIFIED | Independently re-ran the acceptance check this session: `fixtures/ebay_listing_titles.json` has exactly 100 records, each with `title`/`item_price`/`shipping_cost` keys; titles are real product names (e.g., "Pokemon Scarlet & Violet Temporal Forces Elite Trainer Box ETB Walking Wake"), not Sandbox placeholder data. |
 
-**Score:** 3/4 truths verified (0 present-but-behavior-unverified)
+**Score:** 4/4 truths verified (0 present-but-behavior-unverified) — as of 2026-08-02 re-verification
 
 ### Plan-Level Must-Haves (frontmatter, cross-checked against ROADMAP — no scope reduction found)
 
@@ -44,7 +49,7 @@ gaps:
 | 01-01 | Project declares pinned Python deps for reproducible runtime | ✓ VERIFIED | `requirements.txt` pins `requests==2.34.2`, `python-dotenv==1.2.2` (plus later-phase deps bundled deliberately, per review IN-02 — not a Phase 1 defect) |
 | 01-02 | Standalone guide lets user create eBay account + keysets, populate `.env`, submit Growth Check | ✓ VERIFIED (kit) / see SC-2 gap for actual submission | `MANUAL-STEPS.md` is a complete, ordered, self-contained checklist |
 | 01-02 | Claude-drafted Growth Check justification, price-transparency/resale-analytics framing, existing business entity | ✓ VERIFIED | `GROWTH-CHECK-NARRATIVE.md` reviewed directly: frames as price-transparency/resale-analytics (explicitly not "personal project"), `[YOUR BUSINESS ENTITY NAME]` placeholder, realistic call volume (~10-30 products/few hours, within ~5,000/day tier), read-only sold-listing scope stated |
-| 01-02 | Submission-tracking record captures submitted date + decision-by date | ✗ FAILED | Table is unfilled — see SC-2 gap above |
+| 01-02 | Submission-tracking record captures submitted date + decision-by date | ✓ VERIFIED (2026-08-02) | Table filled in: submitted 2026-08-02, ticket 260802-000004, decision-by 2026-08-16 |
 | 01-02 | Documented denied-case fallback decision exists | ✓ VERIFIED | Same as SC-3 above |
 | 01-03 | OAuth + Browse API keyword search with price+shipping extraction implemented in reusable Python | ✓ VERIFIED | `scripts/ebay_client.py` — see Artifacts table |
 | 01-03 | Verification entrypoint asserts both item price and shipping present, captures 50-100 titles | ✓ VERIFIED | `scripts/verify_ebay_access.py` — see Artifacts table |
@@ -63,7 +68,7 @@ gaps:
 | `scripts/ebay_client.py` | Reusable OAuth + Browse API functions | ✓ VERIFIED, WIRED | Exports `get_app_token`, `search_sealed_listings`, `total_cost`; all 3 code-review crash bugs (CR-01/CR-02/CR-03) confirmed fixed in current file content (hardened `shippingCost`/`categories` extraction, `env`-aware host selection) |
 | `scripts/verify_ebay_access.py` | Smoke-test entrypoint: token → search → assert → write fixtures | ✓ VERIFIED, WIRED | Imports `ebay_client` functions, `load_dotenv`, `FIXTURE_TARGET=(50,100)`, writes to `fixtures/ebay_listing_titles.json`; post-fix also has itemId dedup (WR-03) and try/except network error handling (WR-04) |
 | `fixtures/ebay_listing_titles.json` | 50-100 real listing titles + price/shipping/categoryId | ✓ VERIFIED, DATA FLOWING | 100 real records confirmed by independent script run this session |
-| `MANUAL-STEPS.md` | Portal checklist + submission tracking | ⚠️ STUB (tracking section only) | Checklist body is substantive and complete; Submission Tracking table is unfilled placeholders — the one section SC-2 depends on |
+| `MANUAL-STEPS.md` | Portal checklist + submission tracking | ✓ VERIFIED (2026-08-02) | Checklist body is substantive and complete; Submission Tracking table now filled in with real submission data |
 | `GROWTH-CHECK-NARRATIVE.md` | Ready-to-paste justification | ✓ VERIFIED | Substantive, matches all plan requirements |
 | `FALLBACK-DECISION.md` | Committed denied-case fallback record | ✓ VERIFIED | Substantive decision record, not a stub |
 
@@ -75,7 +80,7 @@ gaps:
 | `scripts/verify_ebay_access.py` | `scripts/ebay_client.py` | imports `get_app_token`/`search_sealed_listings`/`total_cost` | ✓ WIRED | `from ebay_client import get_app_token, search_sealed_listings, total_cost` present and used in `main()` |
 | `scripts/verify_ebay_access.py` | `fixtures/ebay_listing_titles.json` | live run writes captured records | ✓ WIRED | `FIXTURE_PATH.write_text(json.dumps(...))`; file exists with 100 real records matching the script's record shape (`title`, `item_price`, `shipping_cost`, `total_cost`, `categoryId`) |
 | `MANUAL-STEPS.md` | `GROWTH-CHECK-NARRATIVE.md` | Growth Check step instructs pasting the narrative text | ✓ WIRED | Step 4 explicitly references opening `GROWTH-CHECK-NARRATIVE.md` and pasting its content |
-| `MANUAL-STEPS.md` (Growth Check submission) | eBay Developer Portal (external) | user performs out-of-band submission | ✗ NOT COMPLETED | This is the actual SC-2 gap — the link from "kit exists" to "action taken" has not closed |
+| `MANUAL-STEPS.md` (Growth Check submission) | eBay Developer Portal (external) | user performs out-of-band submission | ✓ COMPLETED (2026-08-02) | User submitted via the portal; ticket 260802-000004 |
 
 ### Behavioral Spot-Checks
 
@@ -94,7 +99,7 @@ Phase 1 owns no requirement IDs (`Requirements: None owned` per ROADMAP.md — "
 
 | File | Line | Pattern | Severity | Impact |
 |------|------|---------|----------|--------|
-| `MANUAL-STEPS.md` | 79-96 | Unfilled `*(fill in: ...)*` placeholders and unchecked checklist boxes in the Submission Tracking / Summary Checklist sections | 🛑 Blocker | Directly evidences SC-2 is not met — this is the load-bearing anti-pattern for the phase's one gap, not an unrelated debt marker |
+| _(none — resolved 2026-08-02)_ | — | Submission Tracking table and Summary Checklist are now fully filled in / checked | — | Previously the phase's one blocker; closed by the user's actual Growth Check submission |
 
 No `TBD`/`FIXME`/`XXX`/`TODO`/`HACK`/`PLACEHOLDER` debt markers found in any Phase 1 code or doc file (`scripts/ebay_client.py`, `scripts/verify_ebay_access.py`, `.gitignore`, `requirements.txt`, `fixtures/ebay_listing_titles.json`, `MANUAL-STEPS.md`, `FALLBACK-DECISION.md`, `GROWTH-CHECK-NARRATIVE.md`) — the "fill in" text above is a template placeholder for a user-tracking table, not a code debt marker, but is still treated here as load-bearing evidence against SC-2.
 
@@ -102,9 +107,13 @@ The one skipped code-review warning (WR-02, `requirements.txt` version drift vs 
 
 ### Human Verification Required
 
-None. The remaining gap (SC-2) is not ambiguous or a matter of visual/runtime judgment — it is a directly observable, unfilled artifact (the tracking table) with no corroborating evidence anywhere in the repo that the Growth Check was actually submitted. This is a clear FAIL, not an UNCERTAIN.
+None.
 
 ### Gaps Summary
+
+**All 4 ROADMAP success criteria are now met (2026-08-02 re-verification).** SC-2 was the phase's only gap as of the 2026-07-18 initial verification (see below for the original finding, kept for history). It closed when the user submitted the Marketplace Insights Application Growth Check via the eBay Developer Portal on 2026-08-02 (ticket 260802-000004) and the Submission Tracking table in `MANUAL-STEPS.md` was filled in accordingly. Phase 1 is complete; the pending Growth Check *outcome* (approved/denied) is tracked separately and does not block phase completion or any later phase — Phases 2-7 already shipped a complete active-price v1 independent of this decision, and Phase 8 (contingent, sold-price) remains gated on the eventual outcome per `FALLBACK-DECISION.md`.
+
+**Original 2026-07-18 finding (historical, resolved above):**
 
 Phase 1 achieves 3 of its 4 ROADMAP success criteria with strong, independently-reproduced evidence: SC-1 (live OAuth + Browse API call, real listings with price+shipping) and SC-4 (100 real fixture titles) were re-verified directly against the actual fixture file and script contents in this session, not merely trusted from SUMMARY.md narrative. SC-3 (fallback decision) is a substantive, non-stub document. All three critical crash bugs a code review found in the verification scripts were confirmed fixed in the current file contents, and the full 66-test project suite passes.
 

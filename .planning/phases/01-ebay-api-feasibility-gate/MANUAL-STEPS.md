@@ -76,14 +76,14 @@ This is the single highest-risk unknown in the whole project (per `research/PITF
 
 Fill in this table once you submit the Growth Check in Step 4. This satisfies SC-2's requirement that status be tracked with a decision-by date.
 
-**Status as of 2026-08-02: delay period is over, proceeding to submit now.** The always-on worker has now accrued 15.3 continuous days and 94 successful/partial ingestion runs of real production usage (first healthy run 2026-07-18, most recent 2026-08-02) — well past the ~1-2 day target set on 2026-07-18. `GROWTH-CHECK-NARRATIVE.md` has been updated with these real usage numbers alongside the existing forward-looking estimate. Submit the Growth Check now using Step 4 above.
+**Status as of 2026-08-02: submitted.** The always-on worker had accrued 15.3 continuous days and 94 successful/partial ingestion runs of real production usage (first healthy run 2026-07-18, most recent 2026-08-02) before submission. The Growth Check was submitted via the Developer Portal using the narrative in `GROWTH-CHECK-NARRATIVE.md` (including its "Usage to date" section). Now in eBay's review queue — no published SLA, so the self-imposed decision-by date below is a check-in point, not a promise from eBay.
 
 | Field | Value |
 |-------|-------|
-| Submitted date | *(fill in: YYYY-MM-DD — target 2026-07-19/20)* |
-| Ticket / reference ID | *(fill in: eBay's ticket/reference number from the confirmation screen or email)* |
-| Self-imposed decision-by date | *(fill in: ~14 days after submission — eBay publishes no SLA, so this is a self-imposed check-in date, not a promise from eBay)* |
-| Outcome | *(fill in: pending / approved / denied)* |
+| Submitted date | 2026-08-02 |
+| Ticket / reference ID | 260802-000004 |
+| Self-imposed decision-by date | 2026-08-16 (~14 days after submission) |
+| Outcome | pending |
 
 Revisit this table on or after the decision-by date. If the outcome is still "pending" past that date, treat it as effectively "denied for now" for planning purposes and proceed per `FALLBACK-DECISION.md` — you can always update the outcome later if eBay responds.
 
@@ -91,8 +91,8 @@ Revisit this table on or after the decision-by date. If the outcome is still "pe
 
 ## Summary Checklist
 
-- [ ] eBay Developer Program account created
-- [ ] Production keyset created (Client ID + Client Secret recorded privately)
-- [ ] `.env` created from `.env.example` and populated with real values (never shared in chat, never committed)
-- [ ] Marketplace Insights Application Growth Check submitted using the narrative in `GROWTH-CHECK-NARRATIVE.md`
-- [ ] Submission Tracking table above filled in with submitted date, ticket ID, and self-imposed decision-by date
+- [x] eBay Developer Program account created
+- [x] Production keyset created (Client ID + Client Secret recorded privately)
+- [x] `.env` created from `.env.example` and populated with real values (never shared in chat, never committed)
+- [x] Marketplace Insights Application Growth Check submitted using the narrative in `GROWTH-CHECK-NARRATIVE.md`
+- [x] Submission Tracking table above filled in with submitted date, ticket ID, and self-imposed decision-by date
