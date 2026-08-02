@@ -2,18 +2,18 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 07
-current_phase_name: Launch & Hardening (v1 active-price)
-status: complete
-stopped_at: Phases 1-7 complete; MI Growth Check (ticket 260802-000004) denied 2026-08-02; FALLBACK-DECISION.md Option 1 locked in — v1 ships active-listing-only; Phase 8 deferred out of v1.0 to a future milestone.
-last_updated: "2026-08-02T12:45:51.000Z"
+status: Awaiting next milestone
+stopped_at: "Quick task 260802-n5c complete — MI Growth Check denial recorded, FALLBACK-DECISION.md Option 1 locked in. Phases 1-7 (v1.0) complete; Phase 8 deferred out of v1.0 to a future milestone. Next natural step: /gsd-complete-milestone."
+last_updated: "2026-08-02T13:30:38.810Z"
 last_activity: 2026-08-02
-last_activity_desc: Recorded the Marketplace Insights Growth Check denial (ticket 260802-000004) and locked in FALLBACK-DECISION.md Option 1 — active-listing-only v1, Phase 8 deferred out of v1.0 to a future milestone.
+last_activity_desc: Milestone v1.0 completed and archived
 progress:
   total_phases: 7
   completed_phases: 7
   total_plans: 39
   completed_plans: 39
+current_phase: 07
+current_phase_name: Launch & Hardening (v1 active-price)
 ---
 
 # Project State
@@ -27,12 +27,10 @@ See: .planning/PROJECT.md (updated 2026-07-12)
 
 ## Current Position
 
-Phase: 07 — Launch & Hardening (v1 active-price) — last phase in v1.0's final scope
-Plan: All plans complete
-Status: Complete — v1.0 shipped active-listing-only; Phase 8 deferred to a future milestone
-Last activity: 2026-08-02 — MI Growth Check (ticket 260802-000004) denied; FALLBACK-DECISION.md Option 1 locked in
-
-Progress: [██████████] 100%
+Phase: Milestone v1.0 complete
+Plan: —
+Status: Awaiting next milestone
+Last activity: 2026-08-02 — Milestone v1.0 completed and archived
 
 ## Performance Metrics
 
@@ -201,3 +199,7 @@ Last session: 2026-08-02T12:45:51.000Z
 Stopped at: Quick task 260802-n5c complete — MI Growth Check denial recorded, FALLBACK-DECISION.md Option 1 locked in. Phases 1-7 (v1.0) complete; Phase 8 deferred out of v1.0 to a future milestone. Next natural step: /gsd-complete-milestone.
 Resume file: 
 None
+
+## Operator Next Steps
+
+- Start the next milestone with /gsd-new-milestone
