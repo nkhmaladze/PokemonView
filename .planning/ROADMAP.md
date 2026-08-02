@@ -7,7 +7,7 @@ PokemonView is built in horizontal technical layers, bottom-up: first de-risk th
 ## Milestones
 
 - ✅ **v1.0 Active-Price MVP** — Phases 1-7 (shipped 2026-08-02)
-- 📋 **Next milestone** — Phase 8 (Sold-Price Integration) deferred here; not yet scheduled — Marketplace Insights API access was denied 2026-08-02, see `.planning/milestones/v1.0-ROADMAP.md` Phase 8 details and `FALLBACK-DECISION.md`
+- ⏸️ **Phase 8 (Sold-Price Integration)** — parked, not being pursued: Marketplace Insights API access was denied 2026-08-02, and a subsequent reapplication as a registered business entity was denied as well; v1.0 stands as the complete product. See `.planning/milestones/v1.0-ROADMAP.md` Phase 8 details and `FALLBACK-DECISION.md`
 
 ## Phases
 
@@ -33,17 +33,17 @@ Full phase details (goals, success criteria, plans): `.planning/milestones/v1.0-
 
 </details>
 
-### 📋 Next Milestone (Not Yet Scheduled)
+### ⏸️ Parked (Not Being Pursued)
 
-- [ ] **Phase 8: Sold-Price Integration — DEFERRED (MI API access denied 2026-08-02)** - Add real sold-price history and active-vs-sold differentiators, if/when pursued in a future milestone
+- [ ] **Phase 8: Sold-Price Integration — PARKED (MI API access denied 2026-08-02; business-entity reapplication also denied)** - Real sold-price history and active-vs-sold differentiators are not being pursued
 
 ## Phase Details
 
-### Phase 8: Sold-Price Integration (contingent on MI API access)
+### Phase 8: Sold-Price Integration (PARKED — MI API access denied)
 
 **Goal**: Add real sold-price history and the active-vs-sold differentiators — the full dual-data thesis of the product — once Marketplace Insights API access is confirmed.
 **Depends on**: Phase 1 (MI API access confirmed), Phase 5 (extends the API), Phase 6 (extends the frontend)
-**Contingency**: This phase was gated on the Phase 1 access outcome. **Resolution (2026-08-02):** the denied branch has been taken — the Marketplace Insights Application Growth Check (ticket 260802-000004) was denied. Phases 1-7 shipped as v1.0, the complete active-listing-only product, and this phase rolls to a future milestone per `FALLBACK-DECISION.md` Option 1. Not scheduled — will be picked up via `/gsd-new-milestone` if/when pursued (e.g. after a Growth Check reapplication, or via the paid PriceCharting API fallback, Option 2 — that path requires an explicit scope conversation since it changes the "official eBay APIs only" constraint).
+**Contingency**: This phase was gated on the Phase 1 access outcome. **Resolution (2026-08-02):** the denied branch has been taken — the Marketplace Insights Application Growth Check (ticket 260802-000004) was denied. Phases 1-7 shipped as v1.0, the complete active-listing-only product, and this phase rolls to a future milestone per `FALLBACK-DECISION.md` Option 1. **Update (2026-08-02):** a reapplication was subsequently submitted as a registered business entity and was denied, closing that path; the phase is therefore parked indefinitely, not scheduled. PriceCharting (Option 2) remains a theoretical option only and is not being pursued.
 **Requirements**: INGEST-04, PRICE-04, PRICE-05, PRICE-06
 **Success Criteria** (what must be TRUE):
 
@@ -66,4 +66,4 @@ Full phase details (goals, success criteria, plans): `.planning/milestones/v1.0-
 | 5. Flask REST API (active-price serving) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 7. Launch & Hardening (v1 active-price) | v1.0 | 5/5 | Complete | 2026-07-15 |
-| 8. Sold-Price Integration | (next, unscheduled) | 0/TBD | Deferred | - |
+| 8. Sold-Price Integration | Parked (not being pursued) | 0/TBD | Parked | - |

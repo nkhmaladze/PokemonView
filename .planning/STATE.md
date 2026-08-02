@@ -101,7 +101,8 @@ Full v1.0 decision log archived in `.planning/RETROSPECTIVE.md` and `.planning/P
 
 Carried-forward decisions still governing future work:
 - Official eBay APIs only, no scraping — held throughout v1.0, still binding for any future milestone.
-- Sold-price integration (formerly Phase 8) deferred to a future milestone, not scheduled — MI Growth Check denied 2026-08-02; see `FALLBACK-DECISION.md` for the ranked options (PriceCharting paid API requires an explicit scope conversation before adoption).
+- Sold-price integration (formerly Phase 8) deferred to a future milestone, not scheduled — MI Growth Check denied 2026-08-02; see `FALLBACK-DECISION.md` for the ranked options (PriceCharting paid API requires an explicit scope conversation before adoption). (superseded by the bullet below)
+- Sold-price integration (formerly Phase 8) is parked indefinitely and v1.0 is treated as the complete product — the MI Growth Check was reapplied for as a registered business entity and denied again, so no live reapplication path remains; PriceCharting is a theoretical option only and is not being pursued.
 - Simple in-process APScheduler over Celery/broker infra — no reason to revisit unless scale requirements change materially.
 
 ### Pending Todos
@@ -131,7 +132,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| Phase | Phase 8: Sold-Price Integration — deferred to a future milestone (MI Growth Check denied) | Deferred | 2026-08-02 |
+| Phase | Phase 8: Sold-Price Integration — parked, not being pursued (business-entity reapplication to MI Growth Check denied) | Parked (reapplication denied) | 2026-08-02 |
 
 ## Session Continuity
 
