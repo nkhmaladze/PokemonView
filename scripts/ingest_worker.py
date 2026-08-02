@@ -65,6 +65,12 @@ LOCK_TTL_SECONDS = 900  # generously longer than one run should ever take
 # scheduled cycles old.
 STALENESS_THRESHOLD_HOURS = 8
 
+# Reporting window for the heartbeat's trailing "N successful runs"
+# count — NOT a debounce knob. The heartbeat's debounce is the UTC
+# calendar day (see send_heartbeat_if_due): this constant only controls
+# how far back the message looks when summarizing recent healthy runs.
+HEARTBEAT_LOOKBACK_HOURS = 24
+
 
 def build_query(product: dict) -> str:
     """Build the Browse API `q` search string for a catalog product.
@@ -377,14 +383,105 @@ def check_and_alert_staleness(db, threshold_hours: float = STALENESS_THRESHOLD_H
         pass  # Discord outage must never crash the ingestion worker
 
 
+def send_heartbeat_if_due(db, now=None) -> None:
+    """POST a best-effort Discord "still healthy" heartbeat once per UTC
+    calendar day, so Discord silence is never ambiguous between "everything
+    is fine" and "the worker is dead" (the original alert-only-on-problem
+    design of check_and_alert_staleness leaves a correctly-running worker
+    completely silent).
+
+    The debounce is derived entirely from existing ingestion_runs
+    documents — counting healthy (success/partial) runs since the current
+    UTC day's midnight — rather than a new collection or a second
+    scheduled job: this function only ever fires on the FIRST healthy run
+    of the day (count == 1) and stays silent on every run after that,
+    which is what keeps the underlying 4-hourly ingestion cadence from
+    spamming Discord six times a day (T-HB-03).
+
+    `now` is injectable purely so tests can pin a fixed instant instead of
+    depending on wall-clock time (a suite run near 00:00 UTC would
+    otherwise flip which calendar day the fixture runs land in). Scheduler-
+    only, like check_and_alert_staleness: run_ingestion_once/main()'s
+    `--once` branch must never call this (they call neither this nor
+    check_and_alert_staleness), so manual/CI runs stay heartbeat-free.
+
+    Never raises and never crashes the worker: a missing
+    DISCORD_WEBHOOK_URL is read via os.environ.get (not bracket access)
+    and simply no-ops, and any Discord-side network failure
+    (requests.RequestException) is caught and swallowed, mirroring
+    check_and_alert_staleness's own discipline.
+
+    The message carries only run counts and an ISO timestamp — never the
+    webhook URL, MONGODB_URI, or eBay credentials (T-HB-01).
+    """
+    if now is None:
+        now = datetime.now(timezone.utc)
+    day_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    healthy_statuses = ["success", "partial"]
+
+    today_healthy_count = db.ingestion_runs.count_documents(
+        {"status": {"$in": healthy_statuses}, "started_at": {"$gte": day_start}}
+    )
+    # 0 means the run that just finished wasn't healthy (failed or
+    # skipped_locked) — nothing to confirm. 2+ means today's heartbeat
+    # already went out on the first healthy run of the day (T-HB-03).
+    if today_healthy_count != 1:
+        return
+
+    webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
+    if not webhook_url:
+        return  # not configured yet — never crash the worker over it
+
+    lookback_start = now - timedelta(hours=HEARTBEAT_LOOKBACK_HOURS)
+    trailing_count = db.ingestion_runs.count_documents(
+        {"status": {"$in": healthy_statuses}, "started_at": {"$gte": lookback_start}}
+    )
+
+    # Fall back to an empty dict so a race (e.g. the just-counted run
+    # disappearing) can never raise AttributeError on the .get() calls
+    # below.
+    latest_run = (
+        db.ingestion_runs.find_one(
+            {"status": {"$in": healthy_statuses}},
+            sort=[("started_at", -1)],
+        )
+        or {}
+    )
+    last_ts = latest_run.get("finished_at") or latest_run.get("started_at") or now
+    # This project's MongoClient is not tz_aware (Phase 04-04 decision),
+    # so a datetime round-tripped through Mongo comes back offset-naive
+    # even though it was inserted as UTC-aware — normalize before it is
+    # rendered into the message.
+    if last_ts.tzinfo is None:
+        last_ts = last_ts.replace(tzinfo=timezone.utc)
+    listings_written = latest_run.get("listings_written", 0)
+    listings_matched = latest_run.get("listings_matched", 0)
+
+    message = (
+        f":white_check_mark: PokemonView ingestion healthy — "
+        f"{trailing_count} successful runs in the last "
+        f"{HEARTBEAT_LOOKBACK_HOURS}h. Latest run: {listings_written} "
+        f"listings written, {listings_matched} matched at "
+        f"{last_ts.isoformat()}."
+    )
+    try:
+        requests.post(webhook_url, json={"content": message}, timeout=10)
+    except requests.RequestException:
+        pass  # Discord outage must never crash the ingestion worker
+
+
 def scheduled_job(db) -> None:
     """Scheduler-only wrapper: run one ingestion pass, then check
-    staleness (D-06/D-07). Kept separate from run_ingestion_once so its
-    return-value contract (used by --once and by the existing test suite)
-    is untouched — the --once path intentionally does NOT call
-    check_and_alert_staleness (manual/CI runs don't need alerting)."""
+    staleness (D-06/D-07) and send the low-frequency "still healthy"
+    heartbeat when one is due (T-HB-01..04). Kept separate from
+    run_ingestion_once so its return-value contract (used by --once and by
+    the existing test suite) is untouched — the --once path intentionally
+    calls neither check_and_alert_staleness nor send_heartbeat_if_due
+    (manual/CI runs don't need alerting)."""
     run_ingestion_once(db)
     check_and_alert_staleness(db)
+    send_heartbeat_if_due(db)
 
 
 def main() -> int:
