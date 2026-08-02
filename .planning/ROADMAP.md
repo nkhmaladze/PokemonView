@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Flask REST API (active-price serving)** - Read-only API serves catalog, search, current price, freshness, and trend data (completed 2026-07-15)
 - [x] **Phase 6: React SPA Frontend (active-price product)** - Users browse products and see whether one is priced fairly right now (completed 2026-07-15)
 - [x] **Phase 7: Launch & Hardening (v1 active-price)** - Deploy, monitor for stale data, and take the active-price product live (completed 2026-07-15)
-- [ ] **Phase 8: Sold-Price Integration (contingent on MI API access)** - Add real sold-price history and active-vs-sold differentiators
+- [ ] **Phase 8: Sold-Price Integration — DEFERRED to a future milestone (MI API access denied 2026-08-02)** - Add real sold-price history and active-vs-sold differentiators
 
 ## Phase Details
 
@@ -245,7 +245,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 **Goal**: Add real sold-price history and the active-vs-sold differentiators — the full dual-data thesis of the product — once Marketplace Insights API access is confirmed.
 **Depends on**: Phase 1 (MI API access confirmed), Phase 5 (extends the API), Phase 6 (extends the frontend)
-**Contingency**: This phase is gated on the Phase 1 access outcome. If MI API access is confirmed it can be pulled forward (e.g., before or alongside Phase 7 launch); if access is denied or delayed indefinitely, Phases 1-7 remain a complete, shippable v1 and this phase rolls to a later milestone.
+**Contingency**: This phase is gated on the Phase 1 access outcome. If MI API access is confirmed it can be pulled forward (e.g., before or alongside Phase 7 launch); if access is denied or delayed indefinitely, Phases 1-7 remain a complete, shippable v1 and this phase rolls to a later milestone. **Resolution (2026-08-02):** the denied branch has been taken — the Marketplace Insights Application Growth Check (ticket 260802-000004) was denied. Phases 1-7 stand as the complete, shippable v1, and this phase rolls to a later milestone per `FALLBACK-DECISION.md` Option 1.
 **Requirements**: INGEST-04, PRICE-04, PRICE-05, PRICE-06
 **Success Criteria** (what must be TRUE):
 
@@ -271,4 +271,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 5. Flask REST API (active-price serving) | 7/7 | Complete    | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | 7/7 | Complete    | 2026-07-15 |
 | 7. Launch & Hardening (v1 active-price) | 5/5 | Complete    | 2026-07-15 |
-| 8. Sold-Price Integration (contingent) | 0/TBD | Not started | - |
+| 8. Sold-Price Integration (deferred) | 0/TBD | Deferred    | - |

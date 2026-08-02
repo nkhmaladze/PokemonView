@@ -76,16 +76,17 @@ This is the single highest-risk unknown in the whole project (per `research/PITF
 
 Fill in this table once you submit the Growth Check in Step 4. This satisfies SC-2's requirement that status be tracked with a decision-by date.
 
-**Status as of 2026-08-02: submitted.** The always-on worker had accrued 15.3 continuous days and 94 successful/partial ingestion runs of real production usage (first healthy run 2026-07-18, most recent 2026-08-02) before submission. The Growth Check was submitted via the Developer Portal using the narrative in `GROWTH-CHECK-NARRATIVE.md` (including its "Usage to date" section). Now in eBay's review queue — no published SLA, so the self-imposed decision-by date below is a check-in point, not a promise from eBay.
+**Status as of 2026-08-02: denied.** The always-on worker had accrued 15.3 continuous days and 94 successful/partial ingestion runs of real production usage (first healthy run 2026-07-18, most recent 2026-08-02) before submission. The Growth Check was submitted via the Developer Portal using the narrative in `GROWTH-CHECK-NARRATIVE.md` (including its "Usage to date" section). eBay has since responded: the request was **denied**. This resolves Phase 1's go/no-go gate on the "no" branch — the project proceeds per `FALLBACK-DECISION.md` **Option 1** (ship active-listing-only v1; sold-price work rolls to a later milestone).
 
 | Field | Value |
 |-------|-------|
 | Submitted date | 2026-08-02 |
 | Ticket / reference ID | 260802-000004 |
-| Self-imposed decision-by date | 2026-08-16 (~14 days after submission) |
-| Outcome | pending |
+| Self-imposed decision-by date | 2026-08-16 (~14 days after submission) — moot/superseded, outcome arrived early |
+| Outcome | **denied** |
+| Outcome recorded date | 2026-08-02 |
 
-Revisit this table on or after the decision-by date. If the outcome is still "pending" past that date, treat it as effectively "denied for now" for planning purposes and proceed per `FALLBACK-DECISION.md` — you can always update the outcome later if eBay responds.
+This outcome is now final and recorded. `FALLBACK-DECISION.md` Option 1 is the active path. If eBay ever reverses or re-opens this decision, this table can be updated and Phase 8 pulled forward at that point.
 
 ---
 

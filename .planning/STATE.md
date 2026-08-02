@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 08
-current_phase_name: Sold-Price Integration (contingent on MI API access)
-status: blocked
-stopped_at: Phase 01 complete (SC-2 Growth Check submitted 2026-08-02, ticket 260802-000004, decision-by 2026-08-16). Phases 1-7 all complete. Phase 8 contingent on Growth Check outcome — not yet plannable.
-last_updated: "2026-08-02T12:10:00.000Z"
+current_phase: 07
+current_phase_name: Launch & Hardening (v1 active-price)
+status: complete
+stopped_at: Phases 1-7 complete; MI Growth Check (ticket 260802-000004) denied 2026-08-02; FALLBACK-DECISION.md Option 1 locked in — v1 ships active-listing-only; Phase 8 deferred out of v1.0 to a future milestone.
+last_updated: "2026-08-02T12:45:51.000Z"
 last_activity: 2026-08-02
-last_activity_desc: Diagnosed Fly.io billing/Discord-silence scare (not a bug), shipped + deployed a Discord heartbeat feature, updated and submitted the Marketplace Insights Growth Check (ticket 260802-000004) with real usage evidence (94 runs/15.3 days), closed Phase 01's SC-2 gap and marked Phase 01 complete.
+last_activity_desc: Recorded the Marketplace Insights Growth Check denial (ticket 260802-000004) and locked in FALLBACK-DECISION.md Option 1 — active-listing-only v1, Phase 8 deferred out of v1.0 to a future milestone.
 progress:
   total_phases: 7
   completed_phases: 7
@@ -23,16 +23,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-12)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by both live eBay asking prices and actual sold-price history.
-**Current focus:** Phase 8 — Sold-Price Integration, contingent on Marketplace Insights Growth Check outcome (submitted 2026-08-02, ticket 260802-000004, decision-by 2026-08-16). Phases 1-7 all shipped.
+**Current focus:** v1.0 complete — Phases 1-7 shipped as a complete active-listing-only product. Phase 8 (Sold-Price Integration) is deferred out of this milestone: Marketplace Insights Growth Check (ticket 260802-000004) was denied 2026-08-02; FALLBACK-DECISION.md Option 1 is locked in.
 
 ## Current Position
 
-Phase: 08 — Sold-Price Integration (contingent on MI API access)
-Plan: Not started — blocked on Growth Check outcome
-Status: Blocked (external dependency, not actionable until 2026-08-16 decision-by date)
-Last activity: 2026-08-02 — Phase 01 complete; Growth Check submitted (ticket 260802-000004)
+Phase: 07 — Launch & Hardening (v1 active-price) — last phase in v1.0's final scope
+Plan: All plans complete
+Status: Complete — v1.0 shipped active-listing-only; Phase 8 deferred to a future milestone
+Last activity: 2026-08-02 — MI Growth Check (ticket 260802-000004) denied; FALLBACK-DECISION.md Option 1 locked in
 
-Progress: [██████████] 97%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -162,6 +162,7 @@ Recent decisions affecting current work:
 - [Phase 06]: [Phase 06-06]: Fixed a bug in ProductDetailPage.test.jsx's own MSRP/release_date null-fallback assertions - exact-match getByText false-failed since those strings are part of larger text nodes; switched to regex matchers
 - [Phase 06-07]: Task 3 live end-to-end checkpoint approved by user against a real running Flask API (port 5001, Atlas-backed MongoDB) — browse/filter, detail (price/trend/freshness/sample-size), and 404 states all confirmed correct; dev servers stopped after approval since Task 3 writes no files
 - [Phase ?]: [Phase 07-01] Normalized naive datetimes read back from MongoDB to UTC-aware in check_and_alert_staleness before gap-hours subtraction (MongoClient not tz_aware, per Phase 04-04 precedent)
+- [Quick 260802-n5c]: MI Growth Check denied (ticket 260802-000004, recorded 2026-08-02); FALLBACK-DECISION.md Option 1 locked in — active-listing-only v1, Phase 8 deferred to a future milestone; PriceCharting (Option 2) explicitly NOT adopted and no scope conversation opened.
 
 ### Pending Todos
 
@@ -173,9 +174,9 @@ None yet.
 
 [Issues that affect future work]
 
-- [Phase 1 → Phase 8]: Marketplace Insights API access is approval-gated and may be denied; Phase 8 (sold-price) is contingent on the Phase 1 outcome.
+- [Phase 1 → Phase 8]: **RESOLVED 2026-08-02.** Marketplace Insights API access is approval-gated and may be denied; Phase 8 (sold-price) is contingent on the Phase 1 outcome. — Outcome: denied; Phase 8 deferred to a future milestone.
 - [Phase 01 -> future eBay-dependent phases]: A prior continuation-agent crash overwrote .env, wiping the previously-entered EBAY_CLIENT_ID/EBAY_CLIENT_SECRET from Phase 1 Plan 01-04. User confirmed loss and does not yet have replacement values (pending eBay response). Non-blocking for Phase 2 (no eBay dependency), but EBAY_CLIENT_ID, EBAY_CLIENT_SECRET, and EBAY_ENV=production must be re-added to .env before any phase requiring live eBay API calls proceeds. **Update 2026-07-18:** User obtained a real Production keyset (resolved the Marketplace Account Deletion exemption gate) and repopulated .env. First live run against real eBay Production data succeeded (OAuth OK, real listing with price=119.95 captured) but surfaced a real KeyError in `total_cost()` on a listing shape with no `shippingCost` key — fixed via quick task 260718-0a4. Phase 1's live verification (01-04-PLAN.md) is still outstanding — this only unblocks it, doesn't complete it.
-- [Phase 01 — SC-2, Marketplace Insights Growth Check]: **Deliberately delayed, not stalled.** Phase 1 verification (01-VERIFICATION.md) found the Growth Check was never submitted (MANUAL-STEPS.md Submission Tracking table still blank). Same-session eBay credentials were pushed to Fly production secrets (`fly secrets import`) and the deployed worker's first live run succeeded (16 products queried, 800 listings fetched, 571 written, 299 matched, 0 errors — `price_points` now populated, live API returns real `price_status: "ok"` prices, e.g. GET /products/chaos-rising_etb). eBay's Growth Check form states it cannot approve apps "in beta or [with] no usage" — with only one run of usage on record, user chose to wait ~1-2 days (target 2026-07-19/20) for the always-on worker to accumulate more real usage before submitting, rather than submit now into a likely rejection. See PROJECT.md Key Decisions and MANUAL-STEPS.md's Submission Tracking note. Phase 1 stays open (status: gaps_found, 3/4 SC) until submission happens and the tracking table is filled in.
+- [Phase 01 — SC-2, Marketplace Insights Growth Check]: **RESOLVED 2026-08-02.** Deliberately delayed, not stalled. Phase 1 verification (01-VERIFICATION.md) found the Growth Check was never submitted (MANUAL-STEPS.md Submission Tracking table still blank). Same-session eBay credentials were pushed to Fly production secrets (`fly secrets import`) and the deployed worker's first live run succeeded (16 products queried, 800 listings fetched, 571 written, 299 matched, 0 errors — `price_points` now populated, live API returns real `price_status: "ok"` prices, e.g. GET /products/chaos-rising_etb). eBay's Growth Check form states it cannot approve apps "in beta or [with] no usage" — with only one run of usage on record, user chose to wait ~1-2 days (target 2026-07-19/20) for the always-on worker to accumulate more real usage before submitting, rather than submit now into a likely rejection. See PROJECT.md Key Decisions and MANUAL-STEPS.md's Submission Tracking note. — Outcome: submitted 2026-08-02, denied 2026-08-02, Phase 1 closed.
 
 ### Quick Tasks Completed
 
@@ -191,7 +192,7 @@ Items acknowledged and carried forward from previous milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| Phase | Phase 8: Sold-Price Integration — deferred to a future milestone (MI Growth Check denied) | Deferred | 2026-08-02 |
 
 ## Session Continuity
 
