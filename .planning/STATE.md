@@ -6,7 +6,7 @@ status: Awaiting next milestone
 stopped_at: "Quick task 260802-n5c complete — MI Growth Check denial recorded, FALLBACK-DECISION.md Option 1 locked in. Phases 1-7 (v1.0) complete; Phase 8 deferred out of v1.0 to a future milestone. Next natural step: /gsd-complete-milestone."
 last_updated: "2026-08-02T13:30:38.810Z"
 last_activity: 2026-08-02
-last_activity_desc: Milestone v1.0 completed and archived
+last_activity_desc: Sold-price integration parked permanently (quick task 260802-oup); v1.0 treated as the complete product
 progress:
   total_phases: 7
   completed_phases: 7
@@ -20,10 +20,10 @@ current_phase_name: Launch & Hardening (v1 active-price)
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-07-12)
+See: .planning/PROJECT.md (updated 2026-08-02)
 
-**Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by live eBay asking prices (sold-price history deferred — see PROJECT.md Context).
-**Current focus:** Awaiting next milestone. v1.0 shipped and archived (Phases 1-7, active-listing-only product). Sold-price integration (formerly Phase 8) is deferred to a future milestone, not yet scheduled — see `.planning/milestones/v1.0-ROADMAP.md` Phase 8 and `FALLBACK-DECISION.md`.
+**Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by live eBay asking prices (sold-price history parked — see PROJECT.md Context).
+**Current focus:** v1.0 is the product. Sold-price integration (formerly Phase 8) is parked indefinitely, not being pursued — MI Growth Check reapplication (as a registered business entity) was denied again; see `.planning/milestones/v1.0-ROADMAP.md` Phase 8 and `FALLBACK-DECISION.md`.
 
 ## Current Position
 
@@ -125,6 +125,7 @@ None open. All v1.0 blockers (eBay credential loss, MI Growth Check submission/o
 | 260802-l3l | Add once-per-UTC-day Discord heartbeat to ingest worker — deployed to Fly.io (image deployment-01KZ14GZ0KWPZDW889A1RFFMGZ) | 2026-08-02 | db4e1e4 | [260802-l3l-add-periodic-discord-heartbeat-to-ingest](./quick/260802-l3l-add-periodic-discord-heartbeat-to-ingest/) |
 | 260802-lwv | Add real production usage stats (94 runs/15.3 days) to Growth Check narrative + update MANUAL-STEPS status; also scaled Fly web 2→1 machine | 2026-08-02 | aec6a8c | [260802-lwv-update-growth-check-narrative-and-manual](./quick/260802-lwv-update-growth-check-narrative-and-manual/) |
 | 260802-n5c | Mark MI Growth Check (ticket 260802-000004) as denied; lock in FALLBACK-DECISION.md Option 1 — active-listing-only v1, Phase 8 deferred out of v1.0 | 2026-08-02 | 79d63c3 | [260802-n5c-mark-ebay-marketplace-insights-growth-ch](./quick/260802-n5c-mark-ebay-marketplace-insights-growth-ch/) |
+| 260802-oup | Record decision to permanently park sold-price integration (MI Growth Check reapplied as a business entity, denied again) — v1.0 treated as the complete product | 2026-08-02 | 200d29f | [260802-oup-record-decision-to-permanently-park-sold](./quick/260802-oup-record-decision-to-permanently-park-sold/) |
 
 ## Deferred Items
 
