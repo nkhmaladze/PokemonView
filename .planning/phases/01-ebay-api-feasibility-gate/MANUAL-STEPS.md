@@ -76,7 +76,7 @@ This is the single highest-risk unknown in the whole project (per `research/PITF
 
 Fill in this table once you submit the Growth Check in Step 4. This satisfies SC-2's requirement that status be tracked with a decision-by date.
 
-**Status as of 2026-07-18: intentionally delayed, not yet submitted.** eBay's own Application Growth Check form states it cannot approve applications "in beta or [with] no usage." Production had only one live ingestion run at the time this was raised. Decision: wait ~1-2 days (target 2026-07-19/20) so the always-on worker (4h cadence) accumulates several real runs of usage to cite in the application, then submit. See PROJECT.md Key Decisions table. This is a deliberate timing choice, not a blocker — submit as soon as there's a few days of real usage to point to.
+**Status as of 2026-08-02: delay period is over, proceeding to submit now.** The always-on worker has now accrued 15.3 continuous days and 94 successful/partial ingestion runs of real production usage (first healthy run 2026-07-18, most recent 2026-08-02) — well past the ~1-2 day target set on 2026-07-18. `GROWTH-CHECK-NARRATIVE.md` has been updated with these real usage numbers alongside the existing forward-looking estimate. Submit the Growth Check now using Step 4 above.
 
 | Field | Value |
 |-------|-------|

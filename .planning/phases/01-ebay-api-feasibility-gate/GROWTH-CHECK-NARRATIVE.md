@@ -20,6 +20,8 @@ We are requesting access to the Marketplace Insights API specifically to retriev
 
 **Estimated call volume:** Our ingestion process is a scheduled worker that polls a curated catalog of approximately 10-30 tracked products on a periodic interval (every few hours), well within eBay's default rate-limit tier of roughly 5,000 calls per day. We do not require elevated rate limits at this time — this request is solely for read scope to the Marketplace Insights API endpoint, not for a rate-limit increase.
 
+**Usage to date:** This is not a beta or no-usage application — it is a live, continuously running production service with real accumulated usage history. As of 2026-08-02, our always-on Fly.io production worker has completed 94 successful/partial ingestion runs over 15.3 continuous days (first healthy run on 2026-07-18, most recent on 2026-08-02), executing on a fixed 4-hour schedule with zero gaps. To date it has issued 1,504 Browse API search calls, fetched 75,200 cumulative listings, and currently tracks 4,865 unique active listings in our database. This Marketplace Insights request extends an existing, actively operating application — not a new or speculative one.
+
 **Data handling:** Retrieved sold-listing data is used only to compute aggregate price statistics (e.g., median sold price, price trend over time) displayed to end users, in compliance with eBay's API License Agreement's data-retention and display-restriction terms. We do not resell, redistribute, or expose raw eBay listing/seller data beyond aggregate price figures.
 
 ---
