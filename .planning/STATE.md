@@ -5,10 +5,10 @@ milestone_name: milestone
 current_phase: 01
 current_phase_name: eBay API Feasibility Gate
 status: blocked
-stopped_at: Phase 01 verification — SC-2 gap (Growth Check submission deliberately delayed to 2026-07-19/20 for usage history); Phase 03 UAT closed same session
-last_updated: "2026-07-18T05:11:50.771Z"
-last_activity: 2026-07-18
-last_activity_desc: Re-ran Phase 01 live verification (total_cost() fix confirmed, no KeyError), ran Phase 03 live ingestion UAT (pass), Phase 03 now complete. Phases 02-07 all complete. Only Phase 01 SC-2 (Growth Check submission) and contingent Phase 8 remain open.
+stopped_at: Phase 01 SC-2 — Growth Check narrative updated with real usage (94 runs/15.3 days), user proceeding to submit via eBay portal now; awaiting user to report back submitted date/ticket ID
+last_updated: "2026-08-02T11:50:00.000Z"
+last_activity: 2026-08-02
+last_activity_desc: Diagnosed Fly.io billing scare (not a bug — normal always-on cost, scaled web 2→1), added Discord heartbeat feature (deployed), updated Growth Check narrative with real production usage stats so the user can now submit SC-2. Phases 02-07 all complete. Only Phase 01 SC-2 (Growth Check submission, about to be submitted) and contingent Phase 8 remain open.
 progress:
   total_phases: 7
   completed_phases: 6
@@ -181,7 +181,8 @@ None yet.
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260718-0a4 | Fix ebay_client.py total_cost() KeyError on missing shippingCost in a real Browse API shippingOptions entry | 2026-07-18 | 0c1364d | [260718-0a4-fix-ebay-client-py-total-cost-keyerror-o](./quick/260718-0a4-fix-ebay-client-py-total-cost-keyerror-o/) |
-| 260802-l3l | Add once-per-UTC-day Discord heartbeat to ingest worker (implemented + locally tested, NOT deployed to Fly.io) | 2026-08-02 | db4e1e4 | [260802-l3l-add-periodic-discord-heartbeat-to-ingest](./quick/260802-l3l-add-periodic-discord-heartbeat-to-ingest/) |
+| 260802-l3l | Add once-per-UTC-day Discord heartbeat to ingest worker — deployed to Fly.io (image deployment-01KZ14GZ0KWPZDW889A1RFFMGZ) | 2026-08-02 | db4e1e4 | [260802-l3l-add-periodic-discord-heartbeat-to-ingest](./quick/260802-l3l-add-periodic-discord-heartbeat-to-ingest/) |
+| 260802-lwv | Add real production usage stats (94 runs/15.3 days) to Growth Check narrative + update MANUAL-STEPS status; also scaled Fly web 2→1 machine | 2026-08-02 | aec6a8c | [260802-lwv-update-growth-check-narrative-and-manual](./quick/260802-lwv-update-growth-check-narrative-and-manual/) |
 
 ## Deferred Items
 
