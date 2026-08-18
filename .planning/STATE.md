@@ -5,8 +5,8 @@ milestone_name: Price History & Extended Badges
 current_phase: 8
 current_phase_name: Price History Chart
 status: planning
-stopped_at: Phase 8 context gathered
-last_updated: "2026-08-18T15:38:25.717Z"
+stopped_at: Phase 8 UI-SPEC approved
+last_updated: "2026-08-18T16:41:46.486Z"
 last_activity: 2026-08-18
 last_activity_desc: v1.1 roadmap created (Phases 8-9, 3/3 requirements mapped)
 progress:
@@ -156,10 +156,10 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-18T15:38:25.709Z
-Stopped at: Phase 8 context gathered
+Last session: 2026-08-18T16:41:46.476Z
+Stopped at: Phase 8 UI-SPEC approved
 Resume file:
-.planning/phases/08-price-history-chart/08-CONTEXT.md
+/Users/nkhmal/Desktop/PokemonView/.planning/phases/08-price-history-chart/08-UI-SPEC.md
 
 ## Operator Next Steps
 
