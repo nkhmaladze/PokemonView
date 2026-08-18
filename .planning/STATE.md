@@ -1,19 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: Awaiting next milestone
-stopped_at: "Quick task 260802-n5c complete — MI Growth Check denial recorded, FALLBACK-DECISION.md Option 1 locked in. Phases 1-7 (v1.0) complete; Phase 8 deferred out of v1.0 to a future milestone. Next natural step: /gsd-complete-milestone."
-last_updated: "2026-08-02T13:30:38.810Z"
-last_activity: 2026-08-02
-last_activity_desc: Sold-price integration parked permanently (quick task 260802-oup); v1.0 treated as the complete product
+milestone: v1.1
+milestone_name: Price History & Extended Badges
+status: planning
+last_updated: "2026-08-18T11:37:46.626Z"
+last_activity: 2026-08-18
 progress:
-  total_phases: 7
-  completed_phases: 7
-  total_plans: 39
-  completed_plans: 39
-current_phase: 07
-current_phase_name: Launch & Hardening (v1 active-price)
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -27,10 +24,10 @@ See: .planning/PROJECT.md (updated 2026-08-02)
 
 ## Current Position
 
-Phase: Milestone v1.0 complete
+Phase: Not started (defining requirements)
 Plan: —
-Status: Awaiting next milestone
-Last activity: 2026-08-18 — Completed quick task 260818-k38: GitHub Actions CI/CD pipeline live — PR #1 merged, FLY_API_TOKEN secret added, first main-branch deploy to Fly.io confirmed successful
+Status: Defining requirements
+Last activity: 2026-08-18 — Milestone v1.1 started
 
 ## Performance Metrics
 
@@ -100,6 +97,7 @@ Last activity: 2026-08-18 — Completed quick task 260818-k38: GitHub Actions CI
 Full v1.0 decision log archived in `.planning/RETROSPECTIVE.md` and `.planning/PROJECT.md` Key Decisions table (with outcomes). Cleared here at milestone close — starting fresh for the next milestone.
 
 Carried-forward decisions still governing future work:
+
 - Official eBay APIs only, no scraping — held throughout v1.0, still binding for any future milestone.
 - Sold-price integration (formerly Phase 8) deferred to a future milestone, not scheduled — MI Growth Check denied 2026-08-02; see `FALLBACK-DECISION.md` for the ranked options (PriceCharting paid API requires an explicit scope conversation before adoption). (superseded by the bullet below)
 - Sold-price integration (formerly Phase 8) is parked indefinitely and v1.0 is treated as the complete product — the MI Growth Check was reapplied for as a registered business entity and denied again, so no live reapplication path remains; PriceCharting is a theoretical option only and is not being pursued.

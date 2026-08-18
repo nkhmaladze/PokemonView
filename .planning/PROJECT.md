@@ -8,6 +8,17 @@ A poe.ninja-style price-tracking website for sealed Pokemon TCG product — boos
 
 A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by live eBay asking prices — this must always be accurate and current. (Original v1 framing also promised sold-price history as a second pillar; that pillar is now parked indefinitely — see Context.)
 
+## Current Milestone: v1.1 Price History & Extended Badges
+
+**Goal:** Give users visibility into how a product's active-listing price has moved over time, not just the current snapshot.
+
+**Target features:**
+- Historical price chart on the product detail page (line chart, total price, built on the price_points time-series data already being collected)
+- New API endpoint exposing the raw price_points series for a single product (currently deliberately withheld by catalog_service)
+- 24h change badge, same pattern as the existing 7d/30d badges
+- All-time high/low badge, since data collection began
+- Recharts wired into the frontend for the first time (already in the intended stack per prior research, unused until now)
+
 ## Requirements
 
 ### Validated
@@ -23,7 +34,10 @@ A user can look up a specific pack/box/ETB and see whether it's priced fairly ri
 
 ### Active
 
-*(None currently in flight — v1.0 is closing. Next milestone's Active requirements get defined via `/gsd-new-milestone`.)*
+- [ ] Historical price chart on the product detail page, plotting total price over time from the existing price_points time-series data
+- [ ] API endpoint exposing the raw price_points series for a single product
+- [ ] 24h change badge (same pattern as existing 7d/30d)
+- [ ] All-time high/low badge since data collection began
 
 ### Parked (formerly Active, blocked on external access)
 
@@ -103,4 +117,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-02 — sold-price integration is now parked indefinitely after a reapplication to the Marketplace Insights Growth Check, submitted as a registered business entity, was also denied; v1.0 (active-listing price tracking only) is treated as the complete product. The full pipeline was independently re-verified against real production data before close (109 ingestion runs, live API curl-checks) — see Context "v1.0 Shipped State".*
+*Last updated: 2026-08-18 — started Milestone v1.1 (Price History & Extended Badges): historical price chart + 24h/all-time-high-low badges on top of the shipped v1.0 active-price product.*
