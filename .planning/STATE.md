@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-08-02)
 Phase: Milestone v1.0 complete
 Plan: —
 Status: Awaiting next milestone
-Last activity: 2026-08-18 — Completed quick task 260818-k38: GitHub Actions CI/CD pipeline built and proven on PR #1; FLY_API_TOKEN secret creation + PR merge outstanding (human checkpoint)
+Last activity: 2026-08-18 — Completed quick task 260818-k38: GitHub Actions CI/CD pipeline live — PR #1 merged, FLY_API_TOKEN secret added, first main-branch deploy to Fly.io confirmed successful
 
 ## Performance Metrics
 
@@ -126,7 +126,7 @@ None open. All v1.0 blockers (eBay credential loss, MI Growth Check submission/o
 | 260802-lwv | Add real production usage stats (94 runs/15.3 days) to Growth Check narrative + update MANUAL-STEPS status; also scaled Fly web 2→1 machine | 2026-08-02 | aec6a8c | [260802-lwv-update-growth-check-narrative-and-manual](./quick/260802-lwv-update-growth-check-narrative-and-manual/) |
 | 260802-n5c | Mark MI Growth Check (ticket 260802-000004) as denied; lock in FALLBACK-DECISION.md Option 1 — active-listing-only v1, Phase 8 deferred out of v1.0 | 2026-08-02 | 79d63c3 | [260802-n5c-mark-ebay-marketplace-insights-growth-ch](./quick/260802-n5c-mark-ebay-marketplace-insights-growth-ch/) |
 | 260802-oup | Record decision to permanently park sold-price integration (MI Growth Check reapplied as a business entity, denied again) — v1.0 treated as the complete product | 2026-08-02 | 200d29f | [260802-oup-record-decision-to-permanently-park-sold](./quick/260802-oup-record-decision-to-permanently-park-sold/) |
-| 260818-k38 | Add GitHub Actions CI/CD pipeline (.github/workflows/ci.yml): backend pytest + frontend lint/test/build on PR and push to main, secret-gated Fly.io deploy on push to main after CI passes — proven on real PR #1; FLY_API_TOKEN secret + PR merge still pending (human checkpoint) | 2026-08-18 | f3a0868 | [260818-k38-add-a-github-actions-ci-cd-pipeline-ci-r](./quick/260818-k38-add-a-github-actions-ci-cd-pipeline-ci-r/) |
+| 260818-k38 | Add GitHub Actions CI/CD pipeline (.github/workflows/ci.yml): backend pytest + frontend lint/test/build on PR and push to main, secret-gated Fly.io deploy on push to main after CI passes — PR #1 merged, FLY_API_TOKEN secret added, first main-branch deploy confirmed live | 2026-08-18 | 9faddc6 | [260818-k38-add-a-github-actions-ci-cd-pipeline-ci-r](./quick/260818-k38-add-a-github-actions-ci-cd-pipeline-ci-r/) |
 
 ## Deferred Items
 
