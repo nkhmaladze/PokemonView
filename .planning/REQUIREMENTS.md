@@ -39,15 +39,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PRICE-07 | TBD | Pending |
-| PRICE-08 | TBD | Pending |
-| PRICE-09 | TBD | Pending |
+| PRICE-07 | Phase 8: Price History Chart | Pending |
+| PRICE-08 | Phase 9: 24h & All-Time Price Badges | Pending |
+| PRICE-09 | Phase 9: 24h & All-Time Price Badges | Pending |
 
 **Coverage:**
 - v1.1 requirements: 3 total
-- Mapped to phases: 0 (pending roadmap creation)
-- Unmapped: 3 ⚠️ (roadmapper will map these)
+- Mapped to phases: 3 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-08-18*
-*Last updated: 2026-08-18 after initial v1.1 definition*
+*Last updated: 2026-08-18 after v1.1 roadmap creation (traceability mapped to Phases 8-9)*

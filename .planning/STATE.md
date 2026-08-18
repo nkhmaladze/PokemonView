@@ -3,10 +3,10 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Price History & Extended Badges
 status: planning
-last_updated: "2026-08-18T11:37:46.626Z"
+last_updated: "2026-08-18T15:40:00.000Z"
 last_activity: 2026-08-18
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -17,17 +17,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-08-02)
+See: .planning/PROJECT.md (updated 2026-08-18)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by live eBay asking prices (sold-price history parked — see PROJECT.md Context).
-**Current focus:** v1.0 is the product. Sold-price integration (formerly Phase 8) is parked indefinitely, not being pursued — MI Growth Check reapplication (as a registered business entity) was denied again; see `.planning/milestones/v1.0-ROADMAP.md` Phase 8 and `FALLBACK-DECISION.md`.
+**Current focus:** Milestone v1.1 — surface the price history that has already been accumulating in the `price_points` time-series collection since Phase 4: a detail-page line chart (Phase 8), then 24h and all-time high/low badges (Phase 9).
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Phase 8 — Price History Chart (not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-08-18 — Milestone v1.1 started
+Status: Roadmap created, awaiting phase planning
+Last activity: 2026-08-18 — v1.1 roadmap created (Phases 8-9, 3/3 requirements mapped)
 
 ## Performance Metrics
 
@@ -94,14 +94,19 @@ Last activity: 2026-08-18 — Milestone v1.1 started
 
 ### Decisions
 
-Full v1.0 decision log archived in `.planning/RETROSPECTIVE.md` and `.planning/PROJECT.md` Key Decisions table (with outcomes). Cleared here at milestone close — starting fresh for the next milestone.
+Full v1.0 decision log archived in `.planning/RETROSPECTIVE.md` and `.planning/PROJECT.md` Key Decisions table (with outcomes).
 
 Carried-forward decisions still governing future work:
 
-- Official eBay APIs only, no scraping — held throughout v1.0, still binding for any future milestone.
-- Sold-price integration (formerly Phase 8) deferred to a future milestone, not scheduled — MI Growth Check denied 2026-08-02; see `FALLBACK-DECISION.md` for the ranked options (PriceCharting paid API requires an explicit scope conversation before adoption). (superseded by the bullet below)
-- Sold-price integration (formerly Phase 8) is parked indefinitely and v1.0 is treated as the complete product — the MI Growth Check was reapplied for as a registered business entity and denied again, so no live reapplication path remains; PriceCharting is a theoretical option only and is not being pursued.
+- Official eBay APIs only, no scraping — held throughout v1.0, still binding.
+- Sold-price integration is parked indefinitely and v1.0 is treated as the complete product — the MI Growth Check was reapplied for as a registered business entity and denied again, so no live reapplication path remains; PriceCharting is a theoretical option only and is not being pursued.
 - Simple in-process APScheduler over Celery/broker infra — no reason to revisit unless scale requirements change materially.
+
+v1.1 roadmap decisions (2026-08-18):
+
+- Phase numbering continues the global sequence at 8, even though "Phase 8" was the label the now-parked sold-price work carried during v1.0 planning. That label is historical documentation only; the parked item now carries no phase number in ROADMAP.md so there is exactly one `### Phase 8:` header.
+- v1.1 is structured as two thin vertical slices (chart, then badges) rather than a backend phase plus a frontend phase — each phase must ship a user-visible capability end-to-end through Mongo query → API field → React render.
+- Phase 9 is sequenced after Phase 8 for edit-conflict reasons (both touch `ProductDetailPage.jsx` and its tests), not because of a data or API dependency.
 
 ### Pending Todos
 
@@ -113,7 +118,15 @@ None yet.
 
 [Issues that affect future work]
 
-None open. All v1.0 blockers (eBay credential loss, MI Growth Check submission/outcome) resolved by milestone close — full history in `.planning/milestones/v1.0-ROADMAP.md`, `.planning/RETROSPECTIVE.md`, and git log.
+None open.
+
+Context to carry into planning (not blockers):
+
+- `api/services/catalog_service.py::get_product_detail` deliberately withholds the raw `price_points` series (documented as D-11 from Phase 5). Phase 8 needs a new code path/endpoint rather than loosening that function's contract silently — the D-11 decision should be explicitly revisited and recorded, not just overwritten.
+- Recharts is in the intended stack per prior research but has never been added as a dependency or used in any component. Phase 8 is its first real introduction, so it goes through the same package-legitimacy checkpoint the project applied to pymongo/apscheduler/rapidfuzz/flask.
+- The existing `get_trend_baseline` uses a ±3-day tolerance window (D-05), which is nonsensical for a 24h window. Phase 9 must pick and record an explicit tolerance for the 24h badge rather than reusing the default.
+- `.github/workflows/ci.yml` now runs the full pytest suite against a real `mongo:7` service container on every PR/push, so new backend tests execute for real in CI.
+- ~25 non-blocking v1.0 hardening items and Nyquist coverage gaps on 6 of 7 phases remain carried forward (see `.planning/v1.0-MILESTONE-AUDIT.md`). Not in v1.1 scope.
 
 ### Quick Tasks Completed
 
@@ -132,15 +145,18 @@ Items acknowledged and carried forward from previous milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| Phase | Phase 8: Sold-Price Integration — parked, not being pursued (business-entity reapplication to MI Growth Check denied) | Parked (reapplication denied) | 2026-08-02 |
+| Feature | Sold-Price Integration (INGEST-04, PRICE-04/05/06) — parked, not being pursued (business-entity reapplication to MI Growth Check denied). Formerly labeled "Phase 8"; carries no phase number now. | Parked (reapplication denied) | 2026-08-02 |
+| Requirement | PRICE-10 — catalog/browse sparklines | Deferred to v2 | 2026-08-18 |
+| Requirement | PRICE-11 — item/total price toggle on the chart | Deferred to v2 | 2026-08-18 |
+| Tech debt | ~25 v1.0 hardening items + Nyquist coverage gaps on 6 of 7 phases (see `.planning/v1.0-MILESTONE-AUDIT.md`) | Carried forward, non-blocking | 2026-08-02 |
 
 ## Session Continuity
 
-Last session: 2026-08-02T12:45:51.000Z
-Stopped at: Quick task 260802-n5c complete — MI Growth Check denial recorded, FALLBACK-DECISION.md Option 1 locked in. Phases 1-7 (v1.0) complete; Phase 8 deferred out of v1.0 to a future milestone. Next natural step: /gsd-complete-milestone.
-Resume file: 
+Last session: 2026-08-18T15:40:00.000Z
+Stopped at: v1.1 roadmap created — Phases 8 (Price History Chart) and 9 (24h & All-Time Price Badges), all 3 v1.1 requirements mapped, REQUIREMENTS.md traceability updated. No code written yet.
+Resume file:
 None
 
 ## Operator Next Steps
 
-- Start the next milestone with /gsd-new-milestone
+- Plan the first phase with `/gsd-plan-phase 8`

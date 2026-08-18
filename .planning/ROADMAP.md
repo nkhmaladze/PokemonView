@@ -2,12 +2,15 @@
 
 ## Overview
 
-PokemonView is built in horizontal technical layers, bottom-up: first de-risk the two hard eBay dependencies, then stand up the data model and curated catalog, then the ingestion pipeline, then matching/normalization, then the read API, then the React SPA — shipping a live, active-price product as v1. Because eBay's Marketplace Insights (sold-price) API is approval-gated and may never be granted, the roadmap is deliberately split: Phases 1-7 deliver and launch a complete Browse-API-only (active-listing) product that stands on its own, and the sold-price differentiators are isolated in a final, contingent phase that can be pulled forward if access lands early or deferred to a later milestone if it never does.
+v1.0 built PokemonView bottom-up in horizontal technical layers (eBay feasibility → catalog/data model → ingestion → matching → API → SPA → launch) and shipped a live, active-price product on 2026-08-02. The sold-price half of the original thesis is permanently parked — Marketplace Insights API access was denied twice.
+
+v1.1 is a scoped feature addition on top of that shipped product, not a new subsystem. All the data it needs already exists: the `price_points` native time-series collection has been accumulating item/total price medians every ~4 hours per catalog product since Phase 4. What is missing is *exposure* — `catalog_service.get_product_detail` deliberately withholds the raw series (D-11) and only emits a current price plus 7d/30d trend badges. So v1.1 is deliberately structured as two thin vertical slices, each shipping a complete user-visible capability end-to-end (Mongo query → API field → React render) rather than splitting backend and frontend into separate phases: Phase 8 turns the accumulated series into a chart, Phase 9 turns it into two more badges.
 
 ## Milestones
 
 - ✅ **v1.0 Active-Price MVP** — Phases 1-7 (shipped 2026-08-02)
-- ⏸️ **Phase 8 (Sold-Price Integration)** — parked, not being pursued: Marketplace Insights API access was denied 2026-08-02, and a subsequent reapplication as a registered business entity was denied as well; v1.0 stands as the complete product. See `.planning/milestones/v1.0-ROADMAP.md` Phase 8 details and `FALLBACK-DECISION.md`
+- 🚧 **v1.1 Price History & Extended Badges** — Phases 8-9 (in progress, started 2026-08-18)
+- ⏸️ **Sold-Price Integration** — parked indefinitely, not being pursued (see Parked section below)
 
 ## Phases
 
@@ -33,24 +36,43 @@ Full phase details (goals, success criteria, plans): `.planning/milestones/v1.0-
 
 </details>
 
+### 🚧 v1.1 Price History & Extended Badges (Phases 8-9)
+
+- [ ] **Phase 8: Price History Chart** - Detail page plots the full total-price series from `price_points`, served by a new history endpoint
+- [ ] **Phase 9: 24h & All-Time Price Badges** - Detail page adds a 24h change badge and an all-time high/low badge alongside the existing 7d/30d badges
+
 ### ⏸️ Parked (Not Being Pursued)
 
-- [ ] **Phase 8: Sold-Price Integration — PARKED (MI API access denied 2026-08-02; business-entity reapplication also denied)** - Real sold-price history and active-vs-sold differentiators are not being pursued
+- [ ] **Sold-Price Integration** — real sold-price history and the active-vs-sold differentiators (INGEST-04, PRICE-04, PRICE-05, PRICE-06). Marketplace Insights API access was denied 2026-08-02 (ticket 260802-000004), and a subsequent reapplication as a registered business entity was denied as well, so no live reapplication path remains. PriceCharting (`FALLBACK-DECISION.md` Option 2) is a theoretical option only and is explicitly not being pursued. **This item was labeled "Phase 8" during v1.0 planning; that label is historical only and does NOT refer to Phase 8 below.** Full historical detail: `.planning/milestones/v1.0-ROADMAP.md` and `FALLBACK-DECISION.md`.
 
 ## Phase Details
 
-### Phase 8: Sold-Price Integration (PARKED — MI API access denied)
+### Phase 8: Price History Chart
 
-**Goal**: Add real sold-price history and the active-vs-sold differentiators — the full dual-data thesis of the product — once Marketplace Insights API access is confirmed.
-**Depends on**: Phase 1 (MI API access confirmed), Phase 5 (extends the API), Phase 6 (extends the frontend)
-**Contingency**: This phase was gated on the Phase 1 access outcome. **Resolution (2026-08-02):** the denied branch has been taken — the Marketplace Insights Application Growth Check (ticket 260802-000004) was denied. Phases 1-7 shipped as v1.0, the complete active-listing-only product, and this phase rolls to a future milestone per `FALLBACK-DECISION.md` Option 1. **Update (2026-08-02):** a reapplication was subsequently submitted as a registered business entity and was denied, closing that path; the phase is therefore parked indefinitely, not scheduled. PriceCharting (Option 2) remains a theoretical option only and is not being pursued.
-**Requirements**: INGEST-04, PRICE-04, PRICE-05, PRICE-06
+**Goal**: A user can see how a product's asking price has moved over time on its detail page, instead of only its current snapshot.
+**Depends on**: Nothing new — builds directly on the shipped v1.0 detail page and the `price_points` time-series collection that has been accumulating since Phase 4.
+**Requirements**: PRICE-07
 **Success Criteria** (what must be TRUE):
 
-  1. The ingestion worker pulls sold listings via the Marketplace Insights API and stores them alongside the active-listing data.
-  2. A user can view a product's historical sold-price trend chart.
-  3. A user can see an active-vs-sold spread indicator ("asking X% above last sale").
-  4. A user can see a sold-volume/liquidity indicator ("N sold in last 7 days").
+  1. A user opening a product's detail page sees a line chart of that product's total price over time, plotted from every price point collected for it (no downsampling, no binning — the raw series).
+  2. A user can identify a specific point on the chart and read its date and total price (hover/tap tooltip), so the line is readable as data and not just a shape.
+  3. A product with no collected history (or too few points to draw a line) shows an explicit "not enough history yet" message instead of an empty box, a broken axis, or a crash.
+  4. Requesting the product's price-history endpoint directly returns that product's raw `price_points` series as time-ordered JSON — the chart reads a real API response and never recomputes or synthesizes the series client-side.
+
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 9: 24h & All-Time Price Badges
+
+**Goal**: A user can judge a product's current price against both its most recent movement and its full recorded range, not just the 7d/30d windows.
+**Depends on**: Phase 8 (both phases extend the same `ProductDetailPage` surface and the same detail-response contract; sequencing them avoids conflicting edits to the page and its tests). No data dependency — the badges read the same `price_points` collection directly.
+**Requirements**: PRICE-08, PRICE-09
+**Success Criteria** (what must be TRUE):
+
+  1. A user sees a 24h change badge on the product detail page next to the existing 7d and 30d badges, using the same signed-percent, four-state (up / down / flat / insufficient-data) visual convention.
+  2. A user sees the product's all-time high and all-time low total price, covering every point since data collection began, labeled so it is clear the range is "since we started tracking" rather than an absolute market record.
+  3. A product with less than 24 hours of collected history shows the 24h badge in its explicit insufficient-data state (—), never a fabricated percentage and never a silently missing badge.
+  4. A product with no price data at all still renders its detail page with every badge in the insufficient-data state — no crash, no blank page, no partially-rendered price section.
 
 **Plans**: TBD
 **UI hint**: yes
@@ -66,4 +88,7 @@ Full phase details (goals, success criteria, plans): `.planning/milestones/v1.0-
 | 5. Flask REST API (active-price serving) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 7. Launch & Hardening (v1 active-price) | v1.0 | 5/5 | Complete | 2026-07-15 |
-| 8. Sold-Price Integration | Parked (not being pursued) | 0/TBD | Parked | - |
+| 8. Price History Chart | v1.1 | 0/TBD | Not started | - |
+| 9. 24h & All-Time Price Badges | v1.1 | 0/TBD | Not started | - |
+
+**Unnumbered / parked:** Sold-Price Integration (INGEST-04, PRICE-04/05/06) — parked indefinitely, MI API access denied twice. Carries no phase number; the "Phase 8" label it held during v1.0 planning is historical.
