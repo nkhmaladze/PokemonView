@@ -1,8 +1,11 @@
-import { Link, useLoaderData } from 'react-router'
+import { useEffect, useState } from 'react'
+import { Link, useLoaderData, useParams } from 'react-router'
 import styles from './ProductDetailPage.module.css'
 import PriceDisplay from '../components/PriceDisplay'
 import TrendBadge from '../components/TrendBadge'
 import FreshnessIndicator from '../components/FreshnessIndicator'
+import PriceHistoryChart from '../components/PriceHistoryChart'
+import { getPriceHistory } from '../api/client'
 
 const PRODUCT_TYPE_GLYPH = {
   booster_pack: 'P',
@@ -48,10 +51,32 @@ function formatSampleSize(listingCount) {
  * "Sample size unavailable" when it is null/absent. MSRP and
  * release_date fall back to "—"/"TBD" when null so a pre-release
  * product (e.g. Pitch Black) never crashes the page. Never
- * renders the `verified` field or a price_points/chart series.
+ * renders the `verified` field. The page also
+ * renders a separate Price History section fed by an independent
+ * post-mount fetch against the history endpoint — the loader response itself still carries no
+ * series (of, of).
  */
 export default function ProductDetailPage() {
   const product = useLoaderData()
+  const { productId } = useParams()
+  const [history, setHistory] = useState(null) // null = loading
+  const [historyError, setHistoryError] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    setHistory(null)
+    setHistoryError(null)
+    getPriceHistory(productId)
+      .then((data) => {
+        if (!cancelled) setHistory(data)
+      })
+      .catch((err) => {
+        if (!cancelled) setHistoryError(err)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [productId])
 
   return (
     <div className={styles.detail}>
@@ -109,6 +134,21 @@ export default function ProductDetailPage() {
         <div className={styles.trend}>
           <span className={styles.trendLabel}>30d</span>
           <TrendBadge trend={product.trend_30d} />
+        </div>
+      </div>
+
+      <div className={styles.detail__historySection}>
+        <h2 className={styles.sectionHeading}>Price History</h2>
+        <div className={styles.historyChartFrame}>
+          {historyError ? (
+            <p className={styles.historyMessage}>
+              Couldn't load price history. Try refreshing the page.
+            </p>
+          ) : history === null ? (
+            <p className={styles.historyMessage}>Loading price history…</p>
+          ) : (
+            <PriceHistoryChart data={history} />
+          )}
         </div>
       </div>
 
