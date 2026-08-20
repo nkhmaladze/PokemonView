@@ -1,17 +1,20 @@
 ---
 phase: 08-price-history-chart
 verified: 2026-08-20T13:00:00Z
-status: human_needed
+status: passed
 score: 9/9 must-haves verified (across 08-01 truths); all plan-level must_haves verified across 08-01/08-02/08-03/08-04
 behavior_unverified: 0
 overrides_applied: 0
 human_verification:
+
   - test: "Run the Flask API on port 5001 and `npm run dev` in frontend/, then open a product detail page with 2+ collected price points."
     expected: "Price, badges and meta appear first; a 'Price History' heading appears below the trend badges and above the MSRP/release-date block; a line chart draws with visible dated X-axis ticks, dollar Y-axis ticks and dashed gridlines; hovering the line shows a tooltip with a formatted date and a $X.XX total price."
     why_human: "Visual chart rendering (SVG geometry, gridlines, hover tooltip, dark-theme token resolution) requires a human to open the running app and look at it. Deferred per .planning/config.json's workflow.human_verify_mode: end-of-phase (08-01-PLAN.md Task 2 human-check)."
+
   - test: "With the app running, open a product detail page with several days of history. Confirm axis tick text and tooltip text match the 7d/30d badge label size; the tooltip sits on the surface colour with no border and tabular-width price digits; the line is accent orange and gridlines are divider grey. Then check the Y-axis dollar labels are not clipped at the highest-priced catalog product, and X-axis date labels are not overlapping at the longest currently-collected history."
     expected: "Typography and token-driven styling render as specified; the two documented overflow backstops (Y-axis tick width at high prices, X-axis tick crowding over long history) are not visibly broken."
     why_human: "Visual typography sizing and two explicitly-documented overflow backstops require eyes on the running app with real accumulated data. Deferred per workflow.human_verify_mode: end-of-phase (08-03-PLAN.md Task 3 human-check)."
+
   - test: "Open a product detail page and confirm the 'Price History' heading reads as a section label at the same size as the page title but without the orange underline, the chart sits directly below it, and MSRP/release-date follows. Switch to a product with no collected history and confirm the insufficient-history message occupies the same vertical space the chart did, with no visible jump. Reload with the network throttled and confirm price/badges appear before the chart area fills."
     expected: "Section placement, heading weight, fixed-frame non-shifting behaviour, and progressive-load ordering all hold visually under real network conditions."
     why_human: "Layout weight, no-shift-on-state-change, and network-throttled ordering are visual/timing properties that automated DOM tests approximate but do not fully substitute for. Deferred per workflow.human_verify_mode: end-of-phase (08-04-PLAN.md Task 3 human-check)."

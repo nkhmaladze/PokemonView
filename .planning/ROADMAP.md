@@ -38,7 +38,7 @@ Full phase details (goals, success criteria, plans): `.planning/milestones/v1.0-
 
 ### 🚧 v1.1 Price History & Extended Badges (Phases 8-9)
 
-- [ ] **Phase 8: Price History Chart** - Detail page plots the full total-price series from `price_points`, served by a new history endpoint
+- [x] **Phase 8: Price History Chart** - Detail page plots the full total-price series from `price_points`, served by a new history endpoint (completed 2026-08-20)
 - [ ] **Phase 9: 24h & All-Time Price Badges** - Detail page adds a 24h change badge and an all-time high/low badge alongside the existing 7d/30d badges
 
 ### ⏸️ Parked (Not Being Pursued)
@@ -100,7 +100,7 @@ Plans:
 | 5. Flask REST API (active-price serving) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 7. Launch & Hardening (v1 active-price) | v1.0 | 5/5 | Complete | 2026-07-15 |
-| 8. Price History Chart | v1.1 | 4/4 | In Progress|  |
+| 8. Price History Chart | v1.1 | 4/4 | Complete    | 2026-08-20 |
 | 9. 24h & All-Time Price Badges | v1.1 | 0/TBD | Not started | - |
 
 **Unnumbered / parked:** Sold-Price Integration (INGEST-04, PRICE-04/05/06) — parked indefinitely, MI API access denied twice. Carries no phase number; the "Phase 8" label it held during v1.0 planning is historical.

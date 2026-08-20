@@ -31,11 +31,11 @@ A user can look up a specific pack/box/ETB and see whether it's priced fairly ri
 - [x] MongoDB is the shared data store across all services, including the live production deployment — validated in Phase 7 (Atlas M0, Network Access opened for the deployed Fly.io app)
 - [x] The v1 active-price product is deployed and publicly reachable end-to-end — validated in Phase 7 (Flask API on Fly.io at a public `.fly.dev` URL, React SPA on Vercel, CORS wired between them, live-verified with no CORS errors)
 - [x] The full pipeline (catalog → scheduled ingestion → matching → price aggregation → API → frontend) is proven against real eBay production data, not just architecturally wired — validated in the 2026-08-02 milestone re-audit: 109 real ingestion runs, 1,272 real price_points, live production `curl` returning real current prices and trends for 15/16 catalog products
+- [x] Historical price chart on the product detail page, plotting total price over time from the existing price_points time-series data — validated in Phase 8 (Recharts `LineChart` wired into `ProductDetailPage.jsx`, full token/typography contract, progressive-load ordering, cancellation-safe fetch, insufficient-history/loading/error states, all UAT-passed)
+- [x] API endpoint exposing the raw price_points series for a single product — validated in Phase 8 (`GET /products/<id>/history`, scoped equality filter, plain `{ts, total_price}` shape, no internal field leakage)
 
 ### Active
 
-- [ ] Historical price chart on the product detail page, plotting total price over time from the existing price_points time-series data
-- [ ] API endpoint exposing the raw price_points series for a single product
 - [ ] 24h change badge (same pattern as existing 7d/30d)
 - [ ] All-time high/low badge since data collection began
 
@@ -98,6 +98,8 @@ A user can look up a specific pack/box/ETB and see whether it's priced fairly ri
 | Ship v1.0 as active-listing-only on MI denial; sold-price rolls to a future milestone | Pre-committed fallback (`FALLBACK-DECISION.md` Option 1), decided before the outcome was known — avoided any rework or scope scramble when the denial landed | ✓ Good — executed exactly as pre-planned, same day as the denial |
 | Re-audit v1.0 against live production data before archiving, rather than trusting the 2026-07-15 audit's stale "gaps_found" | That audit predated the credential restoration and 21 days of real production usage; closing the milestone on stale findings would have misrepresented actual product state | ✓ Good (2026-08-02) — re-audit independently curl-verified the live API and found 13/13 requirements satisfied, 0 blockers, status `tech_debt` |
 | Park sold-price integration permanently | The Growth Check was reapplied for as a registered business entity and denied again, leaving no live reapplication path; PriceCharting is not being pursued | User's explicit, final call as of 2026-08-02 — sold-price integration stands parked for the foreseeable future; v1.0 is the complete product |
+| Price-history X-axis uses `type="number" scale="time"` (not Recharts' default category axis) | `get_price_history` is unbounded/gap-tolerant (~6 pts/day, no downsampling), so evenly-spaced category ticks would misrepresent real elapsed time between points (WR-01, 08-REVIEW.md); a numeric time-scale axis also keeps tick count fixed (~5, Recharts' default) regardless of how much history accumulates, incidentally resolving the UI-SPEC's X-axis-crowding overflow backstop for free | ✓ Good (Phase 8) — confirmed via source + token audit at UAT time, no bug found |
+| History fetch uses `AbortController` over a manual `cancelled`-boolean guard | A boolean flag only discards a stale response client-side; an `AbortController` actually cancels the in-flight request when the user navigates to a different product mid-fetch, so the superseded request stops consuming network/server resources (WR-02, 08-REVIEW.md) | ✓ Good (Phase 8) |
 
 ## Evolution
 
@@ -117,4 +119,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-08-18 — started Milestone v1.1 (Price History & Extended Badges): historical price chart + 24h/all-time-high-low badges on top of the shipped v1.0 active-price product.*
+*Last updated: 2026-08-20 — Phase 8 (Price History Chart) complete: Recharts line chart + history API endpoint shipped, UAT-passed (3/3), 0 open security threats. Next: Phase 9 (24h & all-time price badges).*

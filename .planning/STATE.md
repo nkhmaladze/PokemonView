@@ -2,42 +2,42 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Price History & Extended Badges
-current_phase: 08
-current_phase_name: price-history-chart
-status: executing
-stopped_at: Phase 8 UI-SPEC approved
-last_updated: "2026-08-20T10:48:31.397Z"
+current_phase: 9
+current_phase_name: 24h & All-Time Price Badges
+status: planning
+stopped_at: Phase 8 complete, transitioned to Phase 9
+last_updated: "2026-08-20T19:02:10.409Z"
 last_activity: 2026-08-20
-last_activity_desc: Phase 08 execution started
+last_activity_desc: Phase 08 complete — UAT 3/3 passed, security threats_open 0
 progress:
   total_phases: 2
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 4
-  completed_plans: 0
-  percent: 0
+  completed_plans: 4
+  percent: 50
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-08-18)
+See: .planning/PROJECT.md (updated 2026-08-20)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by live eBay asking prices (sold-price history parked — see PROJECT.md Context).
-**Current focus:** Phase 08 — price-history-chart
+**Current focus:** Phase 09 — 24h & all-time price badges
 
 ## Current Position
 
-Phase: 08 (price-history-chart) — EXECUTING
-Plan: 1 of 4
-Status: Executing Phase 08
-Last activity: 2026-08-20 — Phase 08 execution started
+Phase: 9 — 24h & All-Time Price Badges
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-08-20 — Phase 08 complete, transitioned to Phase 9
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 39
+- Total plans completed: 47
 - Average duration: — min
 - Total execution time: 0.0 hours
 
@@ -52,6 +52,7 @@ Last activity: 2026-08-20 — Phase 08 execution started
 | 07 | 5 | - | - |
 | 03 | 5 | - | - |
 | 01 | 4 | - | - |
+| 08 | 4 | - | - |
 
 **Recent Trend:**
 
@@ -93,6 +94,10 @@ Last activity: 2026-08-20 — Phase 08 execution started
 | Phase 06 P06 | ~10min | 1 tasks | 3 files |
 | Phase 06 P07 | ~8min | 3 tasks | 5 files |
 | Phase 07 P01 | 12min | 2 tasks | 3 files |
+| Phase 08 P01 | 45min | 2 tasks | 10 files |
+| Phase 08 P02 | ~35min | 3 tasks | 4 files |
+| Phase 08 P03 | 25min | 3 tasks | 3 files |
+| Phase 08 P04 | ~50min | 3 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -126,9 +131,9 @@ None open.
 
 Context to carry into planning (not blockers):
 
-- `api/services/catalog_service.py::get_product_detail` deliberately withholds the raw `price_points` series (documented as D-11 from Phase 5). Phase 8 needs a new code path/endpoint rather than loosening that function's contract silently — the D-11 decision should be explicitly revisited and recorded, not just overwritten.
-- Recharts is in the intended stack per prior research but has never been added as a dependency or used in any component. Phase 8 is its first real introduction, so it goes through the same package-legitimacy checkpoint the project applied to pymongo/apscheduler/rapidfuzz/flask.
 - The existing `get_trend_baseline` uses a ±3-day tolerance window (D-05), which is nonsensical for a 24h window. Phase 9 must pick and record an explicit tolerance for the 24h badge rather than reusing the default.
+- Phase 8 shipped `price_service.get_price_history` + `GET /products/<id>/history` as a new, separate code path rather than loosening `catalog_service.get_product_detail`'s D-11 contract — that decision stands resolved, not just deferred.
+- Recharts 3.10.1 is now an installed, in-use frontend dependency (first real introduction, went through the package-legitimacy checkpoint) — Phase 9's badges are plain text/number UI, no new charting surface expected, but note the dependency exists if Phase 9 needs anything chart-adjacent.
 - `.github/workflows/ci.yml` now runs the full pytest suite against a real `mongo:7` service container on every PR/push, so new backend tests execute for real in CI.
 - ~25 non-blocking v1.0 hardening items and Nyquist coverage gaps on 6 of 7 phases remain carried forward (see `.planning/v1.0-MILESTONE-AUDIT.md`). Not in v1.1 scope.
 
@@ -156,11 +161,10 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-18T16:41:46.476Z
-Stopped at: Phase 8 UI-SPEC approved
-Resume file:
-/Users/nkhmal/Desktop/PokemonView/.planning/phases/08-price-history-chart/08-UI-SPEC.md
+Last session: 2026-08-20
+Stopped at: Phase 8 complete, ready to plan Phase 9
+Resume file: None
 
 ## Operator Next Steps
 
-- Plan the first phase with `/gsd-plan-phase 8`
+- Plan the next phase with `/gsd-plan-phase 9`
