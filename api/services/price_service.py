@@ -83,6 +83,18 @@ def get_price_history(db, product_id):
         list[dict]: {"ts": ISO-8601 string, "total_price": float}
         objects ordered oldest-first by ts. Empty when the product has
         no price_points documents.
+
+    Unbounded-response assumption: this function returns every stored
+    point for the product with no limit, window or downsampling. This
+    is deliberate at the current data volume — roughly 6 points per day
+    per product, per REQUIREMENTS.md's Out of Scope table row on
+    downsampled/binned chart data — and is the same assumption
+    08-CONTEXT.md D-02 makes when it defers a time-range selector.
+    Revisit trigger: accumulated history large enough that response
+    size or chart legibility becomes a real problem, at which point
+    adding a limit/window/since parameter is a considered decision, not
+    an accident. No such parameter should be added speculatively ahead
+    of that trigger.
     """
     docs = db.price_points.find(
         {"product_id": product_id},

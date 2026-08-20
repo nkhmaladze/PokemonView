@@ -78,6 +78,15 @@ def product_history(product_id):
     time-ordered ascending (PRICE-07, 08-CONTEXT.md D-04). Always
     returns 200 + a JSON array; an unknown product id and a product
     with zero points both correctly produce 200 + [], not a 404.
+
+    Why no not-found branch, unlike the sibling `product_detail` route
+    above: at this layer, an id absent from the catalog and a
+    catalogued product with no collected points are indistinguishable
+    — both are legitimately served as an empty array with status 200 —
+    and the SPA only ever requests history for an id its detail loader
+    has already resolved. This was raised as Open Question 1 in
+    08-RESEARCH.md and answered here; the behaviour is pinned by
+    `tests/test_api_products.py::test_product_history_unknown_id_is_200_empty`.
     """
     history = price_service.get_price_history(get_db(), product_id)
     return jsonify(history)

@@ -15,6 +15,11 @@ Uses the `client` (Flask test client) and `api_db` (seeded-products,
 empty-price_points MongoDB handle) fixtures from tests/conftest.py.
 Status codes and JSON envelopes assert against the exact "## API
 Response Contract" shape locked in this plan.
+
+This file also covers Phase 8's history route (PRICE-07, 08-CONTEXT.md
+D-04/D-06) at the HTTP boundary: zero-point and unknown-id responses,
+CORS coverage, and a regression guard proving the new history
+capability did not loosen the detail route's existing D-11 contract.
 """
 
 import os
@@ -262,6 +267,84 @@ def test_product_history_returns_ordered_series(client, api_db):
     for point in body:
         assert set(point.keys()) == {"ts", "total_price"}
         datetime.fromisoformat(point["ts"])
+
+
+def test_product_history_empty_for_product_with_no_points(client):
+    """Pitfall 2: a seeded product that has never had a point collected
+    is a normal, expected state and must never surface as an HTTP
+    error — GET /products/pitch-black_etb/history returns 200 and []."""
+    response = client.get("/products/pitch-black_etb/history")
+
+    assert response.status_code == 200
+    assert response.get_json() == []
+
+
+def test_product_history_unknown_id_is_200_empty(client):
+    """08-RESEARCH.md Open Question 1, resolved: an id absent from the
+    catalog does NOT mirror test_detail_unknown_id_404's behaviour on
+    this route. The frontend only ever requests history for an id its
+    detail loader has already resolved, and at this layer an unknown
+    id is indistinguishable from a catalogued product with no
+    collected points, so both correctly produce 200 + []."""
+    response = client.get("/products/does-not-exist/history")
+
+    assert response.status_code == 200
+    assert response.get_json() == []
+
+
+def test_product_history_cors_header_present(client):
+    """CR-02: the history path sits under the same r"/products*"
+    resource pattern Flask-CORS is scoped to, so the SPA on a
+    different origin can read it (mirrors test_cors_header_present)."""
+    response = client.get("/products/pitch-black_etb/history")
+
+    assert "Access-Control-Allow-Origin" in response.headers
+
+
+def test_detail_still_omits_raw_series_after_history_endpoint(client, api_db):
+    """D-06 regression guard: adding the history capability must not
+    have loosened get_product_detail's existing contract, which
+    deliberately withholds the raw price_points series (D-11). Uses
+    the same per-key scan as test_detail_omits_raw_series."""
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(days=1),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 158.00,
+                "total_price": 165.50,
+            },
+            {
+                "ts": now - timedelta(days=2),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 150.00,
+                "total_price": 157.50,
+            },
+        ]
+    )
+
+    response = client.get("/products/perfect-order_booster_box")
+    body = response.get_json()
+
+    for key, value in body.items():
+        is_point_series = (
+            isinstance(value, list)
+            and len(value) > 0
+            and isinstance(value[0], dict)
+            and "ts" in value[0]
+        )
+        assert not is_point_series, (
+            f"the detail response must not contain a raw price_points "
+            f"series/array (D-06/D-11) even now that a history endpoint "
+            f"exists; found one at key '{key}'"
+        )
 
 
 def test_multi_origin_cors_matches_each_origin(api_db, monkeypatch):
