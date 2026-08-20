@@ -62,24 +62,28 @@ export default function ProductDetailPage() {
   const [history, setHistory] = useState(null) // null = loading
   const [historyError, setHistoryError] = useState(null)
 
-  // The `cancelled` guard exists for two overlapping cases, not
-  // just unmount — a user can navigate away to a different product mid-
-  // request (re-running this effect on a new `productId` before the prior
-  // fetch settles), and a slow response for the product they left must
-  // never overwrite the chart of the product they navigated to.
+  // This guard exists for two overlapping cases, not just
+  // unmount — a user can navigate away to a different product mid-request
+  // (re-running this effect on a new `productId` before the prior fetch
+  // settles), and a slow response for the product they left must never
+  // overwrite the chart of the product they navigated to. An
+  // AbortController actually cancels the underlying fetch (rather than
+  // only discarding its eventual result client-side)
+  // so the superseded request also stops consuming network/server
+  // resources once a newer one starts.
   useEffect(() => {
-    let cancelled = false
+    const controller = new AbortController()
     setHistory(null)
     setHistoryError(null)
-    getPriceHistory(productId)
+    getPriceHistory(productId, { signal: controller.signal })
       .then((data) => {
-        if (!cancelled) setHistory(data)
+        setHistory(data)
       })
       .catch((err) => {
-        if (!cancelled) setHistoryError(err)
+        if (err.name !== 'AbortError') setHistoryError(err)
       })
     return () => {
-      cancelled = true
+      controller.abort()
     }
   }, [productId])
 
