@@ -62,7 +62,12 @@ Full phase details (goals, success criteria, plans): `.planning/milestones/v1.0-
 **Plans**: 4 plans
 
 Plans:
+**Wave 1**
+
 - [ ] 08-01-PLAN.md — Recharts supply-chain gate + end-to-end tracer: `get_price_history`, `GET /products/<id>/history`, `getPriceHistory`, `PriceHistoryChart`, and the detail page's progressive fetch (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 08-02-PLAN.md — Backend edge and serialization coverage: empty/single/ordering/ISO-8601/product-isolation cases, unknown-id 200, CORS, D-06 regression guard (wave 2)
 - [ ] 08-03-PLAN.md — Chart component: exported timezone-pinned formatters, every input state covered, UI-SPEC typography and tooltip token contract (wave 2)
 - [ ] 08-04-PLAN.md — Detail page: first-paint ordering, loading/error containment, cancellation guard, section placement and accent-token documentation (wave 2)
