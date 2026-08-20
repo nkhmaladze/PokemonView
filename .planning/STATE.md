@@ -5,8 +5,8 @@ milestone_name: Price History & Extended Badges
 current_phase: 9
 current_phase_name: 24h & All-Time Price Badges
 status: planning
-stopped_at: Phase 8 complete, transitioned to Phase 9
-last_updated: "2026-08-20T19:02:10.409Z"
+stopped_at: Phase 9 UI-SPEC approved
+last_updated: "2026-08-20T19:21:17.288Z"
 last_activity: 2026-08-20
 last_activity_desc: Phase 08 complete — UAT 3/3 passed, security threats_open 0
 progress:
@@ -161,9 +161,9 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-08-20
-Stopped at: Phase 8 complete, ready to plan Phase 9
-Resume file: None
+Last session: 2026-08-20T19:21:17.280Z
+Stopped at: Phase 9 UI-SPEC approved
+Resume file: /Users/nkhmal/Desktop/PokemonView/.planning/phases/09-price-badges/09-UI-SPEC.md
 
 ## Operator Next Steps
 
