@@ -59,7 +59,7 @@ Full phase details (goals, success criteria, plans): `.planning/milestones/v1.0-
   3. A product with no collected history (or too few points to draw a line) shows an explicit "not enough history yet" message instead of an empty box, a broken axis, or a crash.
   4. Requesting the product's price-history endpoint directly returns that product's raw `price_points` series as time-ordered JSON — the chart reads a real API response and never recomputes or synthesizes the series client-side.
 
-**Plans**: 1/4 plans executed
+**Plans**: 4/4 plans executed
 
 Plans:
 **Wave 1**
@@ -68,9 +68,9 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 08-02-PLAN.md — Backend edge and serialization coverage: empty/single/ordering/ISO-8601/product-isolation cases, unknown-id 200, CORS, D-06 regression guard (wave 2)
-- [ ] 08-03-PLAN.md — Chart component: exported timezone-pinned formatters, every input state covered, UI-SPEC typography and tooltip token contract (wave 2)
-- [ ] 08-04-PLAN.md — Detail page: first-paint ordering, loading/error containment, cancellation guard, section placement and accent-token documentation (wave 2)
+- [x] 08-02-PLAN.md — Backend edge and serialization coverage: empty/single/ordering/ISO-8601/product-isolation cases, unknown-id 200, CORS, D-06 regression guard (wave 2)
+- [x] 08-03-PLAN.md — Chart component: exported timezone-pinned formatters, every input state covered, UI-SPEC typography and tooltip token contract (wave 2)
+- [x] 08-04-PLAN.md — Detail page: first-paint ordering, loading/error containment, cancellation guard, section placement and accent-token documentation (wave 2)
 
 **UI hint**: yes
 
@@ -100,7 +100,7 @@ Plans:
 | 5. Flask REST API (active-price serving) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 6. React SPA Frontend (active-price product) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 7. Launch & Hardening (v1 active-price) | v1.0 | 5/5 | Complete | 2026-07-15 |
-| 8. Price History Chart | v1.1 | 1/4 | In Progress|  |
+| 8. Price History Chart | v1.1 | 4/4 | In Progress|  |
 | 9. 24h & All-Time Price Badges | v1.1 | 0/TBD | Not started | - |
 
 **Unnumbered / parked:** Sold-Price Integration (INGEST-04, PRICE-04/05/06) — parked indefinitely, MI API access denied twice. Carries no phase number; the "Phase 8" label it held during v1.0 planning is historical.
