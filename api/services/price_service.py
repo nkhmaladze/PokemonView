@@ -29,7 +29,7 @@ different problems (05-RESEARCH.md Pitfall 2):
     price_points document.
 """
 
-from datetime import timedelta
+from datetime import timedelta, timezone
 
 TREND_TOLERANCE_DAYS = 3  # D-05
 
@@ -82,7 +82,17 @@ def get_price_history(db, product_id):
     Returns:
         list[dict]: {"ts": ISO-8601 string, "total_price": float}
         objects ordered oldest-first by ts. Empty when the product has
-        no price_points documents.
+        no price_points documents. `ts` always carries an explicit UTC
+        offset (`+00:00`) — the app's MongoClient is not tz_aware, so
+        pymongo returns naive datetimes for values that are actually
+        UTC instants; this function attaches `timezone.utc` before
+        serializing so the frontend's `new Date(ts)` parses the
+        correct instant regardless of the viewer's local timezone
+        (CR-01, 08-REVIEW.md). The broader fix — constructing the
+        MongoClient itself with tz_aware=True — is out of this
+        function's scope; track it as a follow-up alongside
+        catalog_service.py's `as_of` field, which shares this root
+        cause.
 
     Unbounded-response assumption: this function returns every stored
     point for the product with no limit, window or downsampling. This
@@ -101,7 +111,10 @@ def get_price_history(db, product_id):
         sort=[("ts", 1)],
     )
     return [
-        {"ts": doc["ts"].isoformat(), "total_price": doc["total_price"]}
+        {
+            "ts": doc["ts"].replace(tzinfo=timezone.utc).isoformat(),
+            "total_price": doc["total_price"],
+        }
         for doc in docs
     ]
 
