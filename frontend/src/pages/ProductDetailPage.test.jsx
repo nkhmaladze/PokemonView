@@ -1,7 +1,8 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter, Route, Routes } from 'react-router'
 import ProductDetailPage from './ProductDetailPage'
+import { getPriceHistory } from '../api/client'
 
 const useLoaderDataMock = vi.fn()
 
@@ -12,6 +13,8 @@ vi.mock('react-router', async (importOriginal) => {
     useLoaderData: () => useLoaderDataMock(),
   }
 })
+
+vi.mock('../api/client', () => ({ getPriceHistory: vi.fn() }))
 
 const okProduct = {
   id: 'p1',
@@ -36,13 +39,20 @@ const okProduct = {
 function renderDetail(product) {
   useLoaderDataMock.mockReturnValue(product)
   return render(
-    <MemoryRouter>
-      <ProductDetailPage />
+    <MemoryRouter initialEntries={[`/products/${product.id}`]}>
+      <Routes>
+        <Route path="/products/:productId" element={<ProductDetailPage />} />
+      </Routes>
     </MemoryRouter>
   )
 }
 
 describe('ProductDetailPage', () => {
+  beforeEach(() => {
+    getPriceHistory.mockReset()
+    getPriceHistory.mockResolvedValue([])
+  })
+
   it('renders total price, item price, both trend badges, freshness caption, and sample-size caption for an "ok" product', () => {
     renderDetail(okProduct)
 
@@ -84,5 +94,40 @@ describe('ProductDetailPage', () => {
 
     expect(screen.getByText(/—/)).toBeInTheDocument()
     expect(screen.getByText(/TBD/)).toBeInTheDocument()
+  })
+
+  it('shows the price headline before the history fetch resolves, then renders the chart once it does (D-05)', async () => {
+    const historyData = [
+      { ts: '2026-07-14T00:00:00Z', total_price: 145 },
+      { ts: '2026-07-15T00:00:00Z', total_price: 148 },
+      { ts: '2026-07-16T00:00:00Z', total_price: 150 },
+    ]
+    let resolveHistory
+    getPriceHistory.mockReturnValue(
+      new Promise((resolve) => {
+        resolveHistory = resolve
+      })
+    )
+
+    renderDetail(okProduct)
+
+    expect(screen.getByText('$150.00')).toBeInTheDocument()
+    expect(screen.getByText('Loading price history…')).toBeInTheDocument()
+
+    resolveHistory(historyData)
+
+    expect(await screen.findByTestId('price-history-chart')).toBeInTheDocument()
+    expect(screen.getByText('Price History')).toBeInTheDocument()
+  })
+
+  it('shows a chart-scoped error message and keeps the price headline when the history fetch rejects (D-05)', async () => {
+    getPriceHistory.mockRejectedValue(new Error('network error'))
+
+    renderDetail(okProduct)
+
+    expect(
+      await screen.findByText("Couldn't load price history. Try refreshing the page.")
+    ).toBeInTheDocument()
+    expect(screen.getByText('$150.00')).toBeInTheDocument()
   })
 })

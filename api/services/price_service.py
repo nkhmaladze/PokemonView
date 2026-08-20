@@ -1,14 +1,15 @@
 """Pure price-computation service functions (PRICE-01, PRICE-02,
-PRICE-03; 05-CONTEXT.md D-01, D-02, D-03, D-05, D-06, D-07) over the
-`price_points` time-series collection.
+PRICE-03, PRICE-07; 05-CONTEXT.md D-01, D-02, D-03, D-05, D-06, D-07;
+08-CONTEXT.md D-04) over the `price_points` time-series collection.
 
 Pure, DB-taking-as-arg functions consumed by `catalog_service.
-get_product_detail` (Plan 05-05). No top-level side effects on
-import: no MongoClient construction, no os.environ read, no Flask
-import (mirrors scripts/matching.py's / db/init_collections.py's
-established "no top-level side effects on import" convention).
+get_product_detail` (Plan 05-05) and the `products` blueprint's
+history route (Plan 08-01). No top-level side effects on import: no
+MongoClient construction, no os.environ read, no Flask import (mirrors
+scripts/matching.py's / db/init_collections.py's established "no
+top-level side effects on import" convention).
 
-Two deliberately distinct functions solve two similarly-shaped but
+Three deliberately distinct functions solve three similarly-shaped but
 different problems (05-RESEARCH.md Pitfall 2):
   `get_current_price` — NO time-window filter. Always returns the
     single most-recent price_points document for a product, however
@@ -21,6 +22,11 @@ different problems (05-RESEARCH.md Pitfall 2):
     nothing falls inside that window (D-06), so the caller can surface
     an explicit "insufficient_data" state rather than a silently
     omitted badge.
+  `get_price_history` — the one function in this module that returns a
+    list rather than a single document or None (PRICE-07, D-04). No
+    time-window filter, no downsampling — returns the full ascending-
+    by-ts series as clean {ts, total_price} dicts, never a raw
+    price_points document.
 """
 
 from datetime import timedelta
@@ -49,6 +55,43 @@ def get_current_price(db, product_id):
         {"product_id": product_id},
         sort=[("ts", -1)],
     )
+
+
+def get_price_history(db, product_id):
+    """Return the full price_points series for product_id, ordered
+    oldest-first by ts (PRICE-07, 08-CONTEXT.md D-04). The one function
+    in this module that returns a list rather than a single document or
+    None — zero documents yields an empty list and one document yields
+    a one-element list; neither is an error condition and this function
+    never raises for them.
+
+    Builds clean {ts, total_price} dicts rather than returning cursor
+    documents directly: price_points documents carry an auto-generated
+    BSON ObjectId under `_id` (unlike `products`, whose `_id` is the
+    catalog slug), and Flask 3.1.3's DefaultJSONProvider has no handler
+    for that type and serializes `datetime` via werkzeug.http.http_date
+    (RFC-822) rather than ISO-8601 — both of which would break the
+    response if a raw document reached jsonify(). `item_price` and
+    `listing_count` are excluded from the output; this is a total_price
+    series only.
+
+    Args:
+        db: An already-connected pymongo Database handle.
+        product_id: The canonical catalog product slug.
+
+    Returns:
+        list[dict]: {"ts": ISO-8601 string, "total_price": float}
+        objects ordered oldest-first by ts. Empty when the product has
+        no price_points documents.
+    """
+    docs = db.price_points.find(
+        {"product_id": product_id},
+        sort=[("ts", 1)],
+    )
+    return [
+        {"ts": doc["ts"].isoformat(), "total_price": doc["total_price"]}
+        for doc in docs
+    ]
 
 
 def get_trend_baseline(db, product_id, current_ts, days, tolerance_days=TREND_TOLERANCE_DAYS):
