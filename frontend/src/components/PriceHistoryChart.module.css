@@ -1,5 +1,13 @@
 /* PriceHistoryChart — full-axes line chart with insufficient-history
- * fallback (D-01, D-07, D-08). */
+ * fallback (D-01, D-07, D-08).
+ *
+ * Two overflow backstops are left open, deliberately, because D-02 rules
+ * out the range selector that would otherwise motivate custom tick
+ * handling: Y-axis tick width at unusually high total-price values, and
+ * X-axis tick crowding once a product has months of accumulated history.
+ * Both are left to Recharts' default sizing and tick-thinning rather than
+ * an explicit tick width or rotation override. Re-check both visually
+ * once real long-run data exists — do not silently assume they are fine. */
 
 .chartWrap {
   width: 100%;
