@@ -86,7 +86,23 @@ Plans:
   3. A product with less than 24 hours of collected history shows the 24h badge in its explicit insufficient-data state (—), never a fabricated percentage and never a silently missing badge.
   4. A product with no price data at all still renders its detail page with every badge in the insufficient-data state — no crash, no blank page, no partially-rendered price section.
 
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+**Wave 1**
+
+- [ ] 09-01-PLAN.md — Tracer: 24h change badge end-to-end — `TREND_24H_TOLERANCE_HOURS`, `trend_24h` on both branches of `get_product_detail`, a third `TrendBadge` on the page, plus the tolerance-window edge tests (wave 1)
+- [ ] 09-02-PLAN.md — New `AllTimeRangeBadge` component, its token-only stylesheet and its two-state test file (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 09-03-PLAN.md — `price_service.get_all_time_range` `$min`/`$max` aggregation and the `all_time_range` field on both branches of `get_product_detail` (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [ ] 09-04-PLAN.md — HTTP JSON contract for both new keys, catalog-wide badge-field completeness, and the Phase 9 D-11 raw-series regression guard (wave 3)
+- [ ] 09-05-PLAN.md — Detail page: the all-time range section, its verbatim "since we started tracking" caption, locked placement, and the four-badge zero-data state (wave 3)
+
 **UI hint**: yes
 
 ## Progress
@@ -101,6 +117,6 @@ Plans:
 | 6. React SPA Frontend (active-price product) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 7. Launch & Hardening (v1 active-price) | v1.0 | 5/5 | Complete | 2026-07-15 |
 | 8. Price History Chart | v1.1 | 4/4 | Complete    | 2026-08-20 |
-| 9. 24h & All-Time Price Badges | v1.1 | 0/TBD | Not started | - |
+| 9. 24h & All-Time Price Badges | v1.1 | 0/5 | Planned | - |
 
 **Unnumbered / parked:** Sold-Price Integration (INGEST-04, PRICE-04/05/06) — parked indefinitely, MI API access denied twice. Carries no phase number; the "Phase 8" label it held during v1.0 planning is historical.

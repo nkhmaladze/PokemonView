@@ -36,18 +36,33 @@ created: 2026-08-20
 
 ## Per-Task Verification Map
 
+> Reconciled 2026-08-20 against the plan set actually created by `/gsd-plan-phase 9`
+> (five plans across three waves, tracer-first). The behaviours below are unchanged
+> from the draft map; only the Task ID / Plan / Wave columns were re-keyed to the
+> real plans, and the two backend rows the draft merged were split to match the
+> task boundaries.
+
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 09-01-01 | 01 | 1 | PRICE-08 | — | `get_trend_baseline(days=1, tolerance=<new 4h>)` returns a point within ±4h, `None` otherwise | unit | `pytest tests/test_price_service.py -x` | ✅ (extend) | ⬜ pending |
-| 09-01-02 | 01 | 1 | PRICE-08 | — | `get_product_detail` sets `trend_24h` to `{pct_change, status:"ok"}` or `insufficient_data`, incl. zero-data branch | unit | `pytest tests/test_catalog_service.py -x` | ✅ (extend) | ⬜ pending |
-| 09-01-03 | 01 | 1 | PRICE-08 | — | `GET /products/<id>` response includes `trend_24h` with correct shape/status | integration | `pytest tests/test_api_products.py -x` | ✅ (extend) | ⬜ pending |
-| 09-01-04 | 01 | 2 | PRICE-08 | — | `ProductDetailPage` renders a third `TrendBadge` for 24h next to 7d/30d | component | `npm run test -- ProductDetailPage` | ✅ (extend) | ⬜ pending |
-| 09-02-01 | 02 | 1 | PRICE-09 | — | `get_all_time_range` returns `None` for zero points, `{high, low}` for 1+ points (incl. `high==low`) | unit | `pytest tests/test_price_service.py -x` | ✅ (extend) | ⬜ pending |
-| 09-02-02 | 02 | 1 | PRICE-09 | T-08-D11 | `get_product_detail` sets `all_time_range` incl. zero-data branch, never leaks raw series | unit | `pytest tests/test_catalog_service.py -x` | ✅ (extend) | ⬜ pending |
-| 09-02-03 | 02 | 1 | PRICE-09 | — | `GET /products/<id>` response includes `all_time_range` with correct shape | integration | `pytest tests/test_api_products.py -x` | ✅ (extend) | ⬜ pending |
-| 09-02-04 | 02 | 2 | PRICE-09 | — | `AllTimeRangeBadge` renders "since we started tracking" label, incl. insufficient-data (—) case | component | `npm run test -- ProductDetailPage AllTimeRangeBadge` | ❌ W0 | ⬜ pending |
+| 09-01-01 | 01 | 1 | PRICE-08 | T-09-01, T-09-05 | TRACER — `trend_24h` flows `price_points` → `get_product_detail` → JSON → a third `TrendBadge` ordered first on the page | integration + component | `pytest tests/test_api_products.py -x -q` and `cd frontend && npm test -- ProductDetailPage --run` | ✅ (extend) | ⬜ pending |
+| 09-01-02 | 01 | 1 | PRICE-08 | — | `get_trend_baseline(days=1, tolerance_days=4/24)` accepts both inclusive window edges (−20h, −28h), rejects one step outside each and the 4-day default-tolerance case; `trend_24h` present in the zero-data early-return branch | unit | `pytest tests/test_price_service.py tests/test_catalog_service.py -x -q` | ✅ (extend) | ⬜ pending |
+| 09-02-01 | 02 | 1 | PRICE-09 | T-09-05 | `AllTimeRangeBadge` renders `$low – $high` (en dash), the equal-bounds case, and a muted `—` for explicit insufficient-data, `null` and an absent prop | component | `cd frontend && npm test -- AllTimeRangeBadge --run` | ❌ W0 | ⬜ pending |
+| 09-02-02 | 02 | 1 | PRICE-09 | — | Badge stylesheet is token-only, two states, no directional colour; class names asserted for both states | component | `cd frontend && npm test -- AllTimeRangeBadge --run` | ❌ W0 | ⬜ pending |
+| 09-03-01 | 03 | 2 | PRICE-09 | T-09-01, T-09-03 | `get_all_time_range` returns `None` only for zero points, equal bounds for one point, true spread for many; order-independent, precision-preserving, product-scoped | unit | `pytest tests/test_price_service.py -x -q` | ✅ (extend) | ⬜ pending |
+| 09-03-02 | 03 | 2 | PRICE-09 | T-09-04 | `get_product_detail` sets `all_time_range` on both branches incl. the zero-data early return; the field is two scalars plus a status, never series-shaped (D-11) | unit | `pytest tests/test_catalog_service.py -x -q` | ✅ (extend) | ⬜ pending |
+| 09-04-01 | 04 | 3 | PRICE-08, PRICE-09 | T-09-02 | `GET /products/<id>` carries both new keys with exact key sets at zero, one and many points; the zero-point response carries all four badge fields | integration | `pytest tests/test_api_products.py -x -q` | ✅ (extend) | ⬜ pending |
+| 09-04-02 | 04 | 3 | PRICE-08, PRICE-09 | T-09-04, T-09-07 | All 16 catalog products return all four badge fields in both data states; the per-key raw-series scan passes against a response provably containing both new keys; 404 and CORS unchanged | integration | `pytest tests/test_api_products.py -x -q` | ✅ (extend) | ⬜ pending |
+| 09-05-01 | 05 | 3 | PRICE-09 | T-09-08 | The caption `All-time range (since we started tracking)` renders verbatim, in its locked position between the trend row and the history section, styled from existing tokens only | component | `cd frontend && npm test -- ProductDetailPage --run` | ✅ (extend) | ⬜ pending |
+| 09-05-02 | 05 | 3 | PRICE-08, PRICE-09 | T-09-08 | A zero-data product renders four muted badges without throwing; section ordering asserted; an entirely absent `all_time_range` field still renders the caption plus a muted dash | component | `cd frontend && npm test -- ProductDetailPage --run` | ✅ (extend) | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+
+**Vacuous-pass guard (backend rows).** `tests/conftest.py`'s `api_db` and `client`
+fixtures SKIP rather than fail when `MONGODB_URI` is unset, so a bare `pytest -x`
+can go green having executed nothing. Every backend task in this phase therefore
+carries a `<precondition>` naming that env var, and every backend acceptance
+criterion pairs its pytest command with a check that the run reported no skipped
+tests.
 
 ---
 
@@ -62,7 +77,16 @@ created: 2026-08-20
 
 ## Manual-Only Verifications
 
-*All phase behaviors have automated verification.*
+Every phase behaviour has automated verification. Two items are additionally
+confirmed by eye, neither as a substitute for an assertion:
+
+| Item | Where | Why not automated |
+|------|-------|-------------------|
+| The all-time range row does not crowd or awkwardly wrap against the three-badge trend row at narrow viewport widths | `<human-check>` in Plan 09-05 Task 2 | The `overflow` row in `09-UI-SPEC.md`'s UI Considerations table is recorded as a **backstop**, not a covered state — the placement decision is locked but was not pixel-verified at every breakpoint. Carried into `09-05-PLAN.md`'s `must_haves.truths` as a flat-scalar `verification: backstop` entry, so verify-time routes it to human review rather than silently passing. |
+| The all-time range chip reads as a member of the same pill-chip family as the trend badges (same height, padding, radius, digit alignment) | `<human-check>` in Plan 09-02 Task 2 | Class names and token references are asserted; visual equivalence of the rendered chip is not something jsdom can measure. |
+
+*`workflow.human_verify_mode` is `end-of-phase`, so these are `<verify><human-check>`
+blocks inside autonomous plans, not blocking `checkpoint:human-verify` tasks.*
 
 ---
 
