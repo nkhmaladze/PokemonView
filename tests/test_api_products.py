@@ -222,6 +222,48 @@ def test_cors_header_present(client):
     assert "Access-Control-Allow-Origin" in response.headers
 
 
+def test_product_history_returns_ordered_series(client, api_db):
+    """PRICE-07/D-04: GET /products/<product_id>/history returns 200
+    with the product's price_points series ordered oldest-first by ts,
+    each element carrying exactly {ts, total_price}. Points are
+    inserted out of order so the ascending sort is genuinely
+    exercised."""
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(days=2),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 150.00,
+                "total_price": 157.50,
+            },
+            {
+                "ts": now - timedelta(days=1),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 158.00,
+                "total_price": 165.50,
+            },
+        ]
+    )
+
+    response = client.get("/products/perfect-order_booster_box/history")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert isinstance(body, list)
+    assert len(body) == 3
+    assert [point["total_price"] for point in body] == [157.50, 165.50, 172.50]
+    for point in body:
+        assert set(point.keys()) == {"ts", "total_price"}
+        datetime.fromisoformat(point["ts"])
+
+
 def test_multi_origin_cors_matches_each_origin(api_db, monkeypatch):
     """CR-02/VERIFICATION.md gap #12: a comma-separated CORS_ORIGINS
     value (the documented production format) produces a matching
