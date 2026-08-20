@@ -6,6 +6,7 @@ import PriceHistoryChart, {
   formatAxisPrice,
   formatTooltipValue,
 } from './PriceHistoryChart'
+import styles from './PriceHistoryChart.module.css'
 
 describe('formatAxisDate', () => {
   it('formats an ISO timestamp as a short month/day', () => {
@@ -53,6 +54,16 @@ describe('PriceHistoryChart', () => {
 
     expect(screen.getByText('Not enough price history yet')).toBeInTheDocument()
     expect(screen.queryByTestId('price-history-chart')).not.toBeInTheDocument()
+  })
+
+  it('renders the insufficient-history message with the full-height centred class', () => {
+    // Guards the fixed 280px frame so switching between states never
+    // causes layout shift.
+    render(<PriceHistoryChart data={[]} />)
+
+    expect(screen.getByText('Not enough price history yet').className).toContain(
+      styles.insufficient
+    )
   })
 
   it('renders the insufficient-history message for a single point', () => {

@@ -65,12 +65,29 @@ export default function PriceHistoryChart({ data }) {
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
           <CartesianGrid stroke="var(--color-divider)" strokeDasharray="3 3" />
-          <XAxis dataKey="ts" stroke="var(--text-secondary)" tickFormatter={formatAxisDate} />
-          <YAxis stroke="var(--text-secondary)" tickFormatter={formatAxisPrice} />
+          <XAxis
+            dataKey="ts"
+            stroke="var(--text-secondary)"
+            tick={{ fill: 'var(--text-secondary)', fontSize: 'var(--font-size-label)' }}
+            tickFormatter={formatAxisDate}
+          />
+          <YAxis
+            stroke="var(--text-secondary)"
+            tick={{ fill: 'var(--text-secondary)', fontSize: 'var(--font-size-label)' }}
+            tickFormatter={formatAxisPrice}
+          />
           <Tooltip
             labelFormatter={formatTooltipDate}
             formatter={formatTooltipValue}
-            contentStyle={{ background: 'var(--color-surface)', border: 'none' }}
+            contentStyle={{
+              background: 'var(--color-surface)',
+              border: 'none',
+              borderRadius: 'var(--space-xs)',
+              padding: 'var(--space-sm)',
+              fontSize: 'var(--font-size-label)',
+            }}
+            labelStyle={{ color: 'var(--text-secondary)' }}
+            itemStyle={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}
           />
           <Line
             type="monotone"
