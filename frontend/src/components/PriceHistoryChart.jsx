@@ -18,8 +18,8 @@ import {
  * recomputes or reorders the series — every data point plotted is
  * exactly one of the objects the API response contained, in the order
  * it returned them. Fewer than two points is not an error; it renders
- * the locked "Not enough price history yet" message instead of an
- * empty axis frame (D-07, D-08).
+ * the locked insufficient-history copy instead of an empty axis frame
+ * (D-07, D-08).
  */
 
 /**
