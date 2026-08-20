@@ -11,8 +11,12 @@
 // origin instead of a same-origin path that doesn't exist on the static host.
 const BASE = import.meta.env.VITE_API_BASE_URL || ''
 
-async function request(path) {
-  const res = await fetch(`${BASE}${path}`)
+async function request(path, { signal } = {}) {
+  // Only pass a fetch options object when a signal is actually supplied —
+  // getProducts()/getProductDetail() never pass one, and calling
+  // fetch(url) vs. fetch(url, { signal: undefined }) is an observable
+  // difference to callers/tests that assert on fetch's exact arguments.
+  const res = signal ? await fetch(`${BASE}${path}`, { signal }) : await fetch(`${BASE}${path}`)
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
     throw new Error(body.error || `Request failed: ${res.status}`)
@@ -39,6 +43,12 @@ export const getProducts = (filters = {}) => {
 export const getProductDetail = (productId) =>
   request(`/products/${encodeURIComponent(productId)}`)
 
-/** GET /products/<product_id>/history — raw price-history series. */
-export const getPriceHistory = (productId) =>
-  request(`/products/${encodeURIComponent(productId)}/history`)
+/**
+ * GET /products/<product_id>/history — raw price-history series.
+ * Accepts an optional `{ signal }` (an AbortSignal) so callers can
+ * actually cancel the in-flight request — e.g. on unmount or when a
+ * newer request supersedes it — rather than only discarding the
+ * eventual result client-side (WR-02, 08-REVIEW.md).
+ */
+export const getPriceHistory = (productId, opts) =>
+  request(`/products/${encodeURIComponent(productId)}/history`, opts)

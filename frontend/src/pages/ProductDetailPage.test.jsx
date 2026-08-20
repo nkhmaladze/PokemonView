@@ -192,11 +192,27 @@ describe('ProductDetailPage', () => {
     expect(screen.queryByText('Product not found.')).not.toBeInTheDocument()
   })
 
-  it('requests history for the product in the URL', () => {
+  it('requests history for the product in the URL, with an abortable signal', () => {
+    // WR-02, 08-REVIEW.md: the fetch cancellation guard must thread a real
+    // AbortSignal through to the client, not just discard a stale result.
     renderDetail({ ...okProduct, id: 'p2' })
 
     expect(getPriceHistory).toHaveBeenCalledTimes(1)
-    expect(getPriceHistory).toHaveBeenCalledWith('p2')
+    expect(getPriceHistory).toHaveBeenCalledWith('p2', { signal: expect.any(AbortSignal) })
+  })
+
+  it('aborts the in-flight history request on unmount', () => {
+    // WR-02: unmounting must actually cancel the underlying fetch (not
+    // merely discard its eventual result) — assert the signal passed to
+    // getPriceHistory is aborted once the component unmounts.
+    const { unmount } = renderDetail(okProduct)
+
+    const { signal } = getPriceHistory.mock.calls[0][1]
+    expect(signal.aborted).toBe(false)
+
+    unmount()
+
+    expect(signal.aborted).toBe(true)
   })
 
   it('discards a history response that settles after unmount', async () => {
