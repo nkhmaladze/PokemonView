@@ -64,6 +64,11 @@ export default function ProductDetailPage() {
   const [history, setHistory] = useState(null) // null = loading
   const [historyError, setHistoryError] = useState(null)
 
+  // T-08-10: the `cancelled` guard exists for two overlapping cases, not
+  // just unmount — a user can navigate away to a different product mid-
+  // request (re-running this effect on a new `productId` before the prior
+  // fetch settles), and a slow response for the product they left must
+  // never overwrite the chart of the product they navigated to.
   useEffect(() => {
     let cancelled = false
     setHistory(null)
