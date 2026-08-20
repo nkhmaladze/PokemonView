@@ -60,13 +60,25 @@ export default function PriceHistoryChart({ data }) {
     return <p className={styles.insufficient}>Not enough price history yet</p>
   }
 
+  // Recharts' default axis-type resolution makes a horizontal LineChart's
+  // XAxis type="category" (evenly-spaced ticks) unless type is explicitly
+  // overridden. get_price_history is unbounded and the ingestion pipeline
+  // is gap-tolerant, so an evenly-spaced axis would misrepresent real
+  // elapsed time between points (WR-01, 08-REVIEW.md). Precomputing a
+  // numeric epoch-millis field lets the axis be a true `type="number"
+  // scale="time"` axis instead.
+  const chartData = data.map((d) => ({ ...d, tsMillis: new Date(d.ts).getTime() }))
+
   return (
     <div className={styles.chartWrap} data-testid="price-history-chart">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
+        <LineChart data={chartData} margin={{ top: 8, right: 16, bottom: 8, left: 0 }}>
           <CartesianGrid stroke="var(--color-divider)" strokeDasharray="3 3" />
           <XAxis
-            dataKey="ts"
+            dataKey="tsMillis"
+            type="number"
+            scale="time"
+            domain={['dataMin', 'dataMax']}
             stroke="var(--text-secondary)"
             tick={{ fill: 'var(--text-secondary)', fontSize: 'var(--font-size-label)' }}
             tickFormatter={formatAxisDate}
