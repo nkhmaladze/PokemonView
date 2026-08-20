@@ -20,6 +20,13 @@ service-layer unit tests.
 (mirrors tests/test_matching.py's precedent) because MongoDB's BSON
 date type round-trips at millisecond precision through a non-tz-aware
 MongoClient.
+
+This file also covers Phase 8's `get_price_history` (PRICE-07,
+08-CONTEXT.md D-04). Unlike the Phase 5 cases above, these tests were
+authored against an already-implemented function (Plan 08-01) to pin
+its edges — empty/single-point results, ordering, element shape,
+ISO-8601 timestamps, cross-product isolation, and stored-precision
+fidelity — rather than as a RED scaffold.
 """
 
 from datetime import datetime, timedelta, timezone
@@ -183,3 +190,146 @@ def test_trend_uses_total_price_only(api_db):
     assert compute_pct_change(current_total=100.00, baseline_total=0) is None, (
         "a zero baseline must return None (divide-by-zero guard), not raise"
     )
+
+
+def test_price_history_empty_when_no_points(api_db):
+    """PRICE-07/08-CONTEXT.md D-04: a brand-new product with zero
+    collected price_points is a normal state, not an error — the
+    caller renders an explicit "not enough history yet" message rather
+    than an HTTP failure (08-RESEARCH.md Pitfall 2)."""
+    from api.services.price_service import get_price_history
+
+    result = get_price_history(api_db, "pitch-black_etb")
+
+    assert isinstance(result, list)
+    assert result == []
+
+
+def test_price_history_single_point(api_db):
+    """A product with exactly one price_points document returns a
+    one-element list — not an error, not None (08-RESEARCH.md
+    Pitfall 2)."""
+    from api.services.price_service import get_price_history
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_one(
+        {
+            "ts": now,
+            "product_id": "pitch-black_booster_pack",
+            "item_price": 4.00,
+            "total_price": 4.50,
+        }
+    )
+
+    result = get_price_history(api_db, "pitch-black_booster_pack")
+
+    assert len(result) == 1
+    assert result[0]["total_price"] == 4.50
+
+
+def test_price_history_ascending_order(api_db):
+    """The returned series is ordered oldest-first by ts even when the
+    documents were inserted out of chronological order — the ordering
+    must come from the query's ascending sort on ts, never from
+    insertion order or client-side sorting."""
+    from api.services.price_service import get_price_history
+
+    now = datetime.now(timezone.utc)
+    oldest = now - timedelta(days=3)
+    second_oldest = now - timedelta(days=2)
+    second_newest = now - timedelta(days=1)
+    newest = now
+
+    # Deliberately scrambled insert order: [newest, oldest, second-newest, second-oldest]
+    api_db.price_points.insert_many(
+        [
+            {"ts": newest, "product_id": "chaos-rising_etb", "item_price": 39.00, "total_price": 42.99},
+            {"ts": oldest, "product_id": "chaos-rising_etb", "item_price": 30.00, "total_price": 33.00},
+            {"ts": second_newest, "product_id": "chaos-rising_etb", "item_price": 36.00, "total_price": 39.99},
+            {"ts": second_oldest, "product_id": "chaos-rising_etb", "item_price": 33.00, "total_price": 36.00},
+        ]
+    )
+
+    result = get_price_history(api_db, "chaos-rising_etb")
+
+    assert [point["total_price"] for point in result] == [33.00, 36.00, 39.99, 42.99], (
+        "returned order must reflect the ascending ts sort, not insertion order"
+    )
+
+
+def test_price_history_element_shape(api_db):
+    """Every returned element's key set is exactly {ts, total_price} —
+    no leaked BSON ObjectId under `_id` (not JSON serializable) and no
+    RFC-822-formatted `ts`, which would break consistency with the
+    ISO-8601 `as_of` value every other endpoint already returns
+    (08-RESEARCH.md Pitfalls 1 and 3)."""
+    from api.services.price_service import get_price_history
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {"ts": now - timedelta(days=1), "product_id": "chaos-rising_etb", "item_price": 33.00, "total_price": 36.00},
+            {"ts": now, "product_id": "chaos-rising_etb", "item_price": 39.00, "total_price": 42.99},
+        ]
+    )
+
+    result = get_price_history(api_db, "chaos-rising_etb")
+
+    for element in result:
+        assert set(element.keys()) == {"ts", "total_price"}, (
+            "leaked _id or item_price/listing_count would fail this — "
+            "the history response must carry exactly {ts, total_price}"
+        )
+        assert isinstance(element["ts"], str)
+        datetime.fromisoformat(element["ts"])
+
+
+def test_price_history_scoped_to_one_product(api_db):
+    """Points belonging to a different product_id inserted into the
+    same collection do not appear in the result — the query filter is
+    an exact match, not a prefix/substring match."""
+    from api.services.price_service import get_price_history
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {"ts": now - timedelta(days=1), "product_id": "ascended-heroes_etb", "item_price": 40.00, "total_price": 43.99},
+            {"ts": now, "product_id": "ascended-heroes_etb", "item_price": 41.00, "total_price": 44.99},
+            {"ts": now - timedelta(days=1), "product_id": "ascended-heroes_booster_pack", "item_price": 4.50, "total_price": 4.99},
+            {"ts": now, "product_id": "ascended-heroes_booster_pack", "item_price": 4.75, "total_price": 5.25},
+        ]
+    )
+
+    result = get_price_history(api_db, "ascended-heroes_etb")
+
+    assert len(result) == 2
+    returned_totals = {point["total_price"] for point in result}
+    assert returned_totals == {43.99, 44.99}
+    assert not returned_totals & {4.99, 5.25}, (
+        "a second product's price_points documents must never leak into "
+        "this product's history"
+    )
+
+
+def test_price_history_preserves_stored_precision(api_db):
+    """A stored total_price of 172.55 comes back exactly 172.55,
+    unrounded — no rounding, truncation or float re-encoding between
+    MongoDB and the JSON payload. item_price is absent from the
+    element entirely."""
+    from api.services.price_service import get_price_history
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_one(
+        {
+            "ts": now,
+            "product_id": "pitch-black_etb",
+            "item_price": 165.49,
+            "total_price": 172.55,
+        }
+    )
+
+    result = get_price_history(api_db, "pitch-black_etb")
+
+    assert len(result) == 1
+    assert result[0]["total_price"] == 172.55
+    assert "item_price" not in result[0]
