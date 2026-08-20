@@ -9,7 +9,8 @@
   --color-bg: #0B0D12; /* Dominant 60% — page background */
   --color-surface: #171A21; /* Secondary 30% — list rows, cards, nav header, inactive chips */
   --color-divider: #232833; /* Secondary 30% — hairline row dividers, inactive chip background */
-  --color-accent: #E8A33D; /* Accent 10% — active chip bg, focus ring, links, heading underline ONLY */
+  --color-accent: #E8A33D; /* Accent 10% — active chip bg, focus ring, links, heading underline, price-history chart line ONLY */
+  /* PriceHistoryChart's single Line stroke is the only accent-colored element in that component — the chart is deliberately not colored by price direction; --trend-up/--trend-down/--trend-flat belong to TrendBadge's percent-change display, not a raw total-price series. */
   --color-destructive: #D92D20; /* reserved, unused this phase (no write actions) */
   --color-hover: #1D212B; /* neutral row hover state (never accent) */
 
