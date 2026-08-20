@@ -1,8 +1,8 @@
 /**
- * Thin native-fetch data layer over the Flask API's two /products routes
+ * Thin native-fetch data layer over the Flask API's three /products routes
  * (api/blueprints/products.py). No third-party HTTP client dependency. Only
- * these two path prefixes may ever be requested — Flask-CORS is scoped to
- * r"/products*" only (CR-02).
+ * these path prefixes may ever be requested — Flask-CORS is scoped to
+ * r"/products*" only (CR-02), which still covers the new history path.
  */
 
 // In dev, BASE stays '' so requests hit Vite's /products proxy (vite.config.js)
@@ -38,3 +38,7 @@ export const getProducts = (filters = {}) => {
 /** GET /products/<product_id> — single-product detail assembly. */
 export const getProductDetail = (productId) =>
   request(`/products/${encodeURIComponent(productId)}`)
+
+/** GET /products/<product_id>/history — raw price-history series. */
+export const getPriceHistory = (productId) =>
+  request(`/products/${encodeURIComponent(productId)}/history`)

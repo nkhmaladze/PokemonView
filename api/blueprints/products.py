@@ -1,17 +1,21 @@
-"""The `products` blueprint — thin GET /products and GET
-/products/<product_id> routes over `api.services.catalog_service`
-(SEARCH-01, SEARCH-02, PRICE-01/02/03; 05-RESEARCH.md Pattern 2).
+"""The `products` blueprint — three thin routes (catalog browse,
+single-product detail, and a product's price-history sub-route) over
+`api.services.catalog_service` / `api.services.price_service`
+(SEARCH-01, SEARCH-02, PRICE-01/02/03/07; 05-RESEARCH.md Pattern 2;
+08-CONTEXT.md D-04).
 
-Routes parse request args, delegate to a single catalog_service
-function, and `jsonify()` the returned dict/list with no further
-transformation — no pymongo calls happen in this module. Only a
+Routes parse request args, delegate to a single service function, and
+`jsonify()` the returned dict/list with no further transformation — no
+pymongo calls happen in this module. Only a
 `catalog_service.InvalidProductTypeError` (V5/T-05-01, invalid
 `?product_type`) and a `None` detail-lookup result (unknown product
 id) are translated here into 400/404 JSON envelopes; any other
 unexpected exception (including an internal base `ValueError`, e.g.
 from an unregistered set_name) is left to propagate to the app-level
 global error handler (api/app.py) so it becomes a generic 500 instead
-of a leaked partial response or a misleading 400 (CR-01).
+of a leaked partial response or a misleading 400 (CR-01). The history
+route deliberately has no such branch — an unknown product id and a
+product with zero points both correctly produce 200 + [].
 
 No top-level side effects on import: no MongoClient construction, no
 os.environ read, no route registration outside this module's
@@ -22,7 +26,7 @@ create_app, never a network/DB call at import time).
 from flask import Blueprint, jsonify, request
 
 from api.db import get_db
-from api.services import catalog_service
+from api.services import catalog_service, price_service
 
 products_bp = Blueprint("products", __name__)
 
@@ -66,3 +70,14 @@ def product_detail(product_id):
         return jsonify({"error": "not_found"}), 404
 
     return jsonify(detail)
+
+
+@products_bp.route("/products/<product_id>/history")
+def product_history(product_id):
+    """A product's price-history sub-route — raw price_points series,
+    time-ordered ascending (PRICE-07, 08-CONTEXT.md D-04). Always
+    returns 200 + a JSON array; an unknown product id and a product
+    with zero points both correctly produce 200 + [], not a 404.
+    """
+    history = price_service.get_price_history(get_db(), product_id)
+    return jsonify(history)

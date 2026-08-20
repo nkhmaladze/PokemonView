@@ -2,8 +2,11 @@
  * Component Notes -> Product detail page). 96px hero thumbnail, Display-
  * size (28/600) total price as the true headline, side-by-side 7d/30d
  * trend badges, freshness + sample-size captions near the price block,
- * null-safe MSRP/release-date metadata. No chart / price_points space
- * reserved (D-11 of 05-CONTEXT.md). */
+ * null-safe MSRP/release-date metadata. The Price History section
+ * (PRICE-07, 08-CONTEXT.md D-03) is now the fourth section, fed by an
+ * independent post-mount fetch — the loader response itself still
+ * carries no price_points series (D-11 of 05-CONTEXT.md, D-06 of
+ * 08-CONTEXT.md). */
 
 .detail {
   display: flex;
@@ -119,6 +122,37 @@
 .trendLabel {
   font-size: var(--font-size-label);
   line-height: var(--line-height-label);
+  color: var(--text-secondary);
+}
+
+.detail__historySection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.sectionHeading {
+  font-size: var(--font-size-heading);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.historyChartFrame {
+  height: 280px;
+  width: 100%;
+}
+
+.historyMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
   color: var(--text-secondary);
 }
 
