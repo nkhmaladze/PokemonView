@@ -140,6 +140,9 @@
 }
 
 .historyChartFrame {
+  /* Fixed height so the loading, error, insufficient-history and
+     populated states all occupy identical space — switching between
+     them never shifts the page. */
   height: 280px;
   width: 100%;
 }

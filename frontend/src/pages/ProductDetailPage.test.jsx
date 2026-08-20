@@ -198,4 +198,49 @@ describe('ProductDetailPage', () => {
     expect(getPriceHistory).toHaveBeenCalledTimes(1)
     expect(getPriceHistory).toHaveBeenCalledWith('p2')
   })
+
+  it('discards a history response that settles after unmount', async () => {
+    // The observable half of the cancellation guard described in the
+    // UI-SPEC's `partial` consideration: the same flag that stops a late
+    // response from reaching a torn-down tree is what stops a slow
+    // response for a previously-viewed product from overwriting the
+    // chart of the product the user has since navigated to.
+    const { promise, resolve } = deferred()
+    getPriceHistory.mockReturnValue(promise)
+
+    const { unmount } = renderDetail(okProduct)
+    expect(screen.getByText('Loading price history…')).toBeInTheDocument()
+
+    unmount()
+
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    resolve([
+      { ts: '2026-07-14T00:00:00Z', total_price: 145 },
+      { ts: '2026-07-15T00:00:00Z', total_price: 148 },
+      { ts: '2026-07-16T00:00:00Z', total_price: 150 },
+    ])
+    await Promise.resolve()
+    await Promise.resolve()
+
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
+    consoleErrorSpy.mockRestore()
+  })
+
+  it('places the Price History section between the trend badges and the meta block', async () => {
+    // D-03, UI-SPEC Layout Notes ordering: header, price, trends,
+    // history, meta.
+    getPriceHistory.mockResolvedValue([
+      { ts: '2026-07-14T00:00:00Z', total_price: 145 },
+      { ts: '2026-07-15T00:00:00Z', total_price: 148 },
+      { ts: '2026-07-16T00:00:00Z', total_price: 150 },
+    ])
+
+    const { container } = renderDetail(okProduct)
+    await screen.findByTestId('price-history-chart')
+
+    const text = container.textContent
+    expect(text.indexOf('Price History')).toBeGreaterThan(text.indexOf('7d'))
+    expect(text.indexOf('Price History')).toBeLessThan(text.indexOf('MSRP:'))
+    expect(screen.getByText('Price History').tagName).toBe('H2')
+  })
 })
