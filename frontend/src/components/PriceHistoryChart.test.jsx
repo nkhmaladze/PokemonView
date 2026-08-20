@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import PriceHistoryChart, {
   formatAxisDate,
@@ -21,6 +21,39 @@ describe('formatAxisDate', () => {
 describe('formatTooltipDate', () => {
   it('formats an ISO timestamp as month/day/year', () => {
     expect(formatTooltipDate('2026-08-18T14:30:00+00:00')).toBe('Aug 18, 2026')
+  })
+})
+
+describe('formatAxisDate under a non-UTC test timezone (CR-01 regression pin)', () => {
+  // WR-03, 08-REVIEW.md: every fixture above hand-supplies a UTC-offset
+  // string, which never exercised the naive/offset-less shape the
+  // backend actually produced before CR-01's fix (a non-tz_aware
+  // MongoClient). This block pins the corrected system behavior end to
+  // end: an offset-less timestamp near a UTC day boundary, parsed under
+  // a non-UTC test timezone, renders the WRONG day — proving the offset
+  // suffix on the backend's `ts` (not this component) is what makes the
+  // tick label correct.
+  const originalTZ = process.env.TZ
+
+  afterEach(() => {
+    process.env.TZ = originalTZ
+  })
+
+  it('renders the wrong calendar day for an offset-less ts near a UTC day boundary', () => {
+    process.env.TZ = 'America/New_York'
+    // True UTC instant is Aug 18, 23:30 UTC. An offset-less string is
+    // exactly what get_price_history produced before CR-01's fix — the
+    // ECMAScript date-time spec parses it as *local* time (the test's
+    // TZ), not UTC, so the wrong day comes out the other end.
+    expect(formatAxisDate('2026-08-18T23:30:00.000')).toBe('Aug 19')
+  })
+
+  it('renders the correct calendar day once the ts carries a UTC offset', () => {
+    process.env.TZ = 'America/New_York'
+    // The same instant, but with the +00:00 suffix the fixed backend now
+    // always emits, parses as the true UTC instant regardless of the
+    // viewer's local timezone.
+    expect(formatAxisDate('2026-08-18T23:30:00.000+00:00')).toBe('Aug 18')
   })
 })
 

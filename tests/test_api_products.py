@@ -267,6 +267,13 @@ def test_product_history_returns_ordered_series(client, api_db):
     for point in body:
         assert set(point.keys()) == {"ts", "total_price"}
         datetime.fromisoformat(point["ts"])
+        # CR-01, 08-REVIEW.md: a naive (no UTC offset) ts string is parsed
+        # by the frontend's `new Date(ts)` as local time, not UTC — pins
+        # the get_price_history fix that attaches timezone.utc before
+        # serializing.
+        assert point["ts"].endswith(("+00:00", "Z")), (
+            f"ts {point['ts']!r} has no UTC offset — CR-01 regression"
+        )
 
 
 def test_product_history_empty_for_product_with_no_points(client):

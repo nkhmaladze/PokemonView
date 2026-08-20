@@ -282,6 +282,16 @@ def test_price_history_element_shape(api_db):
         )
         assert isinstance(element["ts"], str)
         datetime.fromisoformat(element["ts"])
+        # CR-01, 08-REVIEW.md: the app's MongoClient is not tz_aware, so
+        # pymongo returns naive datetimes for values that are actually UTC
+        # instants. Without an explicit UTC offset here, the frontend's
+        # `new Date(ts)` parses the string as local time and can render the
+        # wrong calendar day for non-UTC viewers. This assertion pins the
+        # fix (get_price_history attaches timezone.utc before
+        # .isoformat()) and would have failed before it.
+        assert element["ts"].endswith(("+00:00", "Z")), (
+            f"ts {element['ts']!r} has no UTC offset — CR-01 regression"
+        )
 
 
 def test_price_history_scoped_to_one_product(api_db):
