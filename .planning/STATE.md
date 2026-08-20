@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Price History & Extended Badges
-current_phase: 8
-current_phase_name: Price History Chart
-status: planning
+current_phase: 08
+current_phase_name: price-history-chart
+status: executing
 stopped_at: Phase 8 UI-SPEC approved
-last_updated: "2026-08-20T10:41:56.251Z"
-last_activity: 2026-08-18
-last_activity_desc: v1.1 roadmap created (Phases 8-9, 3/3 requirements mapped)
+last_updated: "2026-08-20T10:48:31.397Z"
+last_activity: 2026-08-20
+last_activity_desc: Phase 08 execution started
 progress:
   total_phases: 2
   completed_phases: 0
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-18)
 
 **Core value:** A user can look up a specific pack/box/ETB and see whether it's priced fairly right now, backed by live eBay asking prices (sold-price history parked — see PROJECT.md Context).
-**Current focus:** Milestone v1.1 — surface the price history that has already been accumulating in the `price_points` time-series collection since Phase 4: a detail-page line chart (Phase 8), then 24h and all-time high/low badges (Phase 9).
+**Current focus:** Phase 08 — price-history-chart
 
 ## Current Position
 
-Phase: Phase 8 — Price History Chart (not started)
-Plan: —
-Status: Roadmap created, awaiting phase planning
-Last activity: 2026-08-18 — v1.1 roadmap created (Phases 8-9, 3/3 requirements mapped)
+Phase: 08 (price-history-chart) — EXECUTING
+Plan: 1 of 4
+Status: Executing Phase 08
+Last activity: 2026-08-20 — Phase 08 execution started
 
 ## Performance Metrics
 
