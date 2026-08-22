@@ -1,0 +1,29 @@
+/* AllTimeRangeBadge — 2-state all-time low/high price range badge
+ * (09-UI-SPEC.md Color D-UI-01).
+ *
+ * An all-time high/low range has no direction, so it must never carry a
+ * directional trend colour. The neutral `--trend-flat` value is this
+ * codebase's only existing "neutral status: ok" semantic colour, which
+ * makes reusing it the correct zero-new-token choice rather than inventing
+ * a fifth trend colour for a family that today has four states. The base
+ * rule below merges TrendBadge.module.css's base rule and its flat
+ * modifier into one rule, since this component has no directional
+ * variants to keep separate. */
+
+.range {
+  display: inline-block;
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  font-weight: var(--font-weight-regular);
+  font-variant-numeric: tabular-nums;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--space-xs);
+  background: var(--trend-flat);
+  color: var(--color-bg);
+}
+
+.range--muted {
+  background: none;
+  color: var(--trend-insufficient);
+  padding: 0;
+}
