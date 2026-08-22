@@ -40,14 +40,15 @@ function formatSampleSize(listingCount) {
  *
  * Reads the detail object via useLoaderData() (route wiring is 06-07's
  * scope) and composes PriceDisplay (variant="display"), TrendBadge
- * (7d + 30d), and FreshnessIndicator over the exact
+ * (24h + 7d + 30d), and FreshnessIndicator over the exact
  * catalog_service.get_product_detail() response shape — never
  * recomputing total_price/pct_change client-side.
  *
  * Branches on `price_status` BEFORE ever touching `current_price` (it
- * is null whenever price_status is "no_data_yet" — Pitfall 5); the two
- * trend fields are always-present objects and render unconditionally in
- * both price states. The sample-size caption reads the current_price's
+ * is null whenever price_status is "no_data_yet" — Pitfall 5); the
+ * three trend fields are always-present objects and render
+ * unconditionally in both price states. The sample-size caption reads
+ * the current_price's
  * listing_count field only inside the "ok" branch, falling back to
  * "Sample size unavailable" when it is null/absent (D-08). MSRP and
  * release_date fall back to "—"/"TBD" when null so a pre-release
@@ -138,6 +139,10 @@ export default function ProductDetailPage() {
       )}
 
       <div className={styles.detail__trendSection}>
+        <div className={styles.trend}>
+          <span className={styles.trendLabel}>24h</span>
+          <TrendBadge trend={product.trend_24h} />
+        </div>
         <div className={styles.trend}>
           <span className={styles.trendLabel}>7d</span>
           <TrendBadge trend={product.trend_7d} />

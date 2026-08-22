@@ -186,6 +186,124 @@ def test_detail_unknown_id_returns_none(api_db):
     assert get_product_detail(api_db, "does-not-exist") is None
 
 
+def test_detail_trend_24h_present_when_no_data(api_db):
+    """PRICE-08: get_product_detail for a seeded product with zero
+    points still carries trend_24h in its early-return branch, shaped
+    insufficient-data. Pins the early-return branch specifically — the
+    normal-path computation never runs for this product, so a key added
+    only below that branch would be silently absent here, which is the
+    failure ROADMAP success criterion 4 forbids."""
+    from api.services.catalog_service import get_product_detail
+
+    detail = get_product_detail(api_db, "pitch-black_etb")
+
+    assert "trend_24h" in detail
+    assert detail["trend_24h"]["status"] == "insufficient_data"
+    assert detail["trend_24h"]["pct_change"] is None
+
+
+def test_detail_trend_24h_computed_from_the_24h_baseline(api_db):
+    """PRICE-08: get_product_detail computes trend_24h from a point ~24h
+    before the current point, and trend_7d/trend_30d remain present and
+    unchanged in shape — the new sibling block does not disturb the
+    existing TREND_WINDOWS loop."""
+    from api.services.catalog_service import get_product_detail
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(hours=24),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 150.00,
+                "total_price": 155.00,
+            },
+        ]
+    )
+
+    detail = get_product_detail(api_db, "perfect-order_booster_box")
+
+    assert detail["trend_24h"]["status"] == "ok"
+    assert detail["trend_24h"]["pct_change"] == round((172.50 - 155.00) / 155.00 * 100, 2)
+    assert isinstance(detail["trend_7d"], dict)
+    assert isinstance(detail["trend_30d"], dict)
+
+
+def test_detail_trend_24h_never_uses_the_default_three_day_tolerance(api_db):
+    """PRICE-08 must-have: the 24h window never rides get_trend_baseline's
+    default three-day tolerance through catalog_service's actual call
+    site. A lone baseline point 2 days old sits well outside the 24h
+    +/-4h window but squarely inside a 3-day-tolerance window around a
+    1-day target — if the tolerance_days argument were ever dropped at
+    the call site, this point would be wrongly accepted as the 24h
+    baseline. Pins the call site itself, not just get_trend_baseline in
+    isolation (see tests/test_price_service.py's own boundary cases)."""
+    from api.services.catalog_service import get_product_detail
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(days=2),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 150.00,
+                "total_price": 155.00,
+            },
+        ]
+    )
+
+    detail = get_product_detail(api_db, "perfect-order_booster_box")
+
+    assert detail["trend_24h"]["status"] == "insufficient_data", (
+        "a 2-day-old baseline point is outside the 24h+/-4h window and "
+        "must not be accepted just because it falls inside the wider "
+        "3-day default tolerance"
+    )
+    assert detail["trend_24h"]["pct_change"] is None
+
+
+def test_detail_trend_24h_zero_baseline_is_insufficient(api_db):
+    """PRICE-08: a 24h baseline point with total_price of 0 makes
+    trend_24h insufficient-data rather than raising — exercises
+    compute_pct_change's divide-by-zero guard on the new path."""
+    from api.services.catalog_service import get_product_detail
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(hours=24),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 0.00,
+                "total_price": 0.00,
+            },
+        ]
+    )
+
+    detail = get_product_detail(api_db, "perfect-order_booster_box")
+
+    assert detail["trend_24h"]["status"] == "insufficient_data"
+    assert detail["trend_24h"]["pct_change"] is None
+
+
 def test_detail_omits_raw_series(api_db):
     """D-11: the detail dict contains no key whose value is a raw list/
     array of price_points-shaped documents — trend_7d/trend_30d must be

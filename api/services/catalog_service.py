@@ -19,6 +19,7 @@ never returns a raw price_points series (D-11).
 """
 
 from api.services.price_service import (
+    TREND_24H_TOLERANCE_HOURS,
     compute_pct_change,
     get_current_price,
     get_trend_baseline,
@@ -147,7 +148,7 @@ def list_products(db, filters):
 
 def get_product_detail(db, product_id):
     """Assemble a single product's detail: catalog metadata + current
-    price + 7d/30d trend (SEARCH-02, PRICE-01).
+    price + 24h/7d/30d trend (SEARCH-02, PRICE-01, PRICE-08).
 
     Never includes a raw price_points series/array (D-11) — only the
     single current_price object and the two trend objects. Returns
@@ -168,8 +169,9 @@ def get_product_detail(db, product_id):
     detail = _product_summary(db, product)
 
     if detail["current_price"] is None:
-        # No data yet (D-01) — both trends are explicitly insufficient
-        # data, never omitted/None-the-whole-response.
+        # No data yet (D-01) — all three trends are explicitly
+        # insufficient data, never omitted/None-the-whole-response.
+        detail["trend_24h"] = {"pct_change": None, "status": "insufficient_data"}
         detail["trend_7d"] = {"pct_change": None, "status": "insufficient_data"}
         detail["trend_30d"] = {"pct_change": None, "status": "insufficient_data"}
         return detail
@@ -191,5 +193,21 @@ def get_product_detail(db, product_id):
             detail[key] = {"pct_change": None, "status": "insufficient_data"}
         else:
             detail[key] = {"pct_change": pct, "status": "ok"}
+
+    # The 24h window is deliberately NOT folded into the TREND_WINDOWS
+    # loop above — that loop calls get_trend_baseline without a
+    # tolerance_days argument and would silently apply the module's
+    # three-day default, which is nonsensical for a one-day target.
+    baseline_24h = get_trend_baseline(
+        db, product_id, current_ts, days=1, tolerance_days=TREND_24H_TOLERANCE_HOURS / 24
+    )
+    if baseline_24h is None:
+        detail["trend_24h"] = {"pct_change": None, "status": "insufficient_data"}
+    else:
+        pct_24h = compute_pct_change(current_total, baseline_24h["total_price"])
+        if pct_24h is None:
+            detail["trend_24h"] = {"pct_change": None, "status": "insufficient_data"}
+        else:
+            detail["trend_24h"] = {"pct_change": pct_24h, "status": "ok"}
 
     return detail

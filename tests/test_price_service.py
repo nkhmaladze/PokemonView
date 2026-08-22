@@ -192,6 +192,156 @@ def test_trend_uses_total_price_only(api_db):
     )
 
 
+def test_trend_baseline_24h_accepts_both_window_edges(api_db):
+    """PRICE-08: with days=1 and tolerance_days=TREND_24H_TOLERANCE_HOURS/24
+    (4 hours), a point exactly 20 hours before current_ts (the near
+    inclusive edge) and a point exactly 28 hours before current_ts (the
+    far inclusive edge) are both returned — the pipeline's window filter
+    uses $gte/$lte, which is inclusive on both bounds."""
+    from api.services.price_service import TREND_24H_TOLERANCE_HOURS, get_trend_baseline
+
+    current_ts = datetime.now(timezone.utc)
+    tolerance_days = TREND_24H_TOLERANCE_HOURS / 24
+    near_edge_ts = current_ts - timedelta(hours=20)
+    far_edge_ts = current_ts - timedelta(hours=28)
+
+    api_db.price_points.insert_one(
+        {
+            "ts": near_edge_ts,
+            "product_id": "chaos-rising_booster_box",
+            "item_price": 140.00,
+            "total_price": 150.00,
+        }
+    )
+    api_db.price_points.insert_one(
+        {
+            "ts": far_edge_ts,
+            "product_id": "ascended-heroes_booster_box",
+            "item_price": 140.00,
+            "total_price": 150.00,
+        }
+    )
+
+    near_result = get_trend_baseline(
+        api_db, "chaos-rising_booster_box", current_ts, days=1, tolerance_days=tolerance_days
+    )
+    far_result = get_trend_baseline(
+        api_db, "ascended-heroes_booster_box", current_ts, days=1, tolerance_days=tolerance_days
+    )
+
+    assert near_result is not None, "a point exactly 20h before current_ts (near edge) must be found"
+    assert far_result is not None, "a point exactly 28h before current_ts (far edge) must be found"
+
+
+def test_trend_baseline_24h_rejects_one_step_outside_each_edge(api_db):
+    """A point one minute past each inclusive edge (19h59m and 28h01m
+    before current_ts) falls outside the window and returns None."""
+    from api.services.price_service import TREND_24H_TOLERANCE_HOURS, get_trend_baseline
+
+    current_ts = datetime.now(timezone.utc)
+    tolerance_days = TREND_24H_TOLERANCE_HOURS / 24
+    just_inside_near_ts = current_ts - timedelta(hours=19, minutes=59)
+    just_outside_far_ts = current_ts - timedelta(hours=28, minutes=1)
+
+    api_db.price_points.insert_one(
+        {
+            "ts": just_inside_near_ts,
+            "product_id": "chaos-rising_booster_box",
+            "item_price": 140.00,
+            "total_price": 150.00,
+        }
+    )
+    api_db.price_points.insert_one(
+        {
+            "ts": just_outside_far_ts,
+            "product_id": "ascended-heroes_booster_box",
+            "item_price": 140.00,
+            "total_price": 150.00,
+        }
+    )
+
+    near_result = get_trend_baseline(
+        api_db, "chaos-rising_booster_box", current_ts, days=1, tolerance_days=tolerance_days
+    )
+    far_result = get_trend_baseline(
+        api_db, "ascended-heroes_booster_box", current_ts, days=1, tolerance_days=tolerance_days
+    )
+
+    assert near_result is None, "19h59m before current_ts is one step inside the near edge, therefore outside the window"
+    assert far_result is None, "28h01m before current_ts is one step past the far edge"
+
+
+def test_trend_baseline_24h_rejects_the_default_tolerance_case(api_db):
+    """A lone point four days before current_ts must return None when
+    called with the explicit 24h tolerance — this is the regression that
+    fails if the module's three-day default is ever restored for this
+    window, because a +/-3-day window around a one-day target reaches
+    back to four days."""
+    from api.services.price_service import TREND_24H_TOLERANCE_HOURS, get_trend_baseline
+
+    current_ts = datetime.now(timezone.utc)
+    tolerance_days = TREND_24H_TOLERANCE_HOURS / 24
+    four_days_ago_ts = current_ts - timedelta(days=4)
+
+    api_db.price_points.insert_one(
+        {
+            "ts": four_days_ago_ts,
+            "product_id": "chaos-rising_booster_box",
+            "item_price": 140.00,
+            "total_price": 150.00,
+        }
+    )
+
+    result = get_trend_baseline(
+        api_db, "chaos-rising_booster_box", current_ts, days=1, tolerance_days=tolerance_days
+    )
+
+    assert result is None, (
+        "a point 4 days before current_ts must NOT be treated as a valid "
+        "24h baseline — this is the case that would wrongly succeed if "
+        "the 3-day default tolerance were used instead of the explicit 4h one"
+    )
+
+
+def test_trend_baseline_24h_picks_the_nearer_point(api_db):
+    """When two points both fall inside the 24h window, the one nearer
+    the 24-hour target is the one returned."""
+    from api.services.price_service import TREND_24H_TOLERANCE_HOURS, get_trend_baseline
+
+    current_ts = datetime.now(timezone.utc)
+    tolerance_days = TREND_24H_TOLERANCE_HOURS / 24
+    nearer_ts = current_ts - timedelta(hours=23)
+    farther_ts = current_ts - timedelta(hours=27)
+
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": nearer_ts,
+                "product_id": "chaos-rising_booster_box",
+                "item_price": 140.00,
+                "total_price": 151.00,
+            },
+            {
+                "ts": farther_ts,
+                "product_id": "chaos-rising_booster_box",
+                "item_price": 140.00,
+                "total_price": 149.00,
+            },
+        ]
+    )
+
+    result = get_trend_baseline(
+        api_db, "chaos-rising_booster_box", current_ts, days=1, tolerance_days=tolerance_days
+    )
+
+    assert result is not None
+    assert result["total_price"] == 151.00
+    assert (
+        abs((result["ts"].replace(tzinfo=None) - nearer_ts.replace(tzinfo=None)).total_seconds())
+        < 1
+    ), "the point nearer the 24h target (minus-23-hour) must be the one returned"
+
+
 def test_price_history_empty_when_no_points(api_db):
     """PRICE-07/08-CONTEXT.md D-04: a brand-new product with zero
     collected price_points is a normal state, not an error — the

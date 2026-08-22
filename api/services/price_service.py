@@ -21,7 +21,10 @@ different problems (05-RESEARCH.md Pitfall 2):
     computed target date (D-05) and returns None explicitly when
     nothing falls inside that window (D-06), so the caller can surface
     an explicit "insufficient_data" state rather than a silently
-    omitted badge.
+    omitted badge. `catalog_service.get_product_detail`'s 24h trend
+    calls this with `days=1` and an explicit `tolerance_days` derived
+    from `TREND_24H_TOLERANCE_HOURS` — never this module's three-day
+    default, which would be nonsensical for a one-day target.
   `get_price_history` — the one function in this module that returns a
     list rather than a single document or None (PRICE-07, D-04). No
     time-window filter, no downsampling — returns the full ascending-
@@ -32,6 +35,16 @@ different problems (05-RESEARCH.md Pitfall 2):
 from datetime import timedelta, timezone
 
 TREND_TOLERANCE_DAYS = 3  # D-05
+# The 24h trend badge's own explicit tolerance — NOT a reuse of
+# TREND_TOLERANCE_DAYS. The ingestion worker polls every four hours by
+# default (INGESTION_INTERVAL_HOURS, scripts/ingest_worker.py), so four
+# hours is exactly one poll interval of slack around a one-day target,
+# whereas the three-day default was sized for the 7d/30d windows and
+# would span minus-two to plus-four days around a one-day target. This
+# is a tuning choice, cheap to change (one constant, no response shape
+# depends on its value) — its revisit trigger is a change to
+# INGESTION_INTERVAL_HOURS.
+TREND_24H_TOLERANCE_HOURS = 4
 
 
 def get_current_price(db, product_id):
