@@ -10,7 +10,7 @@ Requirements for Milestone v1.1 (Price History & Extended Badges). Each maps to 
 ### Price History & Extended Badges
 
 - [x] **PRICE-07**: User can view a line chart of a product's total-price history on its detail page, rendered from the existing price_points time-series data
-- [ ] **PRICE-08**: User can see a 24h price-change badge on the product detail page, alongside the existing 7d/30d badges
+- [x] **PRICE-08**: User can see a 24h price-change badge on the product detail page, alongside the existing 7d/30d badges
 - [ ] **PRICE-09**: User can see an all-time high/low price badge on the product detail page, covering the full range since data collection began
 
 ## v2 Requirements
@@ -40,7 +40,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | PRICE-07 | Phase 8: Price History Chart | Complete |
-| PRICE-08 | Phase 9: 24h & All-Time Price Badges | Pending |
+| PRICE-08 | Phase 9: 24h & All-Time Price Badges | Complete |
 | PRICE-09 | Phase 9: 24h & All-Time Price Badges | Pending |
 
 **Coverage:**
