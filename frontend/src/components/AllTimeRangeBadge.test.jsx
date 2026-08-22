@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import AllTimeRangeBadge from './AllTimeRangeBadge'
+import styles from './AllTimeRangeBadge.module.css'
 
 describe('AllTimeRangeBadge', () => {
   it('renders the low bound, an en dash separator, then the high bound for an ok range', () => {
@@ -38,5 +39,18 @@ describe('AllTimeRangeBadge', () => {
     const badge = screen.getByText('$129.99 – $172.50')
     expect(badge.className).toContain('range')
     expect(badge.className).not.toContain('range--muted')
+  })
+
+  it("ok state's className contains the stylesheet's base class and not the muted modifier, and the muted state's className contains both", () => {
+    render(<AllTimeRangeBadge range={{ high: 172.5, low: 129.99, status: 'ok' }} />)
+    const okBadge = screen.getByText('$129.99 – $172.50')
+    expect(okBadge.className).toContain(styles.range)
+    expect(okBadge.className).not.toContain(styles['range--muted'])
+
+    render(<AllTimeRangeBadge range={{ high: null, low: null, status: 'insufficient_data' }} />)
+    const mutedBadges = screen.getAllByLabelText('insufficient data')
+    const mutedBadge = mutedBadges[mutedBadges.length - 1]
+    expect(mutedBadge.className).toContain(styles.range)
+    expect(mutedBadge.className).toContain(styles['range--muted'])
   })
 })
