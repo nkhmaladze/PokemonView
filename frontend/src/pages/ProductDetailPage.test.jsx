@@ -32,6 +32,7 @@ const okProduct = {
     as_of: '2026-07-15T00:00:00Z',
     listing_count: 5,
   },
+  trend_24h: { pct_change: 0.8, status: 'ok' },
   trend_7d: { pct_change: 2.5, status: 'ok' },
   trend_30d: { pct_change: -1.2, status: 'ok' },
 }
@@ -68,11 +69,12 @@ describe('ProductDetailPage', () => {
     getPriceHistory.mockResolvedValue([])
   })
 
-  it('renders total price, item price, both trend badges, freshness caption, and sample-size caption for an "ok" product', () => {
+  it('renders total price, item price, all three trend badges, freshness caption, and sample-size caption for an "ok" product', () => {
     renderDetail(okProduct)
 
     expect(screen.getByText('$150.00')).toBeInTheDocument()
     expect(screen.getByText('$145.00')).toBeInTheDocument()
+    expect(screen.getByText('+0.8%')).toBeInTheDocument()
     expect(screen.getByText('+2.5%')).toBeInTheDocument()
     expect(screen.getByText('-1.2%')).toBeInTheDocument()
     expect(screen.getByText(/Data as of/)).toBeInTheDocument()
@@ -88,18 +90,19 @@ describe('ProductDetailPage', () => {
     expect(screen.getByText('Sample size unavailable')).toBeInTheDocument()
   })
 
-  it('renders a graceful no-data state for a "no_data_yet" product without throwing, and still shows both trend badges', () => {
+  it('renders a graceful no-data state for a "no_data_yet" product without throwing, and still shows all three trend badges', () => {
     const noDataProduct = {
       ...okProduct,
       price_status: 'no_data_yet',
       current_price: null,
+      trend_24h: { pct_change: null, status: 'insufficient_data' },
       trend_7d: { pct_change: null, status: 'insufficient_data' },
       trend_30d: { pct_change: null, status: 'insufficient_data' },
     }
 
     expect(() => renderDetail(noDataProduct)).not.toThrow()
     expect(screen.getByText('No pricing data yet')).toBeInTheDocument()
-    expect(screen.getAllByLabelText('insufficient data')).toHaveLength(2)
+    expect(screen.getAllByLabelText('insufficient data')).toHaveLength(3)
     expect(screen.queryByText(/Data as of/)).not.toBeInTheDocument()
     expect(screen.queryByText(/Based on/)).not.toBeInTheDocument()
   })
@@ -258,5 +261,13 @@ describe('ProductDetailPage', () => {
     expect(text.indexOf('Price History')).toBeGreaterThan(text.indexOf('7d'))
     expect(text.indexOf('Price History')).toBeLessThan(text.indexOf('MSRP:'))
     expect(screen.getByText('Price History').tagName).toBe('H2')
+  })
+
+  it('renders the 24h, 7d and 30d trend badges in that left-to-right DOM order (UI-SPEC D-UI-03)', () => {
+    const { container } = renderDetail(okProduct)
+
+    const text = container.textContent
+    expect(text.indexOf('24h')).toBeLessThan(text.indexOf('7d'))
+    expect(text.indexOf('7d')).toBeLessThan(text.indexOf('30d'))
   })
 })

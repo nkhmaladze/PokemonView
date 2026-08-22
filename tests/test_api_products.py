@@ -87,6 +87,47 @@ def test_product_detail_current_price(client, api_db):
     assert body["current_price"]["as_of"] is not None
 
 
+def test_product_detail_includes_trend_24h(client, api_db):
+    """PRICE-08: GET /products/<slug> returns a trend_24h object with
+    exactly {pct_change, status}, computed from a point ~24h before the
+    current point, for a priced product. A second seeded product with
+    zero points also carries trend_24h in its insufficient-data shape,
+    covering the zero-data branch at the HTTP boundary rather than only
+    at the service layer."""
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(hours=24),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 150.00,
+                "total_price": 155.00,
+            },
+        ]
+    )
+
+    response = client.get("/products/perfect-order_booster_box")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert isinstance(body["trend_24h"], dict)
+    assert set(body["trend_24h"].keys()) == {"pct_change", "status"}
+    assert body["trend_24h"]["status"] == "ok"
+    assert body["trend_24h"]["pct_change"] == round((172.50 - 155.00) / 155.00 * 100, 2)
+
+    no_data_response = client.get("/products/pitch-black_etb")
+
+    assert no_data_response.status_code == 200
+    no_data_body = no_data_response.get_json()
+    assert no_data_body["trend_24h"] == {"pct_change": None, "status": "insufficient_data"}
+
+
 def test_product_no_price_data(client):
     """D-01: GET for a seeded product with zero price_points returns
     200 with price_status == 'no_data_yet' and current_price null —
