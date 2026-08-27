@@ -86,7 +86,7 @@ Plans:
   3. A product with less than 24 hours of collected history shows the 24h badge in its explicit insufficient-data state (—), never a fabricated percentage and never a silently missing badge.
   4. A product with no price data at all still renders its detail page with every badge in the insufficient-data state — no crash, no blank page, no partially-rendered price section.
 
-**Plans**: 3/5 plans executed
+**Plans**: 5/5 plans executed
 
 Plans:
 **Wave 1**
@@ -100,8 +100,8 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 
-- [ ] 09-04-PLAN.md — HTTP JSON contract for both new keys, catalog-wide badge-field completeness, and the Phase 9 D-11 raw-series regression guard (wave 3)
-- [ ] 09-05-PLAN.md — Detail page: the all-time range section, its verbatim "since we started tracking" caption, locked placement, and the four-badge zero-data state (wave 3)
+- [x] 09-04-PLAN.md — HTTP JSON contract for both new keys, catalog-wide badge-field completeness, and the Phase 9 D-11 raw-series regression guard (wave 3)
+- [x] 09-05-PLAN.md — Detail page: the all-time range section, its verbatim "since we started tracking" caption, locked placement, and the four-badge zero-data state (wave 3)
 
 **UI hint**: yes
 
@@ -117,6 +117,6 @@ Plans:
 | 6. React SPA Frontend (active-price product) | v1.0 | 7/7 | Complete | 2026-07-15 |
 | 7. Launch & Hardening (v1 active-price) | v1.0 | 5/5 | Complete | 2026-07-15 |
 | 8. Price History Chart | v1.1 | 4/4 | Complete    | 2026-08-20 |
-| 9. 24h & All-Time Price Badges | v1.1 | 3/5 | In Progress|  |
+| 9. 24h & All-Time Price Badges | v1.1 | 5/5 | In Progress|  |
 
 **Unnumbered / parked:** Sold-Price Integration (INGEST-04, PRICE-04/05/06) — parked indefinitely, MI API access denied twice. Carries no phase number; the "Phase 8" label it held during v1.0 planning is historical.
