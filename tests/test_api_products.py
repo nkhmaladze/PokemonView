@@ -515,3 +515,133 @@ def test_detail_json_zero_points_carries_every_badge_field(client):
     for key in ("trend_24h", "trend_7d", "trend_30d"):
         assert body[key] == {"pct_change": None, "status": "insufficient_data"}
     assert body["all_time_range"] == {"high": None, "low": None, "status": "insufficient_data"}
+
+
+def test_every_catalog_product_detail_carries_all_four_badge_fields(client, api_db):
+    """ROADMAP success criterion 4: badge-field completeness is a
+    property of the response, not of one hand-picked fixture. Points
+    are inserted for two products (a priced state) while the rest of
+    the sixteen-product catalog remains unpriced (the insufficient-data
+    state), and every one of the sixteen detail responses must carry
+    all four badge fields with the correct shape regardless of which
+    state it's in."""
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(hours=24),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 153.00,
+                "total_price": 160.00,
+            },
+            {
+                "ts": now,
+                "product_id": "ascended-heroes_booster_box",
+                "item_price": 140.00,
+                "total_price": 148.00,
+            },
+        ]
+    )
+
+    catalog_response = client.get("/products")
+    assert catalog_response.status_code == 200
+    product_ids = [p["id"] for p in catalog_response.get_json()]
+    assert len(product_ids) == 16, "catalog sweep must cover all sixteen seeded products"
+
+    for product_id in product_ids:
+        detail_response = client.get(f"/products/{product_id}")
+        assert detail_response.status_code == 200, f"product '{product_id}' returned a non-200 status"
+        body = detail_response.get_json()
+
+        for trend_key in ("trend_24h", "trend_7d", "trend_30d"):
+            assert trend_key in body, f"product '{product_id}' is missing '{trend_key}'"
+            trend_value = body[trend_key]
+            assert set(trend_value.keys()) == {"pct_change", "status"}, (
+                f"product '{product_id}' key '{trend_key}' has an unexpected shape: {trend_value!r}"
+            )
+            assert trend_value["status"] in ("ok", "insufficient_data"), (
+                f"product '{product_id}' key '{trend_key}' has an invalid status: {trend_value['status']!r}"
+            )
+
+        assert "all_time_range" in body, f"product '{product_id}' is missing 'all_time_range'"
+        all_time_value = body["all_time_range"]
+        assert set(all_time_value.keys()) == {"high", "low", "status"}, (
+            f"product '{product_id}' key 'all_time_range' has an unexpected shape: {all_time_value!r}"
+        )
+        assert all_time_value["status"] in ("ok", "insufficient_data"), (
+            f"product '{product_id}' key 'all_time_range' has an invalid status: {all_time_value['status']!r}"
+        )
+
+
+def test_detail_still_omits_raw_series_after_badge_fields(client, api_db):
+    """D-11 regression guard, Phase 9 instance: the trend_24h and
+    all_time_range fields must not have loosened the detail route's
+    pre-existing contract, which withholds the raw price_points series.
+    Uses the identical per-key scan as the Phase 8 regression guard,
+    but first asserts both new keys are present so the scan cannot
+    pass vacuously against a response that never had them."""
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(hours=24),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 153.00,
+                "total_price": 160.00,
+            },
+            {
+                "ts": now - timedelta(days=30),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 133.00,
+                "total_price": 140.00,
+            },
+        ]
+    )
+
+    response = client.get("/products/perfect-order_booster_box")
+    body = response.get_json()
+
+    assert "trend_24h" in body
+    assert "all_time_range" in body
+
+    for key, value in body.items():
+        is_point_series = (
+            isinstance(value, list)
+            and len(value) > 0
+            and isinstance(value[0], dict)
+            and "ts" in value[0]
+        )
+        assert not is_point_series, (
+            f"the detail response must not contain a raw price_points "
+            f"series/array (D-11) now that trend_24h and all_time_range "
+            f"exist; found one at key '{key}'"
+        )
+    assert isinstance(body["trend_24h"], dict)
+    assert isinstance(body["all_time_range"], dict)
+
+
+def test_detail_route_404_and_cors_unchanged_after_badge_fields(client):
+    """Phase 9 changed the detail route's response body, not the route
+    itself: an unknown id still returns 404 with the not_found
+    envelope, and a detail response still carries an
+    Access-Control-Allow-Origin header (mirrors
+    test_detail_unknown_id_404 and test_cors_header_present, scoped to
+    prove those behaviours specifically after this plan's changes)."""
+    unknown_response = client.get("/products/does-not-exist")
+    assert unknown_response.status_code == 404
+    assert unknown_response.get_json() == {"error": "not_found"}
+
+    known_response = client.get("/products/pitch-black_etb")
+    assert "Access-Control-Allow-Origin" in known_response.headers
