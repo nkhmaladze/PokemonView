@@ -18,6 +18,7 @@ never returns a raw price_points series.
 from api.services.price_service import (
     TREND_24H_TOLERANCE_HOURS,
     compute_pct_change,
+    get_all_time_range,
     get_current_price,
     get_trend_baseline,
 )
@@ -145,11 +146,13 @@ def list_products(db, filters):
 
 def get_product_detail(db, product_id):
     """Assemble a single product's detail: catalog metadata + current
-    price + 24h/7d/30d trend.
+    price + 24h/7d/30d trend + all-time range.
 
     Never includes a raw price_points series/array — only the
-    single current_price object and the two trend objects. Returns
-    None for an unknown id (the blueprint translates this to a 404).
+    single current_price object, the three trend objects, and the
+    all_time_range object, each a small aggregate rather than a series.
+    Returns None for an unknown id (the blueprint translates this to a
+    404).
 
     Args:
         db: An already-connected pymongo Database handle.
@@ -167,10 +170,15 @@ def get_product_detail(db, product_id):
 
     if detail["current_price"] is None:
         # No data yet — all three trends are explicitly
-        # insufficient data, never omitted/None-the-whole-response.
+        # insufficient data, never omitted/None-the-whole-response. A
+        # product with no current price by definition has zero stored
+        # points, which is why all_time_range is insufficient-data here
+        # rather than being computed — the two conditions are the same
+        # condition, not two independent checks.
         detail["trend_24h"] = {"pct_change": None, "status": "insufficient_data"}
         detail["trend_7d"] = {"pct_change": None, "status": "insufficient_data"}
         detail["trend_30d"] = {"pct_change": None, "status": "insufficient_data"}
+        detail["all_time_range"] = {"high": None, "low": None, "status": "insufficient_data"}
         return detail
 
     current_total = detail["current_price"]["total_price"]
@@ -206,5 +214,15 @@ def get_product_detail(db, product_id):
             detail["trend_24h"] = {"pct_change": None, "status": "insufficient_data"}
         else:
             detail["trend_24h"] = {"pct_change": pct_24h, "status": "ok"}
+
+    all_time = get_all_time_range(db, product_id)
+    if all_time is None:
+        detail["all_time_range"] = {"high": None, "low": None, "status": "insufficient_data"}
+    else:
+        detail["all_time_range"] = {
+            "high": all_time["high"],
+            "low": all_time["low"],
+            "status": "ok",
+        }
 
     return detail
