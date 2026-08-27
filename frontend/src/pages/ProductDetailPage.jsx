@@ -3,6 +3,7 @@ import { Link, useLoaderData, useParams } from 'react-router'
 import styles from './ProductDetailPage.module.css'
 import PriceDisplay from '../components/PriceDisplay'
 import TrendBadge from '../components/TrendBadge'
+import AllTimeRangeBadge from '../components/AllTimeRangeBadge'
 import FreshnessIndicator from '../components/FreshnessIndicator'
 import PriceHistoryChart from '../components/PriceHistoryChart'
 import { getPriceHistory } from '../api/client'
@@ -46,18 +47,25 @@ function formatSampleSize(listingCount) {
  *
  * Branches on `price_status` BEFORE ever touching `current_price` (it
  * is null whenever price_status is "no_data_yet" — Pitfall 5); the
- * three trend fields are always-present objects and render
- * unconditionally in both price states. The sample-size caption reads
- * the current_price's
+ * three trend fields and the all-time range field are always-present
+ * objects and render unconditionally in both price states — neither the
+ * trend badges nor the all-time range badge is gated on `price_status`,
+ * because the backend always sends all four fields in one of their two
+ * shapes and each badge component's own missing-prop guard is the last
+ * line of defence if that were ever violated. The sample-size caption
+ * reads the current_price's
  * listing_count field only inside the "ok" branch, falling back to
  * "Sample size unavailable" when it is null/absent (D-08). MSRP and
  * release_date fall back to "—"/"TBD" when null so a pre-release
  * product (e.g. Pitch Black) never crashes the page (Pitfall 3). Never
- * renders the `verified` field (UI-SPEC Layout Notes). The page also
- * renders a separate Price History section fed by an independent
- * post-mount fetch against the history endpoint (PRICE-07, 08-CONTEXT.md
- * D-03, D-04, D-05) — the loader response itself still carries no
- * series (D-06 of 08-CONTEXT.md, D-11 of 05-CONTEXT.md).
+ * renders the `verified` field (UI-SPEC Layout Notes). Neither the
+ * trend badges nor the all-time range badge adds a fetch, loading state
+ * or error state of its own — both ride the existing synchronous
+ * useLoaderData() response. The page also renders a separate Price
+ * History section fed by an independent post-mount fetch against the
+ * history endpoint (PRICE-07, 08-CONTEXT.md D-03, D-04, D-05) — the
+ * loader response itself still carries no series (D-06 of 08-CONTEXT.md,
+ * D-11 of 05-CONTEXT.md).
  */
 export default function ProductDetailPage() {
   const product = useLoaderData()
@@ -151,6 +159,11 @@ export default function ProductDetailPage() {
           <span className={styles.trendLabel}>30d</span>
           <TrendBadge trend={product.trend_30d} />
         </div>
+      </div>
+
+      <div className={styles.detail__allTimeSection}>
+        <span className={styles.trendLabel}>All-time range (since we started tracking)</span>
+        <AllTimeRangeBadge range={product.all_time_range} />
       </div>
 
       <div className={styles.detail__historySection}>

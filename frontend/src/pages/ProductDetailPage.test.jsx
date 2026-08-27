@@ -35,6 +35,12 @@ const okProduct = {
   trend_24h: { pct_change: 0.8, status: 'ok' },
   trend_7d: { pct_change: 2.5, status: 'ok' },
   trend_30d: { pct_change: -1.2, status: 'ok' },
+  // Distinct from the fixture's current_price totals (150/145) so no
+  // assertion can match the wrong element. Without this field the badge
+  // falls into its muted branch and renders an em dash, which would make
+  // the null-msrp test's single-match `/—/` query ambiguous and fail a
+  // test that has nothing to do with this phase.
+  all_time_range: { high: 172.5, low: 129.99, status: 'ok' },
 }
 
 function renderDetail(product) {
@@ -90,7 +96,7 @@ describe('ProductDetailPage', () => {
     expect(screen.getByText('Sample size unavailable')).toBeInTheDocument()
   })
 
-  it('renders a graceful no-data state for a "no_data_yet" product without throwing, and still shows all three trend badges', () => {
+  it('renders a graceful no-data state for a "no_data_yet" product without throwing, and still shows all four badges', () => {
     const noDataProduct = {
       ...okProduct,
       price_status: 'no_data_yet',
@@ -98,11 +104,18 @@ describe('ProductDetailPage', () => {
       trend_24h: { pct_change: null, status: 'insufficient_data' },
       trend_7d: { pct_change: null, status: 'insufficient_data' },
       trend_30d: { pct_change: null, status: 'insufficient_data' },
+      all_time_range: { high: null, low: null, status: 'insufficient_data' },
     }
 
     expect(() => renderDetail(noDataProduct)).not.toThrow()
     expect(screen.getByText('No pricing data yet')).toBeInTheDocument()
-    expect(screen.getAllByLabelText('insufficient data')).toHaveLength(3)
+    expect(screen.getAllByLabelText('insufficient data')).toHaveLength(4)
+    // The caption must still render alongside its dash — a caption with a
+    // muted value beside it is what tells a user the range is absent
+    // rather than the whole feature being missing.
+    expect(
+      screen.getByText('All-time range (since we started tracking)')
+    ).toBeInTheDocument()
     expect(screen.queryByText(/Data as of/)).not.toBeInTheDocument()
     expect(screen.queryByText(/Based on/)).not.toBeInTheDocument()
   })
@@ -269,5 +282,52 @@ describe('ProductDetailPage', () => {
     const text = container.textContent
     expect(text.indexOf('24h')).toBeLessThan(text.indexOf('7d'))
     expect(text.indexOf('7d')).toBeLessThan(text.indexOf('30d'))
+  })
+
+  it('renders the all-time range caption and its low-to-high value', () => {
+    // Asserted as a whole verbatim string because the parenthetical is
+    // the part that scopes the figure to our own collection window; a
+    // shortened label would still render a plausible-looking page while
+    // making a claim the data cannot support.
+    renderDetail(okProduct)
+
+    expect(
+      screen.getByText('All-time range (since we started tracking)')
+    ).toBeInTheDocument()
+    expect(screen.getByText('$129.99 – $172.50')).toBeInTheDocument()
+  })
+
+  it('places the all-time range between the trend badges and the Price History section', async () => {
+    // Pins 09-UI-SPEC.md D-UI-04's locked ordering.
+    getPriceHistory.mockResolvedValue([
+      { ts: '2026-07-14T00:00:00Z', total_price: 145 },
+      { ts: '2026-07-15T00:00:00Z', total_price: 148 },
+      { ts: '2026-07-16T00:00:00Z', total_price: 150 },
+    ])
+
+    const { container } = renderDetail(okProduct)
+    await screen.findByTestId('price-history-chart')
+
+    const text = container.textContent
+    expect(text.indexOf('All-time range (since we started tracking)')).toBeGreaterThan(
+      text.indexOf('30d')
+    )
+    expect(text.indexOf('All-time range (since we started tracking)')).toBeLessThan(
+      text.indexOf('Price History')
+    )
+  })
+
+  it('renders without throwing when the all_time_range field is absent entirely', () => {
+    // This is the defensive branch: the backend always sends the field,
+    // so this asserts the behaviour if that contract were ever broken —
+    // the difference between a muted dash and a white page.
+    // eslint-disable-next-line no-unused-vars -- destructured only to omit it
+    const { all_time_range: _all_time_range, ...productWithoutAllTimeRange } = okProduct
+
+    expect(() => renderDetail(productWithoutAllTimeRange)).not.toThrow()
+    expect(
+      screen.getByText('All-time range (since we started tracking)')
+    ).toBeInTheDocument()
+    expect(screen.getByLabelText('insufficient data')).toBeInTheDocument()
   })
 })
