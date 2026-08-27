@@ -1,9 +1,13 @@
 /* ProductDetailPage — single-product route (06-UI-SPEC.md Layout &
  * Component Notes -> Product detail page). 96px hero thumbnail, Display-
- * size (28/600) total price as the true headline, side-by-side 7d/30d
+ * size (28/600) total price as the true headline, side-by-side 24h/7d/30d
  * trend badges, freshness + sample-size captions near the price block,
- * null-safe MSRP/release-date metadata. The Price History section
- * (PRICE-07, 08-CONTEXT.md D-03) is now the fourth section, fed by an
+ * null-safe MSRP/release-date metadata. Between the trend badges and the
+ * Price History section sits the all-time range block (PRICE-09,
+ * 09-UI-SPEC.md D-UI-04) — its own full-width block rather than a fourth
+ * trend child, because its caption is an order of magnitude longer than
+ * 24h/7d/30d and would crowd them inline. The Price History section
+ * (PRICE-07, 08-CONTEXT.md D-03) follows it, fed by an
  * independent post-mount fetch — the loader response itself still
  * carries no price_points series (D-11 of 05-CONTEXT.md, D-06 of
  * 08-CONTEXT.md). */
@@ -123,6 +127,13 @@
   font-size: var(--font-size-label);
   line-height: var(--line-height-label);
   color: var(--text-secondary);
+}
+
+.detail__allTimeSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-xs);
 }
 
 .detail__historySection {
