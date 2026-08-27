@@ -176,3 +176,13 @@ The plan's Task 2 `<verify>` includes a `<human-check>` step (visual confirmatio
 ---
 *Phase: 09-price-badges*
 *Completed: 2026-08-28*
+
+## Self-Check: PASSED
+
+- FOUND: frontend/src/pages/ProductDetailPage.jsx
+- FOUND: frontend/src/pages/ProductDetailPage.module.css
+- FOUND: frontend/src/pages/ProductDetailPage.test.jsx
+- FOUND: .planning/phases/09-price-badges/09-05-SUMMARY.md
+- FOUND commit: 1c87c70 (Task 1)
+- FOUND commit: 42fd154 (Task 2)
+- FOUND commit: 7d01a86 (docs: SUMMARY)
