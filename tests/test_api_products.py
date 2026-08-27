@@ -420,3 +420,98 @@ def test_multi_origin_cors_matches_each_origin(api_db, monkeypatch):
 
     resp = c.get("/products", headers={"Origin": "https://evil.example"})
     assert resp.headers.get("Access-Control-Allow-Origin") != "https://evil.example"
+
+
+# --- Phase 9: trend_24h + all_time_range HTTP-boundary contract
+# (PRICE-08, PRICE-09). The service-layer tests in
+# tests/test_catalog_service.py already prove both dicts are built
+# correctly; these cases prove they survive jsonify() with the same
+# exact shape, and that no catalogued product in any data state ever
+# produces a response missing a badge field (ROADMAP success
+# criterion 4).
+
+
+def test_detail_json_carries_both_new_fields_with_exact_shapes(client, api_db):
+    """PRICE-08/PRICE-09: GET /products/<id> returns trend_24h with
+    exactly {pct_change, status} and all_time_range with exactly
+    {high, low, status}. Three points are inserted — now, now-24h, and
+    an older, distinctly-lower point — so the all-time bounds are
+    provably wider than the 24h window, showing the two fields are
+    computed by independent code paths rather than sharing one
+    baseline lookup."""
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(hours=24),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 153.00,
+                "total_price": 160.00,
+            },
+            {
+                "ts": now - timedelta(days=30),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 133.00,
+                "total_price": 140.00,
+            },
+        ]
+    )
+
+    response = client.get("/products/perfect-order_booster_box")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert set(body["trend_24h"].keys()) == {"pct_change", "status"}
+    assert set(body["all_time_range"].keys()) == {"high", "low", "status"}
+    assert body["trend_24h"]["status"] == "ok"
+    assert body["all_time_range"]["status"] == "ok"
+    assert body["all_time_range"]["low"] == 140.00
+    assert body["all_time_range"]["high"] == 172.50
+    assert body["all_time_range"]["low"] < body["all_time_range"]["high"]
+
+
+def test_detail_json_single_point_all_time_range_is_ok(client, api_db):
+    """PRICE-09/09-RESEARCH.md Pitfall 3: a product with exactly one
+    collected price point is real data — all_time_range must report
+    status "ok" with equal high and low, never "insufficient_data"."""
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_one(
+        {
+            "ts": now,
+            "product_id": "chaos-rising_etb",
+            "item_price": 189.99,
+            "total_price": 199.99,
+        }
+    )
+
+    response = client.get("/products/chaos-rising_etb")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["all_time_range"]["status"] == "ok"
+    assert body["all_time_range"]["high"] == 199.99
+    assert body["all_time_range"]["low"] == 199.99
+
+
+def test_detail_json_zero_points_carries_every_badge_field(client):
+    """ROADMAP success criterion 4, asserted at the HTTP boundary: the
+    product detail page renders all four badges unconditionally, so a
+    seeded product with zero collected price points must still return
+    200 carrying trend_24h, trend_7d, trend_30d and all_time_range —
+    each in its insufficient-data shape. A key missing here is a crash
+    or a blank badge on the page."""
+    response = client.get("/products/pitch-black_etb")
+
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["price_status"] == "no_data_yet"
+    assert body["current_price"] is None
+    for key in ("trend_24h", "trend_7d", "trend_30d"):
+        assert body[key] == {"pct_change": None, "status": "insufficient_data"}
+    assert body["all_time_range"] == {"high": None, "low": None, "status": "insufficient_data"}
