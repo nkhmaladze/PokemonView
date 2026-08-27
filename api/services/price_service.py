@@ -30,6 +30,12 @@ different problems (05-RESEARCH.md Pitfall 2):
     time-window filter, no downsampling — returns the full ascending-
     by-ts series as clean {ts, total_price} dicts, never a raw
     price_points document.
+  `get_all_time_range` — like `get_current_price`, NO tolerance window:
+    it has no target date at all, so there is nothing to miss. Returns
+    None only when the product has zero price_points documents ever
+    (mirroring `get_current_price`'s D-01 contract) — a single stored
+    point is a legitimate range whose high and low are equal, never an
+    insufficient-data result.
 """
 
 from datetime import timedelta, timezone
@@ -170,6 +176,47 @@ def get_trend_baseline(db, product_id, current_ts, days, tolerance_days=TREND_TO
     ]
     results = list(db.price_points.aggregate(pipeline))
     return results[0] if results else None
+
+
+def get_all_time_range(db, product_id):
+    """Return {"high": float, "low": float} — the maximum and minimum
+    `total_price` ever recorded for product_id, across every stored
+    price_points document.
+
+    Returns None ONLY when the product has zero price_points documents
+    ever, mirroring get_current_price's D-01 contract. This is
+    deliberately NOT a tolerance-window function like
+    get_trend_baseline: there is no target date, so there is nothing to
+    miss, and a product with a single stored point therefore has a
+    legitimate range whose two bounds are equal. A caller must not
+    translate a one-point result into an insufficient-data state.
+
+    Reads total_price only (D-07) — item_price and listing_count never
+    influence either bound.
+
+    Args:
+        db: An already-connected pymongo Database handle.
+        product_id: The canonical catalog product slug.
+
+    Returns:
+        dict | None: {"high": float, "low": float} built fresh from the
+        aggregation's $max/$min accumulators, or None when the product
+        has no price_points documents.
+    """
+    pipeline = [
+        {"$match": {"product_id": product_id}},
+        {
+            "$group": {
+                "_id": None,
+                "high": {"$max": "$total_price"},
+                "low": {"$min": "$total_price"},
+            }
+        },
+    ]
+    results = list(db.price_points.aggregate(pipeline))
+    if not results:
+        return None
+    return {"high": results[0]["high"], "low": results[0]["low"]}
 
 
 def compute_pct_change(current_total, baseline_total):
