@@ -304,6 +304,76 @@ def test_detail_trend_24h_zero_baseline_is_insufficient(api_db):
     assert detail["trend_24h"]["pct_change"] is None
 
 
+def test_detail_all_time_range_present_when_no_data(api_db):
+    """PRICE-09: get_product_detail for a seeded product with zero
+    points still carries all_time_range in its early-return branch,
+    shaped insufficient-data. Pins the early-return branch specifically
+    — a missing key here is the exact KeyError regression this test
+    exists to catch, which is ROADMAP success criterion 4's forbidden
+    'silently missing badge' outcome."""
+    from api.services.catalog_service import get_product_detail
+
+    detail = get_product_detail(api_db, "pitch-black_etb")
+
+    assert "all_time_range" in detail
+    assert detail["all_time_range"]["high"] is None
+    assert detail["all_time_range"]["low"] is None
+    assert detail["all_time_range"]["status"] == "insufficient_data"
+
+
+def test_detail_all_time_range_computed_from_points(api_db):
+    """PRICE-09: get_product_detail computes all_time_range from the
+    product's stored total_price extremes, status 'ok', for a product
+    with multiple points."""
+    from api.services.catalog_service import get_product_detail
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {
+                "ts": now,
+                "product_id": "perfect-order_booster_box",
+                "item_price": 165.00,
+                "total_price": 172.50,
+            },
+            {
+                "ts": now - timedelta(days=7),
+                "product_id": "perfect-order_booster_box",
+                "item_price": 150.00,
+                "total_price": 155.00,
+            },
+        ]
+    )
+
+    detail = get_product_detail(api_db, "perfect-order_booster_box")
+
+    assert detail["all_time_range"]["status"] == "ok"
+    assert detail["all_time_range"]["high"] == 172.50
+    assert detail["all_time_range"]["low"] == 155.00
+
+
+def test_detail_all_time_range_single_point_is_ok(api_db):
+    """PRICE-09/Pitfall 3: a product with exactly one collected point
+    has status 'ok' with equal high/low — this is real data, not
+    insufficient data, even though only one point exists."""
+    from api.services.catalog_service import get_product_detail
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_one(
+        {
+            "ts": now,
+            "product_id": "chaos-rising_booster_pack",
+            "item_price": 4.50,
+            "total_price": 4.99,
+        }
+    )
+
+    detail = get_product_detail(api_db, "chaos-rising_booster_pack")
+
+    assert detail["all_time_range"]["status"] == "ok"
+    assert detail["all_time_range"]["high"] == detail["all_time_range"]["low"] == 4.99
+
+
 def test_detail_omits_raw_series(api_db):
     """D-11: the detail dict contains no key whose value is a raw list/
     array of price_points-shaped documents — trend_7d/trend_30d must be
@@ -344,3 +414,10 @@ def test_detail_omits_raw_series(api_db):
 
     assert isinstance(detail["trend_7d"], dict)
     assert isinstance(detail["trend_30d"], dict)
+    assert isinstance(detail["trend_24h"], dict), (
+        "trend_24h must be a mapping, never a series (D-11)"
+    )
+    assert isinstance(detail["all_time_range"], dict), (
+        "all_time_range must be a mapping — two scalars and a status — "
+        "never anything list-shaped (D-11, T-09-04)"
+    )

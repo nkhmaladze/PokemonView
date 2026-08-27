@@ -471,6 +471,126 @@ def test_price_history_scoped_to_one_product(api_db):
     )
 
 
+def test_all_time_range_none_when_no_points(api_db):
+    """A product with zero price_points documents ever returns None —
+    it has no target date and no tolerance window, so there is no
+    result to give, mirroring get_current_price's D-01 contract."""
+    from api.services.price_service import get_all_time_range
+
+    result = get_all_time_range(api_db, "pitch-black_etb")
+    assert result is None
+
+
+def test_all_time_range_single_point_is_real_data(api_db):
+    """Pitfall 3: a product with exactly one price point is real,
+    non-fabricated data — high and low are both that one price, and
+    this is NOT insufficient data. This is the case a copy of
+    get_trend_baseline's tolerance-window contract would get wrong."""
+    from api.services.price_service import get_all_time_range
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_one(
+        {
+            "ts": now,
+            "product_id": "chaos-rising_booster_pack",
+            "item_price": 27.00,
+            "total_price": 29.99,
+        }
+    )
+
+    result = get_all_time_range(api_db, "chaos-rising_booster_pack")
+
+    assert result is not None
+    assert result["high"] == 29.99
+    assert result["low"] == 29.99
+
+
+def test_all_time_range_multi_point_order_independent(api_db):
+    """The result is order-independent: points inserted in a
+    deliberately scrambled sequence still produce the correct high and
+    low, proving the result comes from the $group accumulators and not
+    from insertion order."""
+    from api.services.price_service import get_all_time_range
+
+    now = datetime.now(timezone.utc)
+    # Deliberately scrambled insert order, not ascending or descending.
+    api_db.price_points.insert_many(
+        [
+            {"ts": now - timedelta(days=1), "product_id": "ascended-heroes_booster_box", "item_price": 36.00, "total_price": 39.99},
+            {"ts": now - timedelta(days=3), "product_id": "ascended-heroes_booster_box", "item_price": 30.00, "total_price": 33.00},
+            {"ts": now, "product_id": "ascended-heroes_booster_box", "item_price": 39.00, "total_price": 42.99},
+            {"ts": now - timedelta(days=2), "product_id": "ascended-heroes_booster_box", "item_price": 33.00, "total_price": 36.00},
+        ]
+    )
+
+    result = get_all_time_range(api_db, "ascended-heroes_booster_box")
+
+    assert result["high"] == 42.99
+    assert result["low"] == 33.00
+
+
+def test_all_time_range_all_equal_values(api_db):
+    """A product whose every point has the identical total_price
+    returns that value as both bounds."""
+    from api.services.price_service import get_all_time_range
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {"ts": now - timedelta(days=1), "product_id": "perfect-order_booster_pack", "item_price": 4.50, "total_price": 4.99},
+            {"ts": now, "product_id": "perfect-order_booster_pack", "item_price": 4.50, "total_price": 4.99},
+        ]
+    )
+
+    result = get_all_time_range(api_db, "perfect-order_booster_pack")
+
+    assert result["high"] == 4.99
+    assert result["low"] == 4.99
+
+
+def test_all_time_range_preserves_stored_precision(api_db):
+    """A stored total_price of 172.55 is returned as exactly 172.55,
+    unrounded — the only rounding anywhere in the all-time path is the
+    badge's display formatting, not this function."""
+    from api.services.price_service import get_all_time_range
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_one(
+        {
+            "ts": now,
+            "product_id": "pitch-black_booster_box",
+            "item_price": 165.49,
+            "total_price": 172.55,
+        }
+    )
+
+    result = get_all_time_range(api_db, "pitch-black_booster_box")
+
+    assert result["high"] == 172.55
+    assert result["low"] == 172.55
+
+
+def test_all_time_range_scoped_to_one_product(api_db):
+    """Points belonging to a different product_id in the same
+    collection never contribute to either bound."""
+    from api.services.price_service import get_all_time_range
+
+    now = datetime.now(timezone.utc)
+    api_db.price_points.insert_many(
+        [
+            {"ts": now - timedelta(days=1), "product_id": "chaos-rising_etb", "item_price": 30.00, "total_price": 33.00},
+            {"ts": now, "product_id": "chaos-rising_etb", "item_price": 39.00, "total_price": 42.99},
+            {"ts": now - timedelta(days=1), "product_id": "chaos-rising_booster_box", "item_price": 500.00, "total_price": 549.99},
+            {"ts": now, "product_id": "chaos-rising_booster_box", "item_price": 500.00, "total_price": 549.99},
+        ]
+    )
+
+    result = get_all_time_range(api_db, "chaos-rising_etb")
+
+    assert result["high"] == 42.99
+    assert result["low"] == 33.00
+
+
 def test_price_history_preserves_stored_precision(api_db):
     """A stored total_price of 172.55 comes back exactly 172.55,
     unrounded — no rounding, truncation or float re-encoding between
