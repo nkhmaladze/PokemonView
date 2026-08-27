@@ -169,3 +169,9 @@ None - no external service configuration required.
 ---
 *Phase: 09-price-badges*
 *Completed: 2026-08-28*
+
+## Self-Check: PASSED
+- FOUND: .planning/phases/09-price-badges/09-03-SUMMARY.md
+- FOUND: commit dc25612 (Task 1)
+- FOUND: commit 8612cf7 (Task 2)
+- FOUND: commit 22bb066 (docs: SUMMARY)
