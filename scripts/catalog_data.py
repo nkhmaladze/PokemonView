@@ -53,15 +53,16 @@ Sourcing notes (Task 1 research, 2026-07-13):
 - Ascended Heroes' standard Elite Trainer Box (Target/Walmart) was
   separately confirmed distinct from the Pokemon Center-exclusive
   11-pack ETB variant (which is correctly excluded per D-05).
-- Of the ~12 TCGplayer product IDs 02-RESEARCH.md left unresolved,
-  none could be confidently confirmed in this pass (TCGplayer's
-  product pages are client-side rendered and returned no parseable
-  product ID from a plain HTTP fetch; search-engine access was rate
-  limited before all products could be checked via result snippets).
-  Per the plan's explicit instruction, these image_url fields are set
-  to None rather than fabricated -- only the 4 IDs already confirmed
-  in 02-RESEARCH.md are populated. Resolving the rest is carried
-  forward as a follow-up (see 02-03-SUMMARY.md).
+- Image IDs (2026-10-24): the original pass populated only 4 of the 16
+  image_url fields, because TCGplayer's pages are client-side rendered
+  and no product ID could be confirmed. The other 11 were resolved from
+  TCGplayer product-page URLs found by search, each image downloaded and
+  checked by eye against its set and product type. The standard retail
+  product was chosen over its Pokemon Center exclusive and case siblings
+  (D-05). Ascended Heroes' booster_box stays None: TCGplayer lists no
+  standalone 36-pack Ascended Heroes booster product and this entry has
+  never matched a listing, so the site shows its placeholder tile rather
+  than a substitute image. tests/test_catalog_data.py enforces this.
 """
 
 CATALOG = [
@@ -84,7 +85,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-05-22",
         "msrp": 161.64,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/684444_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Chaos Rising Booster Display Box (36 Packs)",
         "required_keywords": ["chaos rising", "booster box", "display"],
         "verified": True,
@@ -96,7 +97,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-05-22",
         "msrp": 26.94,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/684456_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Chaos Rising Booster Bundle (6 Packs)",
         "required_keywords": ["chaos rising", "booster bundle", "bundle"],
         "verified": True,
@@ -108,7 +109,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-05-22",
         "msrp": 4.49,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/684446_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Chaos Rising Booster Pack",
         "required_keywords": ["chaos rising", "booster pack"],
         "verified": True,
@@ -121,7 +122,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-03-27",
         "msrp": 49.99,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/672401_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Perfect Order Elite Trainer Box",
         "required_keywords": ["perfect order", "elite trainer box", "etb"],
         "verified": True,
@@ -145,7 +146,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-03-27",
         "msrp": 26.94,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/672396_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Perfect Order Booster Bundle (6 Packs)",
         "required_keywords": ["perfect order", "booster bundle", "bundle"],
         "verified": True,
@@ -171,7 +172,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-02-20",
         "msrp": 49.99,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/668496_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Ascended Heroes Elite Trainer Box",
         "required_keywords": ["ascended heroes", "elite trainer box", "etb"],
         "verified": True,
@@ -207,7 +208,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-01-30",
         "msrp": 4.49,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/672434_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Ascended Heroes Booster Pack",
         "required_keywords": ["ascended heroes", "booster pack"],
         "verified": True,
@@ -222,7 +223,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-07-17",
         "msrp": 49.99,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/692947_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Pitch Black Elite Trainer Box",
         "required_keywords": ["pitch black", "elite trainer box", "etb"],
         "verified": False,
@@ -234,7 +235,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-07-17",
         "msrp": 161.64,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/692939_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Pitch Black Booster Display Box (36 Packs)",
         "required_keywords": ["pitch black", "booster box", "display"],
         "verified": False,
@@ -246,7 +247,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-07-17",
         "msrp": 26.94,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/692942_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Pitch Black Booster Bundle (6 Packs)",
         "required_keywords": ["pitch black", "booster bundle", "bundle"],
         "verified": False,
@@ -258,7 +259,7 @@ CATALOG = [
         "language": "en",
         "release_date": "2026-07-17",
         "msrp": 4.49,
-        "image_url": None,
+        "image_url": "https://tcgplayer-cdn.tcgplayer.com/product/692944_in_1000x1000.jpg",
         "display_name": "Pokemon TCG: Mega Evolution-Pitch Black Booster Pack",
         "required_keywords": ["pitch black", "booster pack"],
         "verified": False,
