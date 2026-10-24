@@ -18,6 +18,8 @@ mitigation). `get_product_detail` composes
 never returns a raw price_points series (D-11).
 """
 
+from datetime import timezone
+
 from api.services.price_service import (
     TREND_24H_TOLERANCE_HOURS,
     compute_pct_change,
@@ -74,7 +76,11 @@ def _product_summary(db, product):
         summary["current_price"] = {
             "total_price": current_point["total_price"],
             "item_price": current_point["item_price"],
-            "as_of": current_point["ts"].isoformat(),
+            # The app's MongoClient is not tz_aware, so `ts` comes back naive
+            # though it is a UTC instant; attach the offset so the frontend's
+            # `new Date(as_of)` doesn't read it as the viewer's local time
+            # (same fix as price_service.get_price_history).
+            "as_of": current_point["ts"].replace(tzinfo=timezone.utc).isoformat(),
             "listing_count": current_point.get("listing_count"),
         }
     else:

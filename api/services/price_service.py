@@ -109,9 +109,9 @@ def get_price_history(db, product_id):
         correct instant regardless of the viewer's local timezone
         (CR-01, 08-REVIEW.md). The broader fix — constructing the
         MongoClient itself with tz_aware=True — is out of this
-        function's scope; track it as a follow-up alongside
-        catalog_service.py's `as_of` field, which shares this root
-        cause.
+        function's scope; track it as a follow-up.
+        catalog_service.py's `as_of` field shares this root cause and
+        attaches `timezone.utc` the same way.
 
     Unbounded-response assumption: this function returns every stored
     point for the product with no limit, window or downsampling. This

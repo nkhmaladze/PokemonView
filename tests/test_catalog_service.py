@@ -122,6 +122,47 @@ def test_list_includes_price_and_freshness(api_db):
     assert unpriced["current_price"] is None
 
 
+def _insert_point_at(api_db, product_id, ts):
+    api_db.price_points.insert_one(
+        {"ts": ts, "product_id": product_id, "item_price": 70.00, "total_price": 79.99}
+    )
+
+
+def test_list_as_of_is_an_unambiguous_utc_instant(api_db):
+    """The app's MongoClient is not tz_aware, so pymongo hands back naive
+    datetimes for what are really UTC instants. A bare `.isoformat()` then
+    ships `2026-10-19T19:59:21` with no offset, and the browser's
+    `new Date(as_of)` reads it as the viewer's LOCAL time — the freshness
+    line then says "in 4 hours" for a viewer in EDT. `as_of` must carry an
+    explicit UTC offset and parse back to the exact instant stored."""
+    from api.services.catalog_service import list_products
+
+    stored = datetime(2026, 10, 19, 19, 59, 21, tzinfo=timezone.utc)
+    _insert_point_at(api_db, "perfect-order_booster_box", stored)
+
+    results = list_products(api_db, {"q": None, "set_name": None, "product_type": None})
+    as_of = next(p for p in results if p["id"] == "perfect-order_booster_box")[
+        "current_price"
+    ]["as_of"]
+
+    assert as_of.endswith(("+00:00", "Z")), f"as_of {as_of!r} has no UTC offset"
+    assert datetime.fromisoformat(as_of) == stored
+
+
+def test_detail_as_of_is_an_unambiguous_utc_instant(api_db):
+    """Same contract as the list path — the detail page is where the
+    freshness line is actually rendered, so pin it there too."""
+    from api.services.catalog_service import get_product_detail
+
+    stored = datetime(2026, 10, 19, 19, 59, 21, tzinfo=timezone.utc)
+    _insert_point_at(api_db, "perfect-order_booster_box", stored)
+
+    as_of = get_product_detail(api_db, "perfect-order_booster_box")["current_price"]["as_of"]
+
+    assert as_of.endswith(("+00:00", "Z")), f"as_of {as_of!r} has no UTC offset"
+    assert datetime.fromisoformat(as_of) == stored
+
+
 def test_product_type_enum_validation(api_db):
     """V5: list_products raises ValueError on an invalid non-None
     product_type; each valid enum value does not raise."""
