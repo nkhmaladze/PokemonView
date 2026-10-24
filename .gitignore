@@ -9,3 +9,6 @@ __pycache__/
 venv/
 .venv/
 *.egg-info/
+
+# Personal files kept next to the project, not part of it
+Claude outputs/
