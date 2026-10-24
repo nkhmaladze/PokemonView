@@ -93,3 +93,50 @@ jobs:
       - name: Skip deploy (no token configured)
         if: env.HAS_FLY_TOKEN != 'true'
         run: echo "FLY_API_TOKEN repository secret is not configured yet — skipping deploy."
+
+  deploy-frontend:
+    needs: [deploy]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-frontend-production
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      HAS_VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN != '' }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: team_pSS1uHov6otHe7vY2dqQ0twi
+      VERCEL_PROJECT_ID: prj_sEYIvvKFnmNuTJQcMBAG5UgaaNBE
+    steps:
+      - uses: actions/checkout@v4
+        if: env.HAS_VERCEL_TOKEN == 'true'
+
+      - uses: actions/setup-node@v4
+        if: env.HAS_VERCEL_TOKEN == 'true'
+        with:
+          node-version: '22'
+
+      - name: Install Vercel CLI
+        if: env.HAS_VERCEL_TOKEN == 'true'
+        run: npm install --global vercel@56.2.0
+
+      # Build locally (not on Vercel) so the tracked frontend/.env.production
+      # — which carries VITE_API_BASE_URL — is read from this checkout. The
+      # Vercel project defines no env vars of its own.
+      - name: Pull Vercel project settings
+        if: env.HAS_VERCEL_TOKEN == 'true'
+        run: vercel pull --yes --environment=production
+
+      - name: Build
+        if: env.HAS_VERCEL_TOKEN == 'true'
+        run: vercel build --prod
+
+      - name: Deploy to Vercel
+        if: env.HAS_VERCEL_TOKEN == 'true'
+        run: vercel deploy --prebuilt --prod
+
+      - name: Skip deploy (no token configured)
+        if: env.HAS_VERCEL_TOKEN != 'true'
+        run: echo "VERCEL_TOKEN repository secret is not configured yet — skipping frontend deploy."
