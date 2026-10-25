@@ -69,4 +69,11 @@ describe('ProductRow', () => {
     expect(screen.getByText('No pricing data yet')).toBeInTheDocument()
     expect(screen.queryByText(/\$/)).not.toBeInTheDocument()
   })
+
+  it('loads thumbnails lazily so a long catalog does not fetch every image up front', () => {
+    const { container } = renderRow(okProduct)
+    const img = container.querySelector('img')
+    expect(img).toHaveAttribute('loading', 'lazy')
+    expect(img).toHaveAttribute('decoding', 'async')
+  })
 })

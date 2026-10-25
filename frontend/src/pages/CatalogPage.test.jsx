@@ -105,4 +105,17 @@ describe('CatalogPage', () => {
       )
     ).toBeInTheDocument()
   })
+
+  it('lists each set once in the Set dropdown, in loader order, and narrows the list', async () => {
+    const user = userEvent.setup()
+    renderCatalog()
+    const select = screen.getByRole('combobox', { name: 'Set' })
+    const labels = Array.from(select.querySelectorAll('option')).map((o) => o.textContent)
+    expect(labels).toEqual(['All sets', 'Chaos Rising', 'Perfect Order', 'Pitch Black'])
+
+    await user.selectOptions(select, 'Perfect Order')
+
+    expect(screen.getByText('Perfect Order ETB')).toBeInTheDocument()
+    expect(screen.queryByText('Chaos Rising Booster Box')).not.toBeInTheDocument()
+  })
 })

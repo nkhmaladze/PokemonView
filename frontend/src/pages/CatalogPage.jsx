@@ -26,6 +26,9 @@ export default function CatalogPage() {
   const [productType, setProductType] = useState(null)
   const [setName, setSetName] = useState(null)
 
+  // First-seen order of the loader array = the API's newest-set-first order.
+  const sets = useMemo(() => [...new Set(products.map((product) => product.set_name))], [products])
+
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
     return products.filter((product) => {
@@ -49,6 +52,7 @@ export default function CatalogPage() {
       <FilterChips
         productType={productType}
         onProductType={setProductType}
+        sets={sets}
         setName={setName}
         onSetName={setSetName}
       />

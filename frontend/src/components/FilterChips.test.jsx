@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import FilterChips, { PRODUCT_TYPE_OPTIONS, SET_OPTIONS } from './FilterChips'
+import FilterChips, { PRODUCT_TYPE_OPTIONS } from './FilterChips'
 
 describe('FilterChips', () => {
   it('exports the exact four raw product_type values (VALID_PRODUCT_TYPES, no invented types)', () => {
@@ -10,15 +10,6 @@ describe('FilterChips', () => {
       'booster_box',
       'booster_bundle',
       'etb',
-    ])
-  })
-
-  it('exports the exact four set names (SET_ORDER)', () => {
-    expect(SET_OPTIONS.map((o) => o.value)).toEqual([
-      'Pitch Black',
-      'Chaos Rising',
-      'Perfect Order',
-      'Ascended Heroes',
     ])
   })
 
@@ -35,21 +26,6 @@ describe('FilterChips', () => {
     expect(screen.getByRole('button', { name: 'Booster Box' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Booster Bundle' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'ETB' })).toBeInTheDocument()
-  })
-
-  it('renders all four set chip labels', () => {
-    render(
-      <FilterChips
-        productType={null}
-        onProductType={() => {}}
-        setName={null}
-        onSetName={() => {}}
-      />
-    )
-    expect(screen.getByRole('button', { name: 'Pitch Black' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Chaos Rising' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Perfect Order' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Ascended Heroes' })).toBeInTheDocument()
   })
 
   it('clicking an inactive product_type chip calls onProductType with its raw value', async () => {
@@ -97,29 +73,52 @@ describe('FilterChips', () => {
     expect(inactive.className).not.toContain('chip--active')
   })
 
-  it('clicking a set chip calls onSetName with its raw value, and toggles off when already active', async () => {
-    const user = userEvent.setup()
-    const onSetName = vi.fn()
-    const { rerender } = render(
+  it('renders a Set dropdown with "All sets" first, then the given sets in the given order', () => {
+    render(
       <FilterChips
         productType={null}
         onProductType={() => {}}
+        sets={['Delta Reign', 'Pitch Black', 'Base Set']}
+        setName={null}
+        onSetName={() => {}}
+      />
+    )
+    const select = screen.getByRole('combobox', { name: 'Set' })
+    const labels = Array.from(select.querySelectorAll('option')).map((o) => o.textContent)
+    expect(labels).toEqual(['All sets', 'Delta Reign', 'Pitch Black', 'Base Set'])
+  })
+
+  it('choosing a set calls onSetName with its raw name', async () => {
+    const user = userEvent.setup()
+    const onSetName = vi.fn()
+    render(
+      <FilterChips
+        productType={null}
+        onProductType={() => {}}
+        sets={['Pitch Black', 'Base Set']}
         setName={null}
         onSetName={onSetName}
       />
     )
-    await user.click(screen.getByRole('button', { name: 'Pitch Black' }))
-    expect(onSetName).toHaveBeenCalledWith('Pitch Black')
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Set' }), 'Base Set')
+    expect(onSetName).toHaveBeenCalledWith('Base Set')
+  })
 
-    rerender(
+  it('choosing "All sets" calls onSetName(null)', async () => {
+    const user = userEvent.setup()
+    const onSetName = vi.fn()
+    render(
       <FilterChips
         productType={null}
         onProductType={() => {}}
-        setName="Pitch Black"
+        sets={['Pitch Black', 'Base Set']}
+        setName="Base Set"
         onSetName={onSetName}
       />
     )
-    await user.click(screen.getByRole('button', { name: 'Pitch Black' }))
+    const select = screen.getByRole('combobox', { name: 'Set' })
+    expect(select).toHaveValue('Base Set')
+    await user.selectOptions(select, 'All sets')
     expect(onSetName).toHaveBeenCalledWith(null)
   })
 })
