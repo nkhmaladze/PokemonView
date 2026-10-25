@@ -38,9 +38,12 @@ different problems (05-RESEARCH.md Pitfall 2):
     insufficient-data result.
 """
 
-from datetime import timedelta, timezone
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timedelta, timezone
 
 TREND_TOLERANCE_DAYS = 3  # D-05
+LATEST_PRICE_WINDOW_HOURS = 24  # ingestion runs every 4h; see get_latest_prices
+STALE_LOOKUP_THREADS = 16  # fallback lookups for products older than the window
 # The 24h trend badge's own explicit tolerance — NOT a reuse of
 # TREND_TOLERANCE_DAYS. The ingestion worker polls every four hours by
 # default (INGESTION_INTERVAL_HOURS, scripts/ingest_worker.py), so four
@@ -74,6 +77,38 @@ def get_current_price(db, product_id):
         {"product_id": product_id},
         sort=[("ts", -1)],
     )
+
+
+def get_latest_prices(db, window_hours=LATEST_PRICE_WINDOW_HOURS):
+    """The newest price_points document of EVERY product that has one,
+    without one query per product while ingestion is healthy.
+
+    Same meaning as `get_current_price` (the latest point however old, D-02)
+    for a whole catalog at once: one query reads the points of the last
+    `window_hours` (ingestion runs every 4 hours, so that covers every
+    actively priced product) and one `$group` names every product that has
+    any point (MongoDB advises `$group` over `distinct` on time-series
+    collections). Only a product whose newest point is older than the window
+    falls back to `get_current_price`, run on a small thread pool so a long
+    ingestion outage costs seconds, not minutes.
+
+    Returns:
+        dict[str, dict]: product_id -> price_points document; products with
+        no point at all are absent.
+    """
+    since = datetime.now(timezone.utc) - timedelta(hours=window_hours)
+    latest = {}
+    for doc in db.price_points.find({"ts": {"$gte": since}}).sort("ts", -1):
+        latest.setdefault(doc["product_id"], doc)
+
+    with_history = [row["_id"] for row in db.price_points.aggregate([{"$group": {"_id": "$product_id"}}])]
+    stale = [product_id for product_id in with_history if product_id not in latest]
+    if stale:
+        with ThreadPoolExecutor(max_workers=min(STALE_LOOKUP_THREADS, len(stale))) as pool:
+            for product_id, point in zip(stale, pool.map(lambda pid: get_current_price(db, pid), stale)):
+                if point is not None:
+                    latest[product_id] = point
+    return latest
 
 
 def get_price_history(db, product_id):

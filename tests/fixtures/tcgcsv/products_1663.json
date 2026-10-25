@@ -1,0 +1,91 @@
+{
+ "results": [
+  {
+   "productId": 107596,
+   "name": "Pokemon Base Set (Shadowless) [1st Edition] Booster Box",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/107596_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 107597,
+   "name": "Pokemon Base Set (Shadowless) [Unlimited Edition] Booster Box",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/107597_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 107602,
+   "name": "Pokemon 2-Player Starter Set",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/107602_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 107603,
+   "name": "Base Set Theme Deck - \"Blackout\"",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/107603_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 107604,
+   "name": "Base Set Theme Deck - \"Brushfire\"",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/107604_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 107605,
+   "name": "Base Set Theme Deck - \"Overgrowth\"",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/107605_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 107606,
+   "name": "Base Set Theme Deck - \"Zap!\"",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/107606_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 138131,
+   "name": "Pokemon Base Set (Shadowless) [Unlimited Edition] Booster Pack",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/138131_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 138132,
+   "name": "Pokemon Base Set (Shadowless) [1st Edition] Booster Pack",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/138132_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 106996,
+   "name": "Alakazam",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/106996_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "001/102"
+    }
+   ]
+  },
+  {
+   "productId": 106997,
+   "name": "Blastoise",
+   "groupId": 1663,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/106997_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "002/102"
+    }
+   ]
+  }
+ ]
+}

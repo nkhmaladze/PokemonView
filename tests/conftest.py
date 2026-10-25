@@ -166,7 +166,7 @@ def api_db():
     """Yield a live pymongo Database handle for a dedicated test DB.
 
     Mirrors `catalog_db`'s structure exactly: seeds `products` via
-    `seed_catalog(db, CATALOG)` so all 16 catalog products exist, but
+    `seed_catalog(db, CATALOG)` so every catalog product exists, but
     leaves `price_points` initialized-but-EMPTY — Phase 5's
     price/catalog service tests each insert the controlled
     `price_points` documents their own scenario needs (gap-tolerant

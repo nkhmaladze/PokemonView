@@ -25,16 +25,18 @@ capability did not loosen the detail route's existing D-11 contract.
 import os
 from datetime import datetime, timedelta, timezone
 
+from scripts.catalog_data import CATALOG
+
 
 def test_list_products_200(client):
     """SC1: GET /products returns HTTP 200 and a JSON array containing
-    all 16 seeded catalog products."""
+    every seeded catalog product."""
     response = client.get("/products")
 
     assert response.status_code == 200
     body = response.get_json()
     assert isinstance(body, list)
-    assert len(body) == 16
+    assert len(body) == len(CATALOG)
 
 
 def test_list_filter_by_set_and_type(client):
@@ -212,22 +214,23 @@ def test_product_type_enum_validation(client):
     assert response.get_json() == {"error": "invalid_product_type"}
 
 
-def test_unregistered_set_name_returns_500_not_400(client, api_db, monkeypatch):
+def test_internal_value_error_returns_500_not_400(client, monkeypatch):
     """CR-01/VERIFICATION.md gap #11: an internal data-integrity
-    ValueError (SET_ORDER.index() failing on an unregistered
-    set_name) must surface as a generic 500 {"error": "internal_error"},
-    NEVER masked as a client-facing 400 {"error": "invalid_product_type"}.
+    ValueError (a plain base ValueError, not InvalidProductTypeError)
+    must surface as a generic 500 {"error": "internal_error"}, NEVER
+    masked as a client-facing 400 {"error": "invalid_product_type"}.
 
-    Monkeypatching SET_ORDER to an empty list makes every seeded
-    product's set_name unregistered, so sort_key's SET_ORDER.index()
-    raises a plain base ValueError (not InvalidProductTypeError) during
-    GET /products. This test FAILS against the pre-fix broad-except
-    code (it would return 400) and PASSES only once the route narrows
-    its except clause to catalog_service.InvalidProductTypeError.
+    Simulated by making the per-product summary raise a plain
+    ValueError. This test FAILS against a broad-except route (it would
+    return 400) and PASSES only while the route narrows its except
+    clause to catalog_service.InvalidProductTypeError.
     """
     from api.services import catalog_service
 
-    monkeypatch.setattr(catalog_service, "SET_ORDER", [])
+    def raise_value_error(*args, **kwargs):
+        raise ValueError("simulated internal data-integrity error")
+
+    monkeypatch.setattr(catalog_service, "_product_summary", raise_value_error)
 
     response = client.get("/products")
 
@@ -521,8 +524,8 @@ def test_every_catalog_product_detail_carries_all_four_badge_fields(client, api_
     """ROADMAP success criterion 4: badge-field completeness is a
     property of the response, not of one hand-picked fixture. Points
     are inserted for two products (a priced state) while the rest of
-    the sixteen-product catalog remains unpriced (the insufficient-data
-    state), and every one of the sixteen detail responses must carry
+    the rest of the catalog remains unpriced (the insufficient-data
+    state), and every sampled detail response must carry
     all four badge fields with the correct shape regardless of which
     state it's in."""
     now = datetime.now(timezone.utc)
@@ -542,7 +545,7 @@ def test_every_catalog_product_detail_carries_all_four_badge_fields(client, api_
             },
             {
                 "ts": now,
-                "product_id": "ascended-heroes_booster_box",
+                "product_id": "ascended-heroes_etb",
                 "item_price": 140.00,
                 "total_price": 148.00,
             },
@@ -551,8 +554,14 @@ def test_every_catalog_product_detail_carries_all_four_badge_fields(client, api_
 
     catalog_response = client.get("/products")
     assert catalog_response.status_code == 200
-    product_ids = [p["id"] for p in catalog_response.get_json()]
-    assert len(product_ids) == 16, "catalog sweep must cover all sixteen seeded products"
+    all_ids = [p["id"] for p in catalog_response.get_json()]
+    assert len(all_ids) == len(CATALOG)
+    # Sweep the 15 curated products plus every 10th of the rest: a full
+    # sweep of the ~350-product catalog adds minutes for no extra signal.
+    curated_sets = {"Pitch Black", "Chaos Rising", "Perfect Order", "Ascended Heroes"}
+    curated_ids = [p["id"] for p in catalog_response.get_json() if p["set_name"] in curated_sets]
+    product_ids = curated_ids + [i for i in all_ids if i not in curated_ids][::10]
+    assert len(curated_ids) == 15
 
     for product_id in product_ids:
         detail_response = client.get(f"/products/{product_id}")

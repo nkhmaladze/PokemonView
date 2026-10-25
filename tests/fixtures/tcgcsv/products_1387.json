@@ -1,0 +1,378 @@
+{
+ "results": [
+  {
+   "productId": 91598,
+   "name": "Sylveon Collection",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/91598_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 91601,
+   "name": "XY Booster Box",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/91601_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 91602,
+   "name": "XY Booster Pack",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/91602_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 91603,
+   "name": "XY Base Set Theme Deck - \"Resilient Life\" [Xerneas]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/91603_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 91604,
+   "name": "XY Base Set Theme Deck - \"Destruction Rush\" [Yveltal]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/91604_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97712,
+   "name": "Collector's Pin Three Pack Blisters (Chespin)",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97712_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97713,
+   "name": "Kalos Starter Figure Box [Chespin Box]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97713_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97714,
+   "name": "Kalos Starter Figure Box [Fennekin Box]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97714_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97715,
+   "name": "Kalos Starter Figure Box [Froakie Box]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97715_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97722,
+   "name": "XY Collector Pin 3 Pack Blisters [Xerneas]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97722_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97723,
+   "name": "XY Collector Pin 3 Pack Blisters [Yveltal]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97723_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97724,
+   "name": "Xerneas Figure Collection",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97724_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97725,
+   "name": "Yveltal Figure Collection",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97725_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97726,
+   "name": "Legend of Kalos Tin [Xerneas EX]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97726_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97727,
+   "name": "Legend of Kalos Tin [Yveltal EX]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97727_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97729,
+   "name": "Garchomp EX Box",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97729_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97732,
+   "name": "XY Two Pack Blister [Kanto Trio]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97732_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97733,
+   "name": "XY Two Pack Blister [Dragon Trio]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97733_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97734,
+   "name": "XY 3 Pack Blister [Gallade]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97734_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97735,
+   "name": "XY Three Pack Blister [Gyarados]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97735_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97736,
+   "name": "XY Single Pack Blister [Salamence]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97736_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97743,
+   "name": "XY Single Pack Blister [Dragonite]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97743_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97747,
+   "name": "XY Elite Trainer Box [Xerneas]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97747_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 97748,
+   "name": "XY Elite Trainer Box [Yveltal]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/97748_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 276589,
+   "name": "XY Sleeved Booster Pack Art Bundle [Set of 4]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/276589_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280492,
+   "name": "Code Card - Garchomp EX Box",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280492_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280493,
+   "name": "Code Card - Kalos Starter Figure Box [Chespin Box]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280493_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280494,
+   "name": "Code Card - Kalos Starter Figure Box [Fennekin Box]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280494_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280495,
+   "name": "Code Card - Kalos Starter Figure Box [Froakie Box]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280495_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280497,
+   "name": "Code Card - Legend of Kalos Tin [Xerneas EX]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280497_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280498,
+   "name": "Code Card - Legend of Kalos Tin [Yveltal EX]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280498_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280499,
+   "name": "Code Card - Sylveon Collection",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280499_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280500,
+   "name": "Code Card - Xerneas Figure Collection",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280500_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280501,
+   "name": "Code Card - XY 3 Pack Blister [Gallade]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280501_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280502,
+   "name": "Code Card - XY Base Set Theme Deck - \"Destruction Rush\" [Yveltal]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280502_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280503,
+   "name": "Code Card - XY Base Set Theme Deck - \"Resilient Life\" [Xerneas]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280503_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280504,
+   "name": "Code Card - XY Booster Pack",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280504_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280505,
+   "name": "Code Card - XY Collector Pin 3 Pack Blisters [Xerneas]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280505_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280506,
+   "name": "Code Card - XY Collector Pin 3 Pack Blisters [Yveltal]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280506_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280507,
+   "name": "Code Card - XY Elite Trainer Box [Xerneas]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280507_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280508,
+   "name": "Code Card - XY Elite Trainer Box [Yveltal]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280508_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280509,
+   "name": "Code Card - XY Single Pack Blister [Dragonite]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280509_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280510,
+   "name": "Code Card - XY Single Pack Blister [Salamence]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280510_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280511,
+   "name": "Code Card - XY Three Pack Blister [Gyarados]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280511_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280512,
+   "name": "Code Card - XY Two Pack Blister [Dragon Trio]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280512_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280513,
+   "name": "Code Card - XY Two Pack Blister [Kanto Trio]",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280513_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280514,
+   "name": "Code Card - Yveltal Figure Collection",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280514_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 562107,
+   "name": "XY Base Set Sleeved Booster Pack",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/562107_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 645311,
+   "name": "Collector's Pin Three Pack Blisters (Froakie)",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/645311_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 645312,
+   "name": "Collector's Pin Three Pack Blisters (Fennekin)",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/645312_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 83462,
+   "name": "Aegislash (85)",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/83462_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "85/146"
+    }
+   ]
+  },
+  {
+   "productId": 83463,
+   "name": "Aegislash (86)",
+   "groupId": 1387,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/83463_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "86/146"
+    }
+   ]
+  }
+ ]
+}

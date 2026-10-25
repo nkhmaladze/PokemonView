@@ -12,8 +12,8 @@ prevents overlapping runs via a MongoDB TTL lock in `ingestion_locks`.
 No token caching/refresh wrapper is built here — `get_app_token()` is
 called once per run and the resulting token is reused across every
 catalog product query in that run (03-RESEARCH.md Anti-Patterns; a
-~16-product run completes in seconds to low minutes, nowhere near the
-~7,200s token lifetime).
+~350-product run, one sequential search per product, completes in a
+few minutes, nowhere near the ~7,200s token lifetime).
 
 No top-level side effects on import: no MongoClient construction, no
 network calls, no scheduler startup happen merely from `import
@@ -41,6 +41,7 @@ from pymongo.errors import DuplicateKeyError
 
 from db.init_collections import init_collections
 from scripts.catalog_data import CATALOG
+from scripts.catalog_slug import product_slug
 from scripts.ebay_client import get_app_token, search_sealed_listings, total_cost
 from scripts.matching import run_matching_once
 
@@ -57,8 +58,16 @@ PRODUCT_TYPE_SEARCH_TERMS = {
     "booster_bundle": "Booster Bundle",
 }
 
+# Edition words that belong in the eBay search. Unlimited (and no edition)
+# add nothing: sellers almost never write "unlimited", and the matcher
+# tells it apart by the absence of the 1st Edition / Shadowless words.
+EDITION_SEARCH_TERMS = {
+    "1st Edition": "1st Edition",
+    "Shadowless": "Shadowless",
+}
+
 LOCK_ID = "active_listing_ingestion"
-LOCK_TTL_SECONDS = 900  # generously longer than one run should ever take
+LOCK_TTL_SECONDS = 900  # a ~350-search run takes a few minutes; the lock only guards overlap, and runs are 4h apart
 
 # ~2x the INGESTION_INTERVAL_HOURS default of 4 (D-07) — the staleness
 # alert fires once the last successful/partial run is more than two
@@ -75,11 +84,16 @@ HEARTBEAT_LOOKBACK_HOURS = 24
 def build_query(product: dict) -> str:
     """Build the Browse API `q` search string for a catalog product.
 
-    Returns "Pokemon {set_name} {product-type phrase}" — never joins
-    `required_keywords` (that field is Phase 4's matching input, not
-    a search-query source; 03-RESEARCH.md Pitfall 4).
+    Returns "Pokemon {set_name}[ {edition words}] {product-type phrase}"
+    — never joins `required_keywords` (that field is Phase 4's matching
+    input, not a search-query source; 03-RESEARCH.md Pitfall 4).
     """
-    return f"Pokemon {product['set_name']} {PRODUCT_TYPE_SEARCH_TERMS[product['product_type']]}"
+    parts = ["Pokemon", product["set_name"]]
+    edition_terms = EDITION_SEARCH_TERMS.get(product.get("edition"))
+    if edition_terms:
+        parts.append(edition_terms)
+    parts.append(PRODUCT_TYPE_SEARCH_TERMS[product["product_type"]])
+    return " ".join(parts)
 
 
 def ensure_lock_index(db):
@@ -267,11 +281,7 @@ def run_ingestion_once(db):
             # to the outer try and aborting every remaining product.
             product_ref = None
             try:
-                product_ref = (
-                    f"{product['set_name']}_{product['product_type']}"
-                    .lower()
-                    .replace(" ", "-")
-                )
+                product_ref = product_slug(product)
                 query = build_query(product)
                 items = search_sealed_listings(access_token, query)
                 result = upsert_listings(

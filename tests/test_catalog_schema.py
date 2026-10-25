@@ -20,6 +20,7 @@ follow beyond RESEARCH.md's Validation Architecture).
 """
 
 import pymongo.errors
+import pytest
 
 from scripts.catalog_data import CATALOG
 
@@ -52,12 +53,14 @@ def test_catalog_completeness(catalog_db):
     )
 
     pairs = [
-        (doc["set_name"], doc["product_type"])
-        for doc in catalog_db.products.find({}, {"set_name": 1, "product_type": 1})
+        (doc["set_name"], doc.get("edition"), doc["product_type"])
+        for doc in catalog_db.products.find(
+            {}, {"set_name": 1, "edition": 1, "product_type": 1}
+        )
     ]
     assert len(pairs) == len(set(pairs)), (
-        "found duplicate (set_name, product_type) pairs in products — "
-        "each pair must be a distinct catalog entry"
+        "found duplicate (set_name, edition, product_type) triples in products — "
+        "each triple must be a distinct catalog entry"
     )
 
 
@@ -129,3 +132,57 @@ def test_query_by_set_and_type(catalog_db):
         f"expected a compound index covering set_name and product_type, "
         f"found indexes: {index_info}"
     )
+
+
+def _edition_doc(edition):
+    return {
+        "set_name": "Zz Edition Test Set",
+        "product_type": "booster_box",
+        "edition": edition,
+        "language": "en",
+        "display_name": f"Zz Edition Test Set Booster Box ({edition})",
+        "required_keywords": ["zz edition test set", "booster box"],
+    }
+
+
+def test_editions_of_one_set_and_type_can_coexist(catalog_db):
+    """1st Edition and Unlimited versions of the same set/type are distinct
+    products (the unique index spans edition)."""
+    catalog_db.products.insert_one({"_id": "zz-1st", **_edition_doc("1st Edition")})
+    catalog_db.products.insert_one({"_id": "zz-unl", **_edition_doc("Unlimited")})
+
+
+def test_duplicate_set_edition_type_is_rejected(catalog_db):
+    catalog_db.products.insert_one({"_id": "zz-a", **_edition_doc("1st Edition")})
+    with pytest.raises(pymongo.errors.DuplicateKeyError):
+        catalog_db.products.insert_one({"_id": "zz-b", **_edition_doc("1st Edition")})
+
+
+def test_unknown_edition_value_is_rejected(catalog_db):
+    with pytest.raises(pymongo.errors.WriteError):
+        catalog_db.products.insert_one({"_id": "zz-x", **_edition_doc("Second Edition")})
+
+
+def test_init_collections_replaces_legacy_unique_index(catalog_db):
+    """A deployment created before editions has a unique (set_name,
+    product_type) index that would reject a second edition; init_collections
+    must drop it."""
+    from db.init_collections import init_collections
+
+    catalog_db.products.delete_many({})
+    catalog_db.products.drop_index("set_name_1_edition_1_product_type_1")
+    catalog_db.products.create_index(
+        [("set_name", 1), ("product_type", 1)], unique=True
+    )
+
+    init_collections(catalog_db)
+
+    indexes = catalog_db.products.index_information()
+    assert "set_name_1_product_type_1" not in indexes
+    assert indexes["set_name_1_edition_1_product_type_1"]["unique"] is True
+
+
+def test_seed_gives_curated_entries_the_new_fields(catalog_db):
+    doc = catalog_db.products.find_one({"_id": "chaos-rising_etb"})
+    assert doc["edition"] is None
+    assert doc["excluded_keywords"] == []

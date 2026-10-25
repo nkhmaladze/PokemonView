@@ -9,7 +9,7 @@ test's body so `pytest --collect-only` succeeds now. These tests turn
 GREEN when Plan 05-05 implements `catalog_service.py`.
 
 Uses the `api_db` fixture (a real `pokemonview_test` MongoDB handle
-with the 16-product catalog seeded from scripts/catalog_data.py and
+with the full catalog seeded from scripts/catalog_data.py and
 `price_points` left empty) — tests that need priced products insert
 controlled `price_points` documents directly. Response dicts are
 asserted against the exact JSON Response Contract shape locked in
@@ -21,6 +21,8 @@ the Flask routes `jsonify()` with no further transformation.
 from datetime import datetime, timedelta, timezone
 
 import pytest
+
+from scripts.catalog_data import CATALOG
 
 
 def test_list_products_filters(api_db):
@@ -36,12 +38,19 @@ def test_list_products_filters(api_db):
     assert all(p["set_name"] == "Perfect Order" for p in by_set)
 
     by_type = list_products(api_db, {**no_filter, "product_type": "etb"})
-    assert len(by_type) == 4
+    assert len(by_type) == sum(1 for e in CATALOG if e["product_type"] == "etb")
     assert all(p["product_type"] == "etb" for p in by_type)
 
     by_query = list_products(api_db, {**no_filter, "q": "chaos"})
-    assert len(by_query) == 4, "free-text 'chaos' must match all 4 Chaos Rising products"
-    assert all(p["set_name"] == "Chaos Rising" for p in by_query)
+    expected_chaos = [
+        e
+        for e in CATALOG
+        if "chaos" in e["display_name"].lower() or "chaos" in e["set_name"].lower()
+    ]
+    assert len(by_query) == len(expected_chaos)
+    assert {p["set_name"] for p in by_query} == {"Chaos Rising"}, (
+        "free-text 'chaos' must match only Chaos Rising products"
+    )
 
     combined = list_products(
         api_db,
@@ -51,26 +60,158 @@ def test_list_products_filters(api_db):
     assert combined[0]["id"] == "chaos-rising_booster_pack"
 
 
-def test_default_sort_order(api_db):
-    """D-10: with no filters, results are grouped by set in the
-    hardcoded SET_ORDER (Pitch Black -> Chaos Rising -> Perfect Order
-    -> Ascended Heroes), NOT a raw release_date sort (05-RESEARCH.md
-    Pitfall 1 — per-product release_date is staggered within a set)."""
+TYPE_RANK = {"booster_box": 0, "etb": 1, "booster_bundle": 2, "booster_pack": 3}
+EDITION_RANK = {"1st Edition": 0, "Shadowless": 1, "Unlimited": 2, None: 3}
+
+
+def _expected_set_order():
+    """Sets newest first by their earliest product release_date, name as
+    tiebreak — computed from the catalog data, not a hardcoded list."""
+    earliest = {}
+    for e in CATALOG:
+        date = e["release_date"]
+        earliest[e["set_name"]] = min(date, earliest.get(e["set_name"], date))
+    return sorted(earliest, key=lambda name: (_negate(earliest[name]), name))
+
+
+def _negate(iso_date):
+    # descending by date inside an ascending sort: invert each digit
+    return "".join(str(9 - int(c)) if c.isdigit() else c for c in iso_date)
+
+
+def test_default_sort_order_is_newest_set_first(api_db):
+    """With no filters, sets are grouped (never interleaved) newest first
+    by their earliest product release_date; inside a set, products sort by
+    edition then type (box, ETB, bundle, pack). No hardcoded set list."""
     from api.services.catalog_service import list_products
 
     results = list_products(api_db, {"q": None, "set_name": None, "product_type": None})
-    assert len(results) == 16
+    assert len(results) == len(CATALOG)
 
-    expected_group_order = ["Pitch Black", "Chaos Rising", "Perfect Order", "Ascended Heroes"]
-    last_group_index = -1
+    seen_sets = []
     for product in results:
-        group_index = expected_group_order.index(product["set_name"])
-        assert group_index >= last_group_index, (
-            f"sets must be grouped together in SET_ORDER sequence "
-            f"{expected_group_order}, not interleaved — saw "
-            f"{product['set_name']} after a later-ordered set"
+        if not seen_sets or seen_sets[-1] != product["set_name"]:
+            assert product["set_name"] not in seen_sets, (
+                f"{product['set_name']} appears in two separate groups"
+            )
+            seen_sets.append(product["set_name"])
+    assert seen_sets == _expected_set_order()
+
+    by_id = {}
+    for e in CATALOG:
+        from scripts.catalog_slug import product_slug
+
+        by_id[product_slug(e)] = e
+    keys = [
+        (EDITION_RANK[by_id[p["id"]].get("edition")], TYPE_RANK[p["product_type"]])
+        for p in results
+        if p["set_name"] == "Base Set"
+    ]
+    assert keys == sorted(keys)
+
+
+def _product_doc(set_name, product_type, release_date, msrp=None, **extra):
+    doc = {
+        "_id": f"{set_name}_{product_type}".lower().replace(" ", "-"),
+        "set_name": set_name,
+        "product_type": product_type,
+        "language": "en",
+        "display_name": f"{set_name} {product_type}",
+        "required_keywords": [set_name.lower()],
+        "release_date": release_date,
+        "msrp": msrp,
+        "image_url": None,
+        "verified": True,
+        "verified_at": None,
+    }
+    doc.update(extra)
+    return doc
+
+
+def test_set_unknown_to_old_set_order_does_not_raise(api_db):
+    """A set the old hardcoded SET_ORDER never heard of must list, and
+    sort by its release date."""
+    from api.services.catalog_service import list_products
+
+    api_db.products.insert_many(
+        [
+            _product_doc("Alpha Test Set", "booster_box", datetime(1990, 1, 1)),
+            _product_doc("Zeta Test Set", "booster_box", datetime(2030, 1, 1)),
+        ]
+    )
+
+    results = list_products(api_db, {"q": None, "set_name": None, "product_type": None})
+
+    assert results[0]["set_name"] == "Zeta Test Set"
+    assert results[-1]["set_name"] == "Alpha Test Set"
+
+
+def test_products_with_null_msrp_are_listed_and_sorted_by_type(api_db):
+    from api.services.catalog_service import list_products
+
+    when = datetime(2031, 1, 1)
+    api_db.products.insert_many(
+        [
+            _product_doc("Null Msrp Set", t, when, msrp=None)
+            for t in ("booster_pack", "etb", "booster_bundle", "booster_box")
+        ]
+    )
+
+    results = list_products(
+        api_db, {"q": None, "set_name": "Null Msrp Set", "product_type": None}
+    )
+
+    assert [p["product_type"] for p in results] == [
+        "booster_box",
+        "etb",
+        "booster_bundle",
+        "booster_pack",
+    ]
+    assert all(p["msrp"] is None for p in results)
+
+
+def test_legacy_document_without_edition_field_lists(api_db):
+    """A products document written before editions existed (no `edition`,
+    no `excluded_keywords`) still lists."""
+    from api.services.catalog_service import list_products
+
+    legacy = _product_doc("Legacy Test Set", "etb", datetime(2032, 1, 1))
+    assert "edition" not in legacy and "excluded_keywords" not in legacy
+    api_db.products.insert_one(legacy)
+
+    results = list_products(
+        api_db, {"q": None, "set_name": "Legacy Test Set", "product_type": None}
+    )
+
+    assert [p["id"] for p in results] == ["legacy-test-set_etb"]
+
+
+def test_list_prices_match_sequential_lookup(api_db):
+    """The list endpoint's per-product prices equal a plain one-at-a-time
+    get_current_price lookup (guards the parallel fetch)."""
+    from api.services.catalog_service import list_products
+    from api.services.price_service import get_current_price
+
+    now = datetime.now(timezone.utc)
+    totals = {
+        "perfect-order_booster_box": 172.50,
+        "chaos-rising_etb": 61.25,
+        "pitch-black_booster_pack": 5.75,
+    }
+    for product_id, total in totals.items():
+        api_db.price_points.insert_one(
+            {"ts": now, "product_id": product_id, "item_price": total - 5, "total_price": total}
         )
-        last_group_index = group_index
+
+    results = list_products(api_db, {"q": None, "set_name": None, "product_type": None})
+
+    for product in results:
+        point = get_current_price(api_db, product["id"])
+        if point is None:
+            assert product["current_price"] is None
+        else:
+            assert product["current_price"]["total_price"] == point["total_price"]
+    assert sum(p["current_price"] is not None for p in results) == len(totals)
 
 
 def test_unverified_products_shown_identically(api_db):
@@ -462,3 +603,45 @@ def test_detail_omits_raw_series(api_db):
         "all_time_range must be a mapping — two scalars and a status — "
         "never anything list-shaped (D-11, T-09-04)"
     )
+
+
+def test_list_uses_a_constant_number_of_price_queries(api_db, monkeypatch):
+    """With every point recent, listing the catalog issues no per-product
+    price lookup at all (it used to issue one per product)."""
+    import api.services.catalog_service as catalog_service
+    from api.services import price_service
+
+    now = datetime.now(timezone.utc)
+    for product_id, total in {"perfect-order_booster_box": 172.50, "chaos-rising_etb": 61.25}.items():
+        api_db.price_points.insert_one(
+            {"ts": now, "product_id": product_id, "item_price": total - 5, "total_price": total}
+        )
+    calls = []
+    real = price_service.get_current_price
+
+    def counting(db, product_id):
+        calls.append(product_id)
+        return real(db, product_id)
+
+    monkeypatch.setattr(price_service, "get_current_price", counting)
+    monkeypatch.setattr(catalog_service, "get_current_price", counting)
+
+    results = catalog_service.list_products(api_db, {"q": None, "set_name": None, "product_type": None})
+
+    assert calls == []
+    assert sum(p["current_price"] is not None for p in results) == 2
+
+
+def test_list_still_shows_a_price_older_than_the_recent_window(api_db):
+    """D-02: the current price is the latest point however old, so a
+    product whose newest point is weeks old still lists with it."""
+    from api.services.catalog_service import list_products
+
+    old = datetime.now(timezone.utc) - timedelta(days=21)
+    _insert_point_at(api_db, "pitch-black_etb", old)
+
+    results = list_products(api_db, {"q": None, "set_name": None, "product_type": None})
+
+    listed = next(p for p in results if p["id"] == "pitch-black_etb")
+    assert listed["price_status"] == "ok"
+    assert listed["current_price"]["total_price"] == 79.99

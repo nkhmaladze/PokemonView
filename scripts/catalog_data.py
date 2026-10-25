@@ -1,16 +1,29 @@
-"""Curated v1 sealed-product catalog for PokemonView (CATALOG-01, CATALOG-02).
+"""Sealed-product catalog for PokemonView (CATALOG-01, CATALOG-02).
 
-Holds every in-scope standard-retail sealed product across the 4 sets
-selected for v1 (D-01): Chaos Rising (ME04), Perfect Order (ME03),
-Ascended Heroes, and Pitch Black (ME05). Each entry is a plain dict
-describing one distinct (set, product_type) combination — up to 4
-product types per set: booster_pack, booster_box, etb, booster_bundle
-(D-06 introduces booster_bundle as a distinct type from box/pack).
+`CATALOG` = `CURATED_CATALOG` + `GENERATED_CATALOG`.
+
+CURATED_CATALOG is hand-maintained: the 4 sets selected for v1 (D-01) —
+Chaos Rising (ME04), Perfect Order (ME03), Ascended Heroes, and Pitch
+Black (ME05) — with real MSRPs, hand-checked keywords and `verified`
+flags. GENERATED_CATALOG (scripts/catalog_generated.py, written by
+`python -m scripts.build_catalog`) holds every other English booster
+pack, booster box, ETB and booster bundle from Base Set (1999) onward,
+including 1st Edition / Shadowless / Unlimited printings, with msrp
+None. Never edit the generated file by hand.
+
+Each entry is a plain dict describing one distinct (set, edition,
+product_type) combination — up to 4 product types per set: booster_pack,
+booster_box, etb, booster_bundle (D-06 introduces booster_bundle as a
+distinct type from box/pack).
 
 Fields per entry (CATALOG-02):
     set_name          str  -- e.g. "Perfect Order"
     product_type      str  -- one of booster_pack | booster_box | etb |
                               booster_bundle
+    edition           str | None  -- "1st Edition" | "Shadowless" |
+                              "Unlimited" for Wizards-era sets with more
+                              than one printing, otherwise None (curated
+                              entries omit the key; the seed fills None)
     language          str  -- always "en" (v1 is English-only)
     release_date      str | None  -- ISO "YYYY-MM-DD"; the seed script
                               converts this to a datetime at insert time
@@ -24,6 +37,11 @@ Fields per entry (CATALOG-02):
                               Phase 4's matching never confuses a
                               booster_bundle listing with a booster_box
                               or booster_pack listing for the same set
+    excluded_keywords list[str]  -- optional, normalized phrases that
+                              disqualify a listing from matching this
+                              entry (other sets' names, other product
+                              types, other editions); generated entries
+                              always carry it, curated ones omit it
     verified          bool -- False for Pitch Black (D-02: pre-release
                               data, not yet confirmed against the actual
                               2026-07-17 retail release), True otherwise
@@ -42,30 +60,29 @@ Sourcing notes (Task 1 research, 2026-07-13):
   Pokémon Center product listing snippet ("Mega Evolution-Chaos Rising
   Booster Display Box (36 Packs) $161.64") -- resolved to $161.64,
   matching the sibling sets' 36-pack box price.
-- Ascended Heroes' standard (non-Pokemon-Center-exclusive) booster box
-  was flagged as possibly not existing (Assumption A2). Confirmed to
-  exist via independent eBay/TCGplayer listings and a dedicated
-  "Ascended Heroes ETB & Booster Box Price: Restock Tracker" tracking
-  article -- the entry is kept, with MSRP pattern-matched to $161.64
-  (consistent with Perfect Order/Chaos Rising/Pitch Black's cited
-  36-pack box price; not independently re-cited at the exact dollar
-  figure, so treat as MEDIUM rather than HIGH confidence).
+- Ascended Heroes has NO booster box entry (removed 2026-10-24). It was
+  originally kept on the strength of a restock-tracker article (see
+  Assumption A2 in 02-RESEARCH.md), but TCGplayer lists no standalone
+  36-pack Ascended Heroes booster product (only bundles, bundle
+  displays, ETBs and Mega ex boxes) and the entry never matched a single
+  eBay listing in months of ingestion. Do not re-add it without a real
+  product to point at.
 - Ascended Heroes' standard Elite Trainer Box (Target/Walmart) was
   separately confirmed distinct from the Pokemon Center-exclusive
   11-pack ETB variant (which is correctly excluded per D-05).
-- Image IDs (2026-10-24): the original pass populated only 4 of the 16
-  image_url fields, because TCGplayer's pages are client-side rendered
-  and no product ID could be confirmed. The other 11 were resolved from
+- Image IDs (2026-10-24): the original pass populated only 4 image_url
+  fields, because TCGplayer's pages are client-side rendered and no
+  product ID could be confirmed. The other 11 were resolved from
   TCGplayer product-page URLs found by search, each image downloaded and
   checked by eye against its set and product type. The standard retail
   product was chosen over its Pokemon Center exclusive and case siblings
-  (D-05). Ascended Heroes' booster_box stays None: TCGplayer lists no
-  standalone 36-pack Ascended Heroes booster product and this entry has
-  never matched a listing, so the site shows its placeholder tile rather
-  than a substitute image. tests/test_catalog_data.py enforces this.
+  (D-05). Every entry must carry an image; tests/test_catalog_data.py
+  enforces this.
 """
 
-CATALOG = [
+from scripts.catalog_generated import GENERATED_CATALOG  # noqa: E402
+
+CURATED_CATALOG = [
     # -- Chaos Rising (ME04) - released 2026-05-22 --
     {
         "set_name": "Chaos Rising",
@@ -180,18 +197,6 @@ CATALOG = [
     },
     {
         "set_name": "Ascended Heroes",
-        "product_type": "booster_box",
-        "language": "en",
-        "release_date": "2026-01-30",
-        "msrp": 161.64,
-        "image_url": None,
-        "display_name": "Pokemon TCG: Mega Evolution-Ascended Heroes Booster Display Box (36 Packs)",
-        "required_keywords": ["ascended heroes", "booster box", "display"],
-        "verified": True,
-        "verified_at": None,
-    },
-    {
-        "set_name": "Ascended Heroes",
         "product_type": "booster_bundle",
         "language": "en",
         "release_date": "2026-04-24",
@@ -266,3 +271,5 @@ CATALOG = [
         "verified_at": None,
     },
 ]
+
+CATALOG = CURATED_CATALOG + GENERATED_CATALOG

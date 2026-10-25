@@ -14,7 +14,8 @@ full listing `title` strings at info level.
 Matching design is two-tier and strict/precision-first (D-01):
   Tier 1 (exact keyword rule) — a catalog product matches only if
     every one of its `required_keywords` (scripts.catalog_data.CATALOG)
-    appears as a substring of the normalized title. Exactly one
+    appears as a whole word/phrase (plural tolerated) in the normalized
+    title and none of its `excluded_keywords` does. Exactly one
     candidate resolves via `match_method="keyword"`; more than one
     candidate is never auto-resolved (D-03) — it resolves to
     match_status="unmatched"/match_method="ambiguous".
@@ -28,19 +29,22 @@ Matching design is two-tier and strict/precision-first (D-01):
     margin over the runner-up (FUZZY_MARGIN) — otherwise unmatched.
 
 `check_exclusion()` is an independent keyword/regex pass (lot,
-damaged, counterfeit) run regardless of match outcome. Every pattern
+damaged, counterfeit, foreign language) run regardless of match outcome. Every pattern
 uses simple, non-nested, bounded quantifiers only (T-04-02 ReDoS
 mitigation — no `(a+)+`-style nesting).
 """
 
 import re
 import statistics
+import unicodedata
+from functools import lru_cache
 from datetime import datetime, timezone
 
 from pymongo import UpdateOne
 from rapidfuzz import fuzz, process
 
 from scripts.catalog_data import CATALOG
+from scripts.catalog_slug import product_slug
 
 FILLER_WORDS = [
     # CR-02: multi-word phrases must be listed BEFORE any single word
@@ -66,23 +70,43 @@ FUZZY_MARGIN = 5  # [ASSUMED — required gap over 2nd-best candidate]
 
 
 def normalize(title: str) -> str:
-    """Lowercase, strip filler marketing words (word-boundary-anchored —
-    NOT plain substring .replace(), which would corrupt "resealed" into
-    "re " per 04-RESEARCH.md Pitfall 2), strip punctuation, collapse
-    whitespace."""
-    t = title.lower()
+    """Lowercase, fold accents ("Pokémon" -> "pokemon"), strip filler
+    marketing words (word-boundary-anchored — NOT plain substring
+    .replace(), which would corrupt "resealed" into "re " per
+    04-RESEARCH.md Pitfall 2), drop apostrophes, strip punctuation, drop the standalone
+    word "and" (so "Scarlet & Violet" and "Scarlet and Violet" normalize
+    identically), collapse whitespace."""
+    t = unicodedata.normalize("NFKD", title.lower())
+    t = "".join(c for c in t if not unicodedata.combining(c))
     for word in FILLER_WORDS:
         t = re.sub(rf"\b{re.escape(word)}\b", " ", t)
+    t = re.sub(r"['\u2019]", "", t)  # "Champion's" and "Champions" must agree
     t = re.sub(r"[^\w\s]", " ", t)
+    t = re.sub(r"\band\b", " ", t)
+    # "First Edition", "1st Ed", "1st Ed." all mean the 1st Edition printing
+    t = re.sub(r"\b(?:first|1st)\s+ed(?:ition)?\b", "1st edition", t)
     return re.sub(r"\s+", " ", t).strip()
 
 
+@lru_cache(maxsize=None)
+def _phrase_regex(phrase: str):
+    """Whole-word pattern for a normalized phrase, tolerating a plural
+    ("booster boxes", "etbs"). A bare substring test would let "xy" claim
+    "deoxys" and "proxy"."""
+    return re.compile(rf"(?<![a-z0-9]){re.escape(phrase)}(?:e?s)?(?![a-z0-9])")
+
+
+def _contains(normalized_title: str, phrase: str) -> bool:
+    # Cheap substring test first: almost every (title, keyword) pair ends
+    # here, so the regex only runs for plausible hits.
+    return phrase in normalized_title and _phrase_regex(phrase).search(normalized_title) is not None
+
+
 def _product_slug(product: dict) -> str:
-    """The deterministic products._id slug: f"{set_name}_{product_type}"
-    lowercased with spaces replaced by hyphens — byte-identical to
-    scripts/seed_catalog.py's `_id` and scripts/ingest_worker.py's
-    `product_ref` derivation."""
-    return f"{product['set_name']}_{product['product_type']}".lower().replace(" ", "-")
+    """The deterministic products._id slug — the single shared
+    scripts.catalog_slug.product_slug, so seed, matcher and worker can
+    never disagree."""
+    return product_slug(product)
 
 
 def _canonical_phrase(product: dict) -> str:
@@ -94,18 +118,51 @@ def _canonical_phrase(product: dict) -> str:
     scripts/ingest_worker.py."""
     from scripts.ingest_worker import PRODUCT_TYPE_SEARCH_TERMS
 
-    return f"{product['set_name']} {PRODUCT_TYPE_SEARCH_TERMS[product['product_type']]}".lower()
+    edition = product.get("edition")
+    edition_part = f" {edition}" if edition in ("1st Edition", "Shadowless") else ""
+    return (
+        f"{product['set_name']}{edition_part} "
+        f"{PRODUCT_TYPE_SEARCH_TERMS[product['product_type']]}"
+    ).lower()
+
+
+_BRAND_WORDS = re.compile(r"\b(?:pokemon|tcg)\b")
+
+
+def _strip_brand(text: str) -> str:
+    """Drop "pokemon"/"tcg": every title says it, so a set whose name contains
+    it ("Pokemon GO") would otherwise look similar to every generic title."""
+    return re.sub(r"\s+", " ", _BRAND_WORDS.sub(" ", text)).strip()
+
+
+@lru_cache(maxsize=None)
+def _set_tokens(set_phrase: str) -> frozenset:
+    return frozenset(_strip_brand(set_phrase).split())
+
+
+@lru_cache(maxsize=None)
+def _fuzzy_phrase(set_name: str, edition, product_type: str) -> str:
+    return _strip_brand(
+        _canonical_phrase(
+            {"set_name": set_name, "edition": edition, "product_type": product_type}
+        )
+    )
 
 
 def match_listing(normalized_title: str) -> dict:
     """Returns {match_status, matched_product_id, match_method, match_score}.
 
     Tier 1: exactly one catalog product whose required_keywords are ALL
-    present -> matched/keyword. More than one -> unmatched/ambiguous
+    present as whole words (plural tolerated) and none of whose
+    excluded_keywords (optional) are present
+    -> matched/keyword. More than one -> unmatched/ambiguous
     (D-03: never auto-resolved). Zero -> Tier 2 bounded fuzzy fallback.
     """
     candidates = [
-        p for p in CATALOG if all(kw in normalized_title for kw in p["required_keywords"])
+        p
+        for p in CATALOG
+        if all(_contains(normalized_title, kw) for kw in p["required_keywords"])
+        and not any(_contains(normalized_title, kw) for kw in p.get("excluded_keywords", []))
     ]
     if len(candidates) == 1:
         return {
@@ -123,10 +180,20 @@ def match_listing(normalized_title: str) -> dict:
             "match_score": None,
         }
 
-    # Zero Tier-1 candidates -> Tier 2 bounded fuzzy fallback.
-    phrases = {_canonical_phrase(p): _product_slug(p) for p in CATALOG}
+    # Zero Tier-1 candidates -> Tier 2 bounded fuzzy fallback. Only products
+    # whose set name shares a word with the title are eligible (a generic
+    # "Pokemon Elite Trainer Box" names no set), and a product is never
+    # eligible when the title contains one of its excluded keywords.
+    title_tokens = set(_strip_brand(normalized_title).split())
+    phrases = {}
+    for p in CATALOG:
+        if _set_tokens(p["required_keywords"][0]).isdisjoint(title_tokens):
+            continue
+        if any(_contains(normalized_title, kw) for kw in p.get("excluded_keywords", [])):
+            continue
+        phrases[_fuzzy_phrase(p["set_name"], p.get("edition"), p["product_type"])] = _product_slug(p)
     results = process.extract(
-        normalized_title,
+        _strip_brand(normalized_title),
         list(phrases.keys()),
         scorer=fuzz.token_sort_ratio,
         limit=2,
@@ -175,6 +242,18 @@ LOT_PATTERNS = [
     # with test_exclusion_does_not_flag_legitimate_bundle).
 ]
 
+# A Japanese/Korean/Chinese/... product is a different product with a
+# different price; its listing must never enter an English product's median.
+# Only language words are used (no set codes like "sv2a"): a listing that
+# merely hides its language stays a known limitation.
+FOREIGN_LANGUAGE_PATTERNS = [
+    re.compile(
+        r"\b(?:japanese|japan|jpn|jp|korean|korea|kr|chinese|china|cn|taiwan|"
+        r"indonesian|indonesia|thai|thailand|german|germany|deutsch|french|france|"
+        r"italian|italy|spanish|spain|portuguese|vietnamese|russian)\b"
+    ),
+]
+
 DAMAGED_PATTERNS = [
     re.compile(r"\bdented\b"),
     re.compile(r"\bresealed\b"),
@@ -204,8 +283,8 @@ COUNTERFEIT_PATTERNS = [
 
 
 def check_exclusion(normalized_title: str) -> str | None:
-    """MATCH-02: returns "lot" | "damaged" | "counterfeit" | None,
-    precedence lot -> damaged -> counterfeit. Runs independently of
+    """MATCH-02: returns "lot" | "damaged" | "counterfeit" |
+    "foreign_language" | None, precedence in that order. Runs independently of
     match outcome, on every listing touched this run.
 
     Every pattern above uses simple, non-nested, bounded quantifiers
@@ -217,6 +296,8 @@ def check_exclusion(normalized_title: str) -> str | None:
         return "damaged"
     if any(p.search(normalized_title) for p in COUNTERFEIT_PATTERNS):
         return "counterfeit"
+    if any(p.search(normalized_title) for p in FOREIGN_LANGUAGE_PATTERNS):
+        return "foreign_language"
     return None
 
 

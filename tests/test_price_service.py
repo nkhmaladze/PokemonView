@@ -10,7 +10,7 @@ established deferred-import convention). These tests turn GREEN when
 Plan 05-04 implements `price_service.py`.
 
 Uses the `api_db` fixture (a real `pokemonview_test` MongoDB handle
-with the 16-product catalog seeded and `price_points` left empty) —
+with the full catalog seeded and `price_points` left empty) —
 each test inserts the exact controlled `price_points` documents its
 own scenario needs directly via `api_db.price_points.insert_many/
 insert_one`. No Flask app/test client is needed for these pure
@@ -613,3 +613,34 @@ def test_price_history_preserves_stored_precision(api_db):
     assert len(result) == 1
     assert result[0]["total_price"] == 172.55
     assert "item_price" not in result[0]
+
+
+def test_get_latest_prices_covers_recent_stale_and_missing_products(api_db):
+    """One newest point per product with any history: recent ones from the
+    batched window read, older ones by fallback; products with no points
+    are absent."""
+    from api.services.price_service import get_latest_prices
+
+    now = datetime.now(timezone.utc)
+    rows = [
+        ("perfect-order_booster_box", now - timedelta(hours=1), 160.0),
+        ("perfect-order_booster_box", now - timedelta(hours=9), 150.0),
+        ("chaos-rising_etb", now - timedelta(days=30), 61.0),
+        ("chaos-rising_etb", now - timedelta(days=40), 59.0),
+        ("pitch-black_etb", now - timedelta(days=12), 55.0),
+        ("pitch-black_booster_pack", now - timedelta(days=45), 5.0),
+    ]
+    for product_id, ts, total in rows:
+        api_db.price_points.insert_one(
+            {"ts": ts, "product_id": product_id, "item_price": total - 4, "total_price": total}
+        )
+
+    latest = get_latest_prices(api_db)
+
+    assert {k: v["total_price"] for k, v in latest.items()} == {
+        "perfect-order_booster_box": 160.0,
+        "chaos-rising_etb": 61.0,
+        "pitch-black_etb": 55.0,
+        "pitch-black_booster_pack": 5.0,
+    }
+    assert "ascended-heroes_etb" not in latest

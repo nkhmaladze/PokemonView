@@ -1,0 +1,77 @@
+{
+ "results": [
+  {
+   "productId": 136400,
+   "name": "Pokemon 2-Player Starter Set (Revised Base Set Reprint Run)",
+   "groupId": 604,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/136400_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 136401,
+   "name": "Base Set Theme Deck - \"Blackout\" (Revised Base Set Reprint Run)",
+   "groupId": 604,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/136401_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 136402,
+   "name": "Base Set Theme Deck - \"Zap!\" (Revised Base Set Reprint Run)",
+   "groupId": 604,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/136402_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 136403,
+   "name": "Base Set Theme Deck - \"Brushfire\" (Revised Base Set Reprint Run)",
+   "groupId": 604,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/136403_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 136404,
+   "name": "Base Set Theme Deck - \"Overgrowth\" (Revised Base Set Reprint Run)",
+   "groupId": 604,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/136404_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 138130,
+   "name": "Base Set Booster Pack [Revised Unlimited Edition]",
+   "groupId": 604,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/138130_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 185731,
+   "name": "Base Set Booster Box [Revised Unlimited Edition]",
+   "groupId": 604,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/185731_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 42346,
+   "name": "Alakazam",
+   "groupId": 604,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/42346_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "001/102"
+    }
+   ]
+  },
+  {
+   "productId": 42347,
+   "name": "Mewtwo",
+   "groupId": 604,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/42347_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "010/102"
+    }
+   ]
+  }
+ ]
+}

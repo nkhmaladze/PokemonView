@@ -39,6 +39,8 @@ assertions is an exactly-representable binary float (e.g. 150.00,
 
 from datetime import datetime, timezone
 
+import pytest
+
 
 def test_normalize_word_boundary_preserves_resealed():
     """normalize() strips filler words with word-boundary-anchored regex,
@@ -646,3 +648,373 @@ def test_run_ingestion_once_records_match_counts(matching_db, monkeypatch):
             f"field, proving run_matching_once's counts were merged (D-04)"
         )
         assert isinstance(result[field], int)
+
+
+# --- Full-catalog expansion: accent/"and" folding, excluded_keywords, editions ---
+
+
+def _entry(set_name, product_type, required, edition=None, excluded=None):
+    entry = {
+        "set_name": set_name,
+        "product_type": product_type,
+        "required_keywords": required,
+    }
+    if edition is not None:
+        entry["edition"] = edition
+    if excluded is not None:
+        entry["excluded_keywords"] = excluded
+    return entry
+
+
+def _matched_id(title):
+    from scripts.matching import match_listing, normalize
+
+    result = match_listing(normalize(title))
+    return result["matched_product_id"]
+
+
+def test_normalize_folds_accents():
+    from scripts.matching import normalize
+
+    assert normalize("Pokémon GO Elite Trainer Box") == "pokemon go elite trainer box"
+
+
+def test_normalize_treats_ampersand_and_and_alike_but_keeps_words():
+    from scripts.matching import normalize
+
+    assert normalize("Scarlet & Violet") == normalize("Scarlet and Violet") == "scarlet violet"
+    # "and" inside a word is not a standalone word
+    assert normalize("Sandstorm Island") == "sandstorm island"
+
+
+def test_excluded_keyword_removes_candidate(monkeypatch):
+    import scripts.matching as matching
+
+    monkeypatch.setattr(
+        matching,
+        "CATALOG",
+        [
+            _entry("Alpha", "booster_box", ["alpha", "booster box"], excluded=["beta"]),
+            _entry("Alpha Beta", "booster_box", ["alpha", "beta", "booster box"]),
+        ],
+    )
+    assert _matched_id("Alpha Beta Booster Box") == "alpha-beta_booster_box"
+    assert _matched_id("Alpha Booster Box") == "alpha_booster_box"
+
+
+def test_entry_without_excluded_keywords_still_matches(monkeypatch):
+    import scripts.matching as matching
+
+    monkeypatch.setattr(
+        matching,
+        "CATALOG",
+        [_entry("Chaos Rising", "etb", ["chaos rising", "elite trainer box"])],
+    )
+    assert _matched_id("Pokemon Chaos Rising Elite Trainer Box") == "chaos-rising_etb"
+
+
+def test_edition_entries_resolve_by_title(monkeypatch):
+    import scripts.matching as matching
+
+    monkeypatch.setattr(
+        matching,
+        "CATALOG",
+        [
+            _entry("Base Set", "booster_box", ["base set", "booster box", "1st edition"], "1st Edition"),
+            _entry(
+                "Base Set",
+                "booster_box",
+                ["base set", "shadowless", "booster box"],
+                "Shadowless",
+                excluded=["1st edition"],
+            ),
+            _entry(
+                "Base Set",
+                "booster_box",
+                ["base set", "booster box"],
+                "Unlimited",
+                excluded=["1st edition", "shadowless"],
+            ),
+        ],
+    )
+    assert _matched_id("Pokemon Base Set 1st Edition Booster Box") == "base-set-1st-edition_booster_box"
+    assert (
+        _matched_id("Pokemon Base Set Shadowless 1st Edition Booster Box")
+        == "base-set-1st-edition_booster_box"
+    )
+    assert _matched_id("Pokemon Base Set Shadowless Booster Box") == "base-set-shadowless_booster_box"
+    assert _matched_id("Pokemon Base Set Booster Box") == "base-set-unlimited_booster_box"
+
+
+def test_canonical_phrase_includes_1st_and_shadowless_but_not_unlimited():
+    from scripts.matching import _canonical_phrase
+
+    def phrase(edition):
+        return _canonical_phrase(
+            {"set_name": "Base Set", "product_type": "booster_box", "edition": edition}
+        )
+
+    assert phrase("1st Edition") == "base set 1st edition booster box"
+    assert phrase("Shadowless") == "base set shadowless booster box"
+    assert phrase("Unlimited") == "base set booster box"
+    assert phrase(None) == "base set booster box"
+
+
+# --- Whole-catalog invariants and real-world titles -------------------------
+
+
+def _canonical_titles(entry):
+    """Two titles a seller could plausibly write for this entry: one built
+    from its own required keywords, and the natural "Pokemon {set} {edition}
+    {type}" phrasing (skipped for curated entries that demand extra words
+    like "display" or "etb")."""
+    from scripts.build_catalog import TYPE_LABELS
+
+    titles = ["Pokemon " + " ".join(entry["required_keywords"])]
+    edition = entry.get("edition")
+    edition_words = {"1st Edition": "1st Edition", "Shadowless": "Shadowless"}.get(edition, "")
+    natural = f"Pokemon {entry['set_name']} {edition_words} {TYPE_LABELS[entry['product_type']]}"
+    titles.append(natural)
+    return titles
+
+
+def test_every_catalog_entry_resolves_to_its_own_canonical_titles():
+    """The collision detector: for every catalog entry, the titles a seller
+    would write for it match that entry and nothing else."""
+    from scripts.catalog_data import CATALOG
+    from scripts.catalog_slug import product_slug
+    from scripts.matching import _contains, match_listing, normalize
+
+    wrong = []
+    for entry in CATALOG:
+        expected = product_slug(entry)
+        for index, title in enumerate(_canonical_titles(entry)):
+            normalized = normalize(title)
+            if index == 1 and not all(_contains(normalized, kw) for kw in entry["required_keywords"]):
+                continue  # curated entry that needs words the natural phrasing lacks
+            result = match_listing(normalized)
+            if result["matched_product_id"] != expected:
+                wrong.append((title, expected, result["matched_product_id"], result["match_method"]))
+    assert wrong == [], wrong[:10]
+
+
+def _slug(set_name, product_type, edition=None):
+    from scripts.catalog_slug import product_slug
+
+    return product_slug({"set_name": set_name, "edition": edition, "product_type": product_type})
+
+
+REVIEW_FOCUS_TITLES = [
+    # 1. a block's name is also the tail of "<Block> Base Set"
+    ("Pokemon Sword & Shield Base Set Booster Box", _slug("Sword & Shield", "booster_box")),
+    ("Pokemon Scarlet and Violet Base Set Elite Trainer Box", _slug("Scarlet & Violet", "etb")),
+    ("Pokemon XY Base Set Booster Box", _slug("XY", "booster_box")),
+    ("Pokemon XY Evolutions Booster Box", _slug("Evolutions", "booster_box")),
+    ("Pokemon Sun & Moon Guardians Rising Booster Box", _slug("Guardians Rising", "booster_box")),
+    ("Pokemon Mega Evolution Booster Box", _slug("Mega Evolution", "booster_box")),
+    # 2. Base Set editions
+    ("Pokemon Base Set 1st Edition Booster Box", _slug("Base Set", "booster_box", "1st Edition")),
+    ("Pokemon Base Set Shadowless 1st Edition Booster Box", _slug("Base Set", "booster_box", "1st Edition")),
+    ("Pokemon Base Set Shadowless Booster Box", _slug("Base Set", "booster_box", "Shadowless")),
+    ("Pokemon Base Set Booster Box", _slug("Base Set", "booster_box", "Unlimited")),
+    ("Pokemon Jungle 1st Edition Booster Pack", _slug("Jungle", "booster_pack", "1st Edition")),
+    ("Pokemon Jungle Booster Pack", _slug("Jungle", "booster_pack", "Unlimited")),
+    # 3. sets whose name is inside another set's name
+    ("Pokemon Base Set 2 Booster Box", _slug("Base Set 2", "booster_box")),
+    ("Pokemon Team Rocket Returns Booster Box", _slug("EX Team Rocket Returns", "booster_box")),
+    ("Pokemon Team Rocket Booster Box 1st Edition", _slug("Team Rocket", "booster_box", "1st Edition")),
+    ("Pokemon Platinum Rising Rivals Booster Box", _slug("Rising Rivals", "booster_box")),
+    # accents, "and"/"&", short numeric names, curated sets
+    ("Pokémon GO Elite Trainer Box", _slug("Pokemon GO", "etb")),
+    ("Pokemon Scarlet & Violet 151 Elite Trainer Box", _slug("Scarlet & Violet 151", "etb")),
+    ("Pokemon 151 Booster Bundle", _slug("Scarlet & Violet 151", "booster_bundle")),
+    ("Pokemon Mega Evolution Perfect Order Booster Box Display", _slug("Perfect Order", "booster_box")),
+    # "First Edition" / "1st Ed" are 1st Edition, not Unlimited
+    ("Pokemon Base Set First Edition Booster Pack", _slug("Base Set", "booster_pack", "1st Edition")),
+    ("Pokemon 1999 Base Set 1st Ed. Booster Box WOTC", _slug("Base Set", "booster_box", "1st Edition")),
+    ("Pokemon Jungle First Edition Booster Box", _slug("Jungle", "booster_box", "1st Edition")),
+    ("Gym Heroes Booster Pack 1st Ed", _slug("Gym Heroes", "booster_pack", "1st Edition")),
+    ("Neo Genesis Booster Box First Edition", _slug("Neo Genesis", "booster_box", "1st Edition")),
+    # weak set names (card themes, common words) must not collide with modern sets
+    ("Brilliant Stars Booster Box Arceus VSTAR", _slug("Brilliant Stars", "booster_box")),
+    ("Pokemon Mega Evolutions Booster Box", _slug("Mega Evolution", "booster_box")),
+    ("Destined Rivals Booster Box Team Rocket Mewtwo", _slug("Destined Rivals", "booster_box")),
+    ("Crown Zenith Booster Pack Arceus", _slug("Crown Zenith", "booster_pack")),
+    ("Fusion Strike Booster Box Deoxys", _slug("Fusion Strike", "booster_box")),
+    ("Evolving Skies Booster Box Rayquaza Dragon", _slug("Evolving Skies", "booster_box")),
+    ("Unified Minds Team Up Booster Pack", _slug("Unified Minds", "booster_pack")),
+    ("Journey Together Booster Box Sealed Non-Enhanced", _slug("Journey Together", "booster_box")),
+]
+
+
+@pytest.mark.parametrize("title, expected", REVIEW_FOCUS_TITLES)
+def test_review_focus_titles(title, expected):
+    assert _matched_id(title) == expected
+
+
+def test_real_listing_fixture_titles_keep_their_curated_match(monkeypatch):
+    """The 100 real eBay titles in fixtures/ebay_listing_titles.json: any
+    title that resolved to a curated product before the catalog grew still
+    resolves to the same product."""
+    import json
+    from pathlib import Path
+
+    import scripts.matching as matching
+    from scripts.catalog_data import CATALOG, CURATED_CATALOG
+
+    titles = [
+        row["title"]
+        for row in json.loads(
+            (Path(__file__).parent.parent / "fixtures" / "ebay_listing_titles.json").read_text()
+        )
+    ]
+    assert len(titles) == 100
+
+    monkeypatch.setattr(matching, "CATALOG", CURATED_CATALOG)
+    before = {t: matching.match_listing(matching.normalize(t))["matched_product_id"] for t in titles}
+    monkeypatch.setattr(matching, "CATALOG", CATALOG)
+    after = {t: matching.match_listing(matching.normalize(t))["matched_product_id"] for t in titles}
+
+    changed = {t: (before[t], after[t]) for t in titles if before[t] and before[t] != after[t]}
+    assert changed == {}
+
+
+def test_short_set_names_do_not_match_inside_longer_words(monkeypatch):
+    """"xy" is a substring of "deoxys" and "proxy"; keywords match whole
+    words only."""
+    import scripts.matching as matching
+
+    monkeypatch.setattr(
+        matching,
+        "CATALOG",
+        [
+            _entry("XY", "booster_box", ["xy", "booster box"]),
+            _entry("EX Deoxys", "booster_box", ["ex deoxys", "booster box"]),
+        ],
+    )
+    assert _matched_id("Pokemon EX Deoxys Booster Box") == "ex-deoxys_booster_box"
+    assert _matched_id("Pokemon XY Booster Box") == "xy_booster_box"
+    assert matching.match_listing(matching.normalize("Custom proxy booster box"))["match_method"] != "keyword"
+
+
+def test_keywords_still_match_plural_forms(monkeypatch):
+    import scripts.matching as matching
+
+    monkeypatch.setattr(
+        matching,
+        "CATALOG",
+        [
+            _entry("Chaos Rising", "booster_box", ["chaos rising", "booster box"]),
+            _entry("Chaos Rising", "etb", ["chaos rising", "etb"]),
+        ],
+    )
+    assert _matched_id("Pokemon Chaos Rising Booster Boxes") == "chaos-rising_booster_box"
+    assert _matched_id("Pokemon Chaos Rising ETBs") == "chaos-rising_etb"
+
+
+def test_normalize_drops_apostrophes_so_possessive_set_names_match_either_spelling():
+    from scripts.matching import normalize
+
+    assert normalize("Champion's Path") == normalize("Champions Path") == "champions path"
+    assert normalize("Champion’s Path") == "champions path"
+
+
+# --- Review fixes: foreign language, First Edition aliases, fuzzy guards, deny-listed products ---
+
+FOREIGN_TITLES = [
+    "Pokemon TCG: Scarlet & Violet - Brilliant Fantasy Standard Booster Box (Chinese)",
+    "Pokemon TCG: Scarlet & Violet - Crimson Haze Booster Box SV5a (Japanese) QTY",
+    "Pokemon TCG: Scarlet & Violet - The Glory of Team Rocket Booster Box (Korean)",
+    "Pokemon 151 Booster Pack Japanese sv2a",
+    "Pokemon Jungle Japanese Booster Box",
+    "Pokemon Booster Box Indonesian Edition",
+    "Pokemon Base Set Booster Pack German",
+    "Pokemon Sword & Shield Booster Box French",
+    "Pokemon Japan Import Booster Box",
+    "Pokemon Mega Brave Booster Box JP Version",
+]
+
+
+@pytest.mark.parametrize("title", FOREIGN_TITLES)
+def test_exclusion_foreign_language(title):
+    """A Japanese/Korean/Chinese/... product is a different product: its
+    price must never enter an English product's median."""
+    from scripts.matching import check_exclusion, normalize
+
+    assert check_exclusion(normalize(title)) == "foreign_language"
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Pokemon Scarlet & Violet Booster Box English Factory Sealed",
+        "Pokemon Sword & Shield Evolving Skies Booster Box",
+        "Pokemon Base Set 1st Edition Booster Pack",
+        "Pokemon TCG Elite Trainer Box ETB Chaos Rising",
+    ],
+)
+def test_exclusion_does_not_flag_english_titles(title):
+    from scripts.matching import check_exclusion, normalize
+
+    assert check_exclusion(normalize(title)) is None
+
+
+def test_real_fixture_foreign_language_titles_are_all_excluded():
+    import json
+    import re
+    from pathlib import Path
+
+    from scripts.matching import check_exclusion, normalize
+
+    language = re.compile(r"\b(japanese|korean|chinese|indonesian)\b", re.I)
+    rows = json.loads((Path(__file__).parent.parent / "fixtures" / "ebay_listing_titles.json").read_text())
+    foreign = [r["title"] for r in rows if language.search(r["title"])]
+    assert len(foreign) >= 10
+    not_excluded = [t for t in foreign if check_exclusion(normalize(t)) is None]
+    assert not_excluded == []
+
+
+def test_normalize_first_edition_aliases():
+    from scripts.matching import normalize
+
+    for title in ("Base Set First Edition", "Base Set 1st Ed", "Base Set 1st Ed.", "BASE SET 1ST EDITION"):
+        assert normalize(title) == "base set 1st edition", title
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Pokemon Booster Pack",
+        "Pokemon Booster Pack Lot",
+        "Pokemon Booster Pack Sealed",
+        "Pokemon Elite Trainer Box",
+    ],
+)
+def test_generic_titles_are_not_fuzzy_matched_to_a_set(title):
+    """With no set named, the fuzzy tier must not pick one just because a set
+    name shares the word "pokemon" ("Pokemon GO")."""
+    from scripts.matching import match_listing, normalize
+
+    assert match_listing(normalize(title))["matched_product_id"] is None
+
+
+def test_fuzzy_tier_respects_excluded_keywords():
+    from scripts.matching import match_listing, normalize
+
+    result = match_listing(normalize("Team Rocket 1st Edition Booster Pack Display"))
+    assert result["matched_product_id"] != _slug("Team Rocket", "booster_pack", "1st Edition")
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Pokemon Center Scarlet & Violet Paradox Rift Elite Trainer Box",
+        "Evolving Skies Half Booster Box 18 Packs",
+        "Journey Together Enhanced Booster Box",
+        "Surging Sparks Booster Box Sealed Case",
+        "Surging Sparks Booster Box Code Cards",
+        "Surging Sparks Booster Box Case of 6",
+    ],
+)
+def test_products_the_catalog_leaves_out_do_not_price_into_the_standard_entry(title):
+    assert _matched_id(title) is None

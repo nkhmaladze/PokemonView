@@ -342,3 +342,27 @@ def test_run_ingestion_once_partial_on_product_error(ingest_db, monkeypatch):
     assert result["errors"][0]["product_ref"] == failing_product_ref
     assert "RuntimeError" in result["errors"][0]["error"]
     assert ingest_db.active_listings.count_documents({}) == len(CATALOG) - 1
+
+
+def test_build_query_adds_1st_edition():
+    from scripts.ingest_worker import build_query
+
+    product = {"set_name": "Base Set", "product_type": "booster_box", "edition": "1st Edition"}
+    assert build_query(product) == "Pokemon Base Set 1st Edition Booster Box"
+
+
+def test_build_query_adds_shadowless():
+    from scripts.ingest_worker import build_query
+
+    product = {"set_name": "Base Set", "product_type": "booster_pack", "edition": "Shadowless"}
+    assert build_query(product) == "Pokemon Base Set Shadowless Booster Pack"
+
+
+def test_build_query_unlimited_and_none_are_unchanged():
+    from scripts.ingest_worker import build_query
+
+    unlimited = {"set_name": "Jungle", "product_type": "booster_box", "edition": "Unlimited"}
+    plain = {"set_name": "Chaos Rising", "product_type": "booster_box", "edition": None}
+    legacy = {"set_name": "Chaos Rising", "product_type": "booster_box"}
+    assert build_query(unlimited) == "Pokemon Jungle Booster Box"
+    assert build_query(plain) == build_query(legacy) == "Pokemon Chaos Rising Booster Box"

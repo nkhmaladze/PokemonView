@@ -10,7 +10,7 @@ no MongoClient construction, no os.environ read, no Flask import
 (mirrors scripts/matching.py's / api/services/price_service.py's
 established "no top-level side effects on import" convention).
 
-`list_products` filters the whole (<=16-product) catalog IN PROCESS —
+`list_products` filters the whole (a few hundred products) catalog IN PROCESS —
 never a MongoDB query operator built from raw user text (T-05-01
 mitigation). `get_product_detail` composes
 `price_service.get_current_price` / `get_trend_baseline` /
@@ -25,23 +25,30 @@ from api.services.price_service import (
     compute_pct_change,
     get_all_time_range,
     get_current_price,
+    get_latest_prices,
     get_trend_baseline,
 )
 
 class InvalidProductTypeError(ValueError):
     """Raised ONLY for an unrecognized `?product_type` filter value (V5
-    enum check) — never for any other internal ValueError (e.g. an
-    unregistered set_name inside sort_key's SET_ORDER.index() lookup),
+    enum check) — never for any other internal ValueError (e.g. a
+    data-integrity ValueError raised while building a product summary),
     so the products blueprint can narrow its except clause to this
     subclass without masking unrelated server-side bugs (CR-01)."""
 
 
-SET_ORDER = ["Pitch Black", "Chaos Rising", "Perfect Order", "Ascended Heroes"]  # D-10
+# D-10 (revised): sets are ordered newest first by their release date, not
+# by a hardcoded list; inside a set, by edition and then product type.
+TYPE_RANK = {"booster_box": 0, "etb": 1, "booster_bundle": 2, "booster_pack": 3}
+EDITION_RANK = {"1st Edition": 0, "Shadowless": 1, "Unlimited": 2, None: 3}
 VALID_PRODUCT_TYPES = {"booster_pack", "booster_box", "etb", "booster_bundle"}  # V5 enum
 TREND_WINDOWS = (7, 30)  # D-05
 
 
-def _product_summary(db, product):
+_LOOKUP = object()  # "fetch the current price yourself" marker
+
+
+def _product_summary(db, product, current_point=_LOOKUP):
     """Build the jsonify-ready base dict for one product: catalog
     metadata plus its current_price/price_status (D-01/D-04/D-12).
 
@@ -52,6 +59,9 @@ def _product_summary(db, product):
     Args:
         db: An already-connected pymongo Database handle.
         product: A raw `products` collection document.
+        current_point: This product's latest price_points document (or
+            None for no data) when the caller already has it, e.g. from
+            get_latest_prices; omitted -> looked up here.
 
     Returns:
         dict: jsonify-ready fields — id, set_name, product_type,
@@ -70,7 +80,8 @@ def _product_summary(db, product):
         "verified": product.get("verified"),
     }
 
-    current_point = get_current_price(db, product["_id"])
+    if current_point is _LOOKUP:
+        current_point = get_current_price(db, product["_id"])
     if current_point is not None:
         summary["price_status"] = "ok"
         summary["current_price"] = {
@@ -93,14 +104,15 @@ def _product_summary(db, product):
 def list_products(db, filters):
     """Browse/search/filter the catalog (SEARCH-01).
 
-    Fetches the whole small catalog once (`db.products.find({})`,
-    <=16 docs) and applies combinable `set_name` / `product_type` /
+    Fetches the whole catalog once (`db.products.find({})`, a few
+    hundred docs) and applies combinable `set_name` / `product_type` /
     free-text `q` filters IN PROCESS (D-08) — never a MongoDB query
-    operator built from raw user text (T-05-01 mitigation). With no
-    filters, results are grouped by set in the hardcoded SET_ORDER,
-    secondary-sorted by msrp descending within each set (D-10) — never
-    a raw release_date sort (per-product release_date is staggered
-    within a set).
+    operator built from raw user text (T-05-01 mitigation). Results are
+    grouped by set, newest set first (a set's rank is the earliest
+    release_date of its products, name as tiebreak), then by edition
+    (1st Edition, Shadowless, Unlimited) and product type (box, ETB,
+    bundle, pack) within a set (D-10, revised). Current prices come from one
+    batched read (`get_latest_prices`), not one query per product.
 
     Args:
         db: An already-connected pymongo Database handle.
@@ -141,16 +153,35 @@ def list_products(db, filters):
 
     filtered = [p for p in products if matches(p)]
 
+    # A set's rank is its earliest product release date over the WHOLE
+    # catalog (not the filtered view), so filtering never reorders sets.
+    # Per-product dates are staggered within a set (05-RESEARCH.md
+    # Pitfall 1), hence the minimum rather than any one product's date.
+    set_release = {}
+    for product in products:
+        date = product.get("release_date")
+        if date is None:
+            continue
+        name = product.get("set_name")
+        if name not in set_release or date < set_release[name]:
+            set_release[name] = date
+
     def sort_key(product):
-        msrp = product.get("msrp")
+        name = product.get("set_name") or ""
+        date = set_release.get(name)
+        set_rank = (0, -date.toordinal()) if date is not None else (1, 0)
         return (
-            SET_ORDER.index(product["set_name"]),
-            -(msrp if msrp is not None else -1),
+            set_rank,
+            name,
+            EDITION_RANK.get(product.get("edition"), len(EDITION_RANK)),
+            TYPE_RANK.get(product.get("product_type"), len(TYPE_RANK)),
+            product.get("display_name") or "",
         )
 
     filtered.sort(key=sort_key)
 
-    return [_product_summary(db, p) for p in filtered]
+    latest = get_latest_prices(db)
+    return [_product_summary(db, p, latest.get(p["_id"])) for p in filtered]
 
 
 def get_product_detail(db, product_id):

@@ -69,6 +69,15 @@ PRODUCTS_JSON_SCHEMA = {
         "release_date": {"bsonType": ["date", "null"]},
         "msrp": {"bsonType": ["double", "int", "null"]},
         "image_url": {"bsonType": ["string", "null"]},
+        # Printing of a Wizards-era product (1st Edition / Shadowless /
+        # Unlimited); null for sets with a single printing.
+        "edition": {"enum": ["1st Edition", "Shadowless", "Unlimited", None]},
+        # Phrases that disqualify a listing from matching this product
+        # (see scripts/matching.py match_listing).
+        "excluded_keywords": {
+            "bsonType": "array",
+            "items": {"bsonType": "string"},
+        },
         "verified": {"bsonType": ["bool"]},
         "verified_at": {"bsonType": ["date", "null"]},
     },
@@ -100,9 +109,10 @@ def init_collections(db):
     products: created with a $jsonSchema validator
     (validationLevel="strict", validationAction="error") enforcing the
     catalog document shape for every writer (V5 input-validation
-    control, not just this phase's seed script), plus a compound index
-    on {set_name: 1, product_type: 1} supporting queries by set alone
-    or by set + product_type together (compound-index prefix rule).
+    control, not just this phase's seed script), plus a unique compound
+    index on {set_name: 1, edition: 1, product_type: 1} supporting
+    queries by set alone or by set + edition (compound-index prefix
+    rule). A legacy unique {set_name, product_type} index is dropped.
 
     price_points: created empty as a native time-series collection
     (timeField "ts", metaField "product_id", granularity "hours"),
@@ -162,14 +172,20 @@ def init_collections(db):
     # first if a stale non-unique version exists (e.g. from a
     # pre-WR-03 deployment) so create_index below stays idempotent.
     existing_indexes = db.products.index_information()
-    index_name = "set_name_1_product_type_1"
+    index_name = "set_name_1_edition_1_product_type_1"
     if index_name in existing_indexes and not existing_indexes[index_name].get(
         "unique", False
     ):
         db.products.drop_index(index_name)
 
+    # Pre-edition deployments have a unique (set_name, product_type)
+    # index; it would reject a second edition of the same set and type,
+    # so drop it before the edition-aware one is created.
+    if "set_name_1_product_type_1" in existing_indexes:
+        db.products.drop_index("set_name_1_product_type_1")
+
     db.products.create_index(
-        [("set_name", ASCENDING), ("product_type", ASCENDING)],
+        [("set_name", ASCENDING), ("edition", ASCENDING), ("product_type", ASCENDING)],
         unique=True,
     )
 
