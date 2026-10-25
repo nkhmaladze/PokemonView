@@ -29,7 +29,7 @@ Matching design is two-tier and strict/precision-first (D-01):
     margin over the runner-up (FUZZY_MARGIN) — otherwise unmatched.
 
 `check_exclusion()` is an independent keyword/regex pass (lot,
-damaged, counterfeit, foreign language) run regardless of match outcome. Every pattern
+damaged, counterfeit, foreign language, accessory, other product) run regardless of match outcome. Every pattern
 uses simple, non-nested, bounded quantifiers only (T-04-02 ReDoS
 mitigation — no `(a+)+`-style nesting).
 """
@@ -126,6 +126,16 @@ def _canonical_phrase(product: dict) -> str:
     ).lower()
 
 
+def _is_multi_pack(normalized_title: str, product: dict) -> bool:
+    """True when a booster PACK entry must refuse this title ("2 booster packs",
+    "(8 PACKS)", "promo"). The entry's own set phrase is removed first: the "2" of
+    "Base Set 2 Booster Pack" is part of the set's name, not a count."""
+    if product["product_type"] != "booster_pack":
+        return False
+    without_set = _phrase_regex(product["required_keywords"][0]).sub(" ", normalized_title)
+    return _NOT_A_SINGLE_PACK.search(without_set) is not None
+
+
 _BRAND_WORDS = re.compile(r"\b(?:pokemon|tcg)\b")
 
 
@@ -163,6 +173,7 @@ def match_listing(normalized_title: str) -> dict:
         for p in CATALOG
         if all(_contains(normalized_title, kw) for kw in p["required_keywords"])
         and not any(_contains(normalized_title, kw) for kw in p.get("excluded_keywords", []))
+        and not _is_multi_pack(normalized_title, p)
     ]
     if len(candidates) == 1:
         return {
@@ -188,6 +199,8 @@ def match_listing(normalized_title: str) -> dict:
     phrases = {}
     for p in CATALOG:
         if _set_tokens(p["required_keywords"][0]).isdisjoint(title_tokens):
+            continue
+        if _is_multi_pack(normalized_title, p):
             continue
         if any(_contains(normalized_title, kw) for kw in p.get("excluded_keywords", [])):
             continue
@@ -228,8 +241,16 @@ LOT_PATTERNS = [
     re.compile(r"\bjob\s*lot\b"),
     re.compile(r"\bwholesale\b"),
     re.compile(r"\bset\s+of\s+\d+\b"),
-    re.compile(r"\bx\s?[2-9]\d*\b"),  # "x2", "x 3" — quantity, not the letter x alone
-    re.compile(r"\b[2-9]\d*\s?x\b"),  # "2x", "3 x"
+    # Quantity >= 2, any number of digits ("x12", "12x", "x 20"): the first digit
+    # may be 1 as long as a second digit follows. A lone "x1"/"1x" is one item.
+    re.compile(r"\bx\s?(?:[2-9]\d*|[1-9]\d+)\b"),
+    re.compile(r"\b(?:[2-9]\d*|[1-9]\d+)\s?x\b"),
+    re.compile(r"\blots?\b"),
+    re.compile(r"\b(?:etbs|bundles|boxes)\b"),  # plural: several products in one listing
+    # A case of boxes/bundles ("Booster Bundle CASE (150 Packs)"), but not a box sold
+    # "case fresh" or "with acrylic case".
+    re.compile(r"\b(?:bundles?|etbs?|boxes|box|display)\s+case\b(?!\s+fresh)"),
+    re.compile(r"\bcase\s*[-(]?\s*\d+\s+(?:bundles?|boxes|etbs|packs)\b"),
     re.compile(r"\b[2-9]\d*\s*(boxes|etbs)\b"),
     # Deliberately NOT "packs"/"bundles" in the quantity-noun group, and
     # deliberately NOT the bare word "bundle" alone — catalog display
@@ -254,11 +275,52 @@ FOREIGN_LANGUAGE_PATTERNS = [
     ),
 ]
 
+# Accessories and components sold ALONE ("PopShield Protector for ... Elite Trainer
+# Box", "Elite Trainer Box Card Sleeves", a dice set) are not the product they are
+# made for, and neither are other product lines, digital codes, graded slabs, mini
+# or blister products. Their prices must not enter the real product's median.
+# Deliberately NOT the bare words "protector" or "case": real boxes are sold "with
+# soft protector", "with acrylic case" and "case fresh".
+ACCESSORY_PATTERNS = [
+    re.compile(r"\bpopshield\b"),
+    re.compile(r"\bprotectors?\s+for\b"),
+    re.compile(r"\bprotective\s+case\b"),
+    re.compile(r"\bcase\s+for\b"),
+    re.compile(r"\b(?:booster\s+bundle|etb|elite\s+trainer\s+box)\s+protector\b"),
+    re.compile(r"\bdisplay\s+case\b"),
+    re.compile(r"\bplaymats?\b"),
+    re.compile(r"\bbinders?\b"),
+    re.compile(r"\btop\s?loaders?\b"),
+    re.compile(r"\bsleeves?\b"),
+    re.compile(r"\bdice\b"),
+    re.compile(r"\bplayers?\s+guide\b"),
+]
+
+OTHER_PRODUCT_PATTERNS = [
+    re.compile(r"\b(?:poster|banner|standee)\b"),
+    re.compile(r"\bpre\s?release\b"),
+    re.compile(
+        r"\b(?:kayou|kpop|k\s+pop|one\s+piece|yu\s?gi\s?oh|lorcana|digimon|dragon\s+ball|"
+        r"naruto|magic\s+the\s+gathering|mtg|star\s+wars|marvel|union\s+arena|weiss\s+schwarz)\b"
+    ),
+    re.compile(r"\b(?:ptcgo|tcgo|online|digital)\b"),  # digital code cards
+    re.compile(r"\bcodes?\b"),
+    re.compile(r"\b(?:psa|bgs|cgc|wata|bbce|graded|slabbed?)\b|\bgem\s+mint\b"),
+    re.compile(r"\bblisters?\b"),
+    re.compile(r"\b(?:mini|tins?|upc)\b"),
+    re.compile(r"\b(?:figure|binder|premium|special|collector)\s+collection\b"),
+    re.compile(r"\b(?:choose\s+your|assorted|mystery)\b"),
+]
+
+# Only a single booster PACK entry must refuse these: "2 booster packs", "(8 PACKS)",
+# "promo pack". Boxes, ETBs and bundles legitimately say "36 packs" or "9 booster packs".
+_NOT_A_SINGLE_PACK = re.compile(r"\b(?:[2-9]|[1-3]\d|40)\s+(?:booster\s+)?packs?\b|\bpromos?\b")
+
 DAMAGED_PATTERNS = [
     re.compile(r"\bdented\b"),
     re.compile(r"\bresealed\b"),
     re.compile(r"\bopened\b"),
-    re.compile(r"\bempty\s+box\b"),
+    re.compile(r"\bempty\b"),  # empty box / wrapper / packaging
     re.compile(r"\bno\s+cards?\b"),
     re.compile(r"\bdamaged\b"),
     re.compile(r"\bcrushed\b"),
@@ -284,7 +346,8 @@ COUNTERFEIT_PATTERNS = [
 
 def check_exclusion(normalized_title: str) -> str | None:
     """MATCH-02: returns "lot" | "damaged" | "counterfeit" |
-    "foreign_language" | None, precedence in that order. Runs independently of
+    "foreign_language" | "accessory" | "other_product" | None, precedence in
+    that order. Runs independently of
     match outcome, on every listing touched this run.
 
     Every pattern above uses simple, non-nested, bounded quantifiers
@@ -298,6 +361,10 @@ def check_exclusion(normalized_title: str) -> str | None:
         return "counterfeit"
     if any(p.search(normalized_title) for p in FOREIGN_LANGUAGE_PATTERNS):
         return "foreign_language"
+    if any(p.search(normalized_title) for p in ACCESSORY_PATTERNS):
+        return "accessory"
+    if any(p.search(normalized_title) for p in OTHER_PRODUCT_PATTERNS):
+        return "other_product"
     return None
 
 

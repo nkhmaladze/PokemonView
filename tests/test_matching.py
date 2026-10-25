@@ -1018,3 +1018,165 @@ def test_fuzzy_tier_respects_excluded_keywords():
 )
 def test_products_the_catalog_leaves_out_do_not_price_into_the_standard_entry(title):
     assert _matched_id(title) is None
+
+
+# --- Real production titles that priced into the wrong product (first full run, 2026-10-25) ---
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Platinum Protectors Plastic Case for Pokemon Booster Box .50mm Thick",
+        "PopShield Protector for Pokemon XY Phantom Forces Elite Trainer Box",
+        "Ultra Pro Playmat for Pokemon Elite Trainer Box",
+        "Pokemon Booster Box Binder Storage",
+    ],
+)
+def test_exclusion_accessory(title):
+    """A protector, case, playmat or binder is not the product it is made for."""
+    from scripts.matching import check_exclusion, normalize
+
+    assert check_exclusion(normalize(title)) == "accessory"
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Kayou Platinum Series 01 Kpop Demon Hunters Energy Edition Booster Box",
+        "Pokemon B&W Dark Explorers Retail Poster Prerelease Mint not card booster box",
+        "One Piece Card Game Booster Box OP-09",
+        "Yu-Gi-Oh Booster Box Legend of Blue Eyes",
+    ],
+)
+def test_exclusion_other_product(title):
+    """Another card game, a store poster or a prerelease kit is a different product."""
+    from scripts.matching import check_exclusion, normalize
+
+    assert check_exclusion(normalize(title)) == "other_product"
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Pokemon Sun & Moon Cosmic Eclipse Booster Box Factory Sealed with Acrylic Case",
+        "Pokemon - Scarlet & Violet Booster Box SV01 - FACTORY SEALED CASE FRESH",
+        "Pokemon Team Rocket Booster Box Unlimited 2000 | Factory Sealed | WOTC",
+    ],
+)
+def test_exclusion_keeps_real_boxes_that_mention_a_case(title):
+    from scripts.matching import check_exclusion, normalize
+
+    assert check_exclusion(normalize(title)) is None
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Pokémon TCG Team Rocket Moltres UPC Burning Sparks Booster Box",
+        "Pokémon TCG Team Rocket Sets Moltres ex Booster Box 36 Booster Packs 2024",
+        "Pokemon TCG Glory of Team Rocket Booster Box",
+    ],
+)
+def test_modern_team_rocket_products_do_not_match_the_2000_set(title):
+    assert _matched_id(title) != _slug("Team Rocket", "booster_box", "Unlimited")
+    assert _matched_id(title) != _slug("Team Rocket", "booster_box", "1st Edition")
+
+
+def test_the_real_2000_team_rocket_box_still_matches():
+    assert _matched_id("Pokemon Team Rocket Booster Box Unlimited 2000 | Factory Sealed | WOTC") == _slug(
+        "Team Rocket", "booster_box", "Unlimited"
+    )
+
+
+# --- Second production sweep: more non-products that priced into real products ---
+
+# Real titles from the live sweep. Each is a code, accessory, lot, case, graded slab,
+# empty package, mini product, blister or promo, never the sealed product itself.
+REAL_NON_PRODUCT_TITLES = [
+    "POKEMON (PTCGO) BW Boundaries Crossed UNUSED Booster Pack ENBW7BST ONLINE CODE",
+    "Legendary Treasures Unused Booster Pack Code (TCGO) Sent via eBay Messaging",
+    "POKEMON BW LEGENDARY TREASURES BOOSTER PACK CODE TRADING CARD GAME ONLINE TCG",
+    "PopShield Protector for Pokemon XY BREAKthrough Elite Trainer Box",
+    "Pokemon TCG XY BREAKthrough Elite Trainer Box Card ETB Sleeves (65) NEW Sealed",
+    "Ultra Prism Elite Trainer Box Card Sleeves | Dusk Mane Necrozma (65 Pack) | New",
+    "Fates Collide Elite Trainer Box Sleeves - Mega Alakazam (65 Pack) Pokémon",
+    "1 Sleeve Yveltal | Pokemon Furious Fists XY01 ETB Elite Trainer Box (2014)",
+    "Burning Shadows (Black) Dice, Official Pokemon Elite Trainer Box Dice Set!",
+    "Pokemon TCG Sun & Moon: Burning Shadows Elite Trainer Box Players Guide Book",
+    "2018 Pokemon TCG Dragon Majesty Playmat Official Elite Trainer Box Game Mat",
+    "Acrylic Display Case Pokémon Crown Zenith PC ETB Plus CRZ Elite Trainer Box",
+    "Pokémon Booster Bundle Protector Case  Paldea Evolved",
+    "Paldea Evolved - Premium Booster Bundle Protective Case Fits Pokemon TCG",
+    "POKEMON TCG!  12x SWSH Astral Radiance BOOSTER PACK SEALED BRAND NEW",
+    "Pokemon TCG Crown Zenith Booster Packs x12 Factory Sealed Sword & Shield",
+    "Pokémon TCG Chaos Rising Booster Pack X11 Sealed Packs 11 Total",
+    "Pokémon Phantasmal Flames Sleeved Booster Packs (12 Pack Lot) – Fast Ship",
+    "Pokemon TCG Pitch Black Booster Bundle Sealed Case  - 25 Bundles English",
+    "PITCH BLACK Sealed 25 Booster Bundle CASE (150 Packs Pokemon Cards) ME05",
+    "Pokémon Center Pokémon TCG Mega Evolution: Chaos Rising etbs and booster bundles",
+    "PSA 10 Gem Mint Pokemon Ascended Heroes Booster Pack 2026 Pokemon Cards LOW POP",
+    "Vintage Pokemon Gym Heroes Empty Booster Box With 1 Gym Pack",
+    "Pokemon TCG Jungle 1st Edition Booster Pack EMPTY Wrapper Wigglytuff",
+    "Pokémon Paradox Rift Booster Bundle Empty Paperboard Box Packaging UPC/MPN",
+    "Pokefan - Mini Cards - Pokemon Fossil Set- 18 Packs - Mini Booster Box -Sealed",
+    "Pokémon TCG Raikou Sealed Blister 2 Booster Packs XY Phantom Forces English 2014",
+    "Pokémon TCG Sealed Loose Booster Packs! Choose Your Set! XY-MEG Era!",
+    "Pokemon TCG Arceus V Figure Collection Box Promo + Booster Packs English 2022",
+    "Pokemon TCG Scarlet Violet 151 Binder Collection Sealed Box 4 Booster Packs",
+]
+
+# Real sealed products whose titles mention a protector, a case or an accessory-ish word.
+REAL_PRODUCT_TITLES_THAT_MENTION_ACCESSORIES = [
+    "Pokemon SV Surging Sparks Booster Box New Factory Sealed with Soft Protector",
+    "Pokemon Surging Sparks Booster Box Factory Sealed 36 Packs with protector",
+    "Pokemon Darkness Ablaze Booster Box Factory Sealed + Protector!",
+    "Pokemon Obsidian Flames Elite Trainer Box Sealed ETB W/ Acrylic Protector",
+    "Pokemon Destined Rivals Elite Trainer Box ETB w/ Soft Protector FACTORY SEALED",
+    "Pokemon TCG SWSH Crown Zenith Elite Trainer Box ETB New Sealed with Protector",
+    "Pokemon Sun & Moon Cosmic Eclipse Booster Box Factory Sealed with Acrylic Case",
+    "Pokemon Shining Legends Elite Trainer Box ETB New Factory Sealed w Acrylic Case",
+    "Pokemon - Scarlet & Violet Booster Box SV01 - FACTORY SEALED CASE FRESH",
+]
+
+
+@pytest.mark.parametrize("title", REAL_NON_PRODUCT_TITLES)
+def test_real_non_product_titles_are_excluded(title):
+    from scripts.matching import check_exclusion, normalize
+
+    assert check_exclusion(normalize(title)) is not None, title
+
+
+@pytest.mark.parametrize("title", REAL_PRODUCT_TITLES_THAT_MENTION_ACCESSORIES)
+def test_real_products_that_mention_a_protector_or_case_are_kept(title):
+    from scripts.matching import check_exclusion, normalize
+
+    assert check_exclusion(normalize(title)) is None, title
+
+
+def test_lot_quantities_of_ten_and_more_are_caught():
+    """"12x", "x15" and "10 x" are quantities; the old pattern needed the first
+    digit to be 2-9."""
+    from scripts.matching import check_exclusion, normalize
+
+    for title in ("12x Booster Pack", "Booster Pack x15", "10 x Booster Pack", "Booster Box x 20"):
+        assert check_exclusion(normalize(title)) == "lot", title
+    assert check_exclusion(normalize("Pokemon Chaos Rising Booster Pack 1x")) is None
+
+
+@pytest.mark.parametrize(
+    "title",
+    [
+        "Pokémon TCG Phantom Forces Raikou Blister Pack 2 Booster Packs English 21 Cards",
+        "Pokemon | Gym Challenge Promo Booster Pack 2016 XY-P Vol. 4 Sealed",
+        "NEW Sealed Pokemon Team Rocket Box 3 Booster Packs (scarlet Violet S&S Pack)",
+        "Twilight Masquerade Sleeved Booster Packs (8 PACKS)",
+    ],
+)
+def test_multi_pack_and_promo_listings_do_not_match_a_single_pack_entry(title):
+    assert _matched_id(title) is None, title
+
+
+def test_a_real_single_pack_title_with_card_count_still_matches():
+    assert _matched_id("Pokémon XY Phantom Forces Booster Pack (10 Cards) English Charizard Gengar Art") == _slug(
+        "Phantom Forces", "booster_pack"
+    )

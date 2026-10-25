@@ -147,7 +147,13 @@ WEAK_PHRASES = {
     "expedition",
 }
 # "Mega Evolutions" is a plural typo of the base set but contains "evolutions".
-EXTRA_EXCLUSIONS = {"evolutions": ["mega evolution"]}
+# "Team Rocket" is also the theme of 2024-26 products (Team Rocket's Moltres ex,
+# Glory of Team Rocket, the Ultra Premium Collection), which would otherwise
+# price into the 2000 set.
+EXTRA_EXCLUSIONS = {
+    "evolutions": ["mega evolution"],
+    "team rocket": ["moltres", "glory of", "upc", "ultra premium", "burning sparks", "sv10"],
+}
 # ... and the base set must not exclude "evolutions" back, for the same reason.
 NEVER_EXCLUDE = {"mega evolution": {"evolutions"}}
 EDITION_RANK = {"1st Edition": 0, "Shadowless": 1, "Unlimited": 2, None: 3}
