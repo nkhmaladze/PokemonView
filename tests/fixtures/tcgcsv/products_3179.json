@@ -1,0 +1,49 @@
+{
+ "results": [
+  {
+   "productId": 280301,
+   "name": "Trick or Trade BOOster Bundle - Mini Booster Pack",
+   "groupId": 3179,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280301_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 280302,
+   "name": "Trick or Trade BOOster Bundle (40 ct)",
+   "groupId": 3179,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/280302_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 659627,
+   "name": "Trick or Trade BOOster Bundle (120 ct)",
+   "groupId": 3179,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/659627_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 283766,
+   "name": "Gengar (2021 Copyright Date)",
+   "groupId": 3179,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/283766_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "057/198"
+    }
+   ]
+  },
+  {
+   "productId": 283785,
+   "name": "Mewtwo",
+   "groupId": 3179,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/283785_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "056/172"
+    }
+   ]
+  }
+ ]
+}

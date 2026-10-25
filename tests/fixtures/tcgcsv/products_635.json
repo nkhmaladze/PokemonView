@@ -1,0 +1,70 @@
+{
+ "results": [
+  {
+   "productId": 107598,
+   "name": "Jungle Booster Box [1st Edition]",
+   "groupId": 635,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/107598_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 107599,
+   "name": "Jungle Booster Box [Unlimited Edition]",
+   "groupId": 635,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/107599_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 138128,
+   "name": "Jungle Booster Pack [1st Edition]",
+   "groupId": 635,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/138128_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 138129,
+   "name": "Jungle Booster Pack [Unlimited Edition]",
+   "groupId": 635,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/138129_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 234498,
+   "name": "Jungle Theme Deck - \"Power Reserve\"",
+   "groupId": 635,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/234498_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 234499,
+   "name": "Jungle Theme Deck - \"Water Blast\"",
+   "groupId": 635,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/234499_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 45120,
+   "name": "Clefable (1)",
+   "groupId": 635,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/45120_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "01/64"
+    }
+   ]
+  },
+  {
+   "productId": 45121,
+   "name": "Scyther (10)",
+   "groupId": 635,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/45121_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "10/64"
+    }
+   ]
+  }
+ ]
+}

@@ -3,7 +3,9 @@
 Proves the "seed-now-correct-later" workflow: `seed_catalog(db,
 catalog)` upserts every curated `scripts.catalog_data.CATALOG` entry
 into the `products` collection keyed on a deterministic slug `_id`
-(`{set_name}_{product_type}`, lowercased, spaces to hyphens —), so re-running the seed after Pitch Black's actual
+(`scripts.catalog_slug.product_slug`: `{set_name}_{product_type}`, or
+`{set_name} {edition}_{product_type}` for editioned products, lowercased
+and hyphenated), so re-running the seed after Pitch Black's actual
 post-release data lands or after any other catalog correction
 updates documents in place instead of duplicating them.
 This also ensures `booster_bundle` is seeded as its own
@@ -40,14 +42,14 @@ from pymongo import MongoClient, UpdateOne
 
 from db.init_collections import init_collections
 from scripts.catalog_data import CATALOG
+from scripts.catalog_slug import product_slug
 
 
 def seed_catalog(db, catalog):
     """Idempotently upsert every catalog entry into db.products.
 
-    Builds a deterministic slug `_id` per entry
-    (`f"{set_name}_{product_type}".lower().replace(" ", "-")`,
-) and upserts a COPY of each dict — the shared CATALOG
+    Builds a deterministic slug `_id` per entry (`product_slug`) and upserts a COPY of each dict, defaulting `edition` to
+    None and `excluded_keywords` to [] when an entry omits them — the shared CATALOG
     constant is never mutated. `release_date` is converted from its
     ISO "YYYY-MM-DD" string form to a Python `datetime` via
     `datetime.fromisoformat` when present; `None` (Pitch Black's
@@ -66,7 +68,9 @@ def seed_catalog(db, catalog):
     ops = []
     for product in catalog:
         doc = dict(product)  # copy — never mutate the shared CATALOG constant
-        slug = f"{doc['set_name']}_{doc['product_type']}".lower().replace(" ", "-")
+        doc.setdefault("edition", None)
+        doc.setdefault("excluded_keywords", [])
+        slug = product_slug(doc)
         doc["_id"] = slug
         if doc.get("release_date"):
             doc["release_date"] = datetime.fromisoformat(doc["release_date"])

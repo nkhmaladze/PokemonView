@@ -1,0 +1,184 @@
+{
+ "results": [
+  {
+   "groupId": 24831,
+   "name": "ME06: Delta Reign",
+   "abbreviation": "DLR",
+   "isSupplemental": false,
+   "publishedOn": "2026-11-06T00:00:00",
+   "modifiedOn": "2026-10-19T20:12:05.4",
+   "categoryId": 3
+  },
+  {
+   "groupId": 24587,
+   "name": "ME03: Perfect Order",
+   "abbreviation": "POR",
+   "isSupplemental": false,
+   "publishedOn": "2026-03-27T00:00:00",
+   "modifiedOn": "2026-10-23T20:43:02.35",
+   "categoryId": 3
+  },
+  {
+   "groupId": 24380,
+   "name": "ME01: Mega Evolution",
+   "abbreviation": "MEG",
+   "isSupplemental": false,
+   "publishedOn": "2025-09-26T00:00:00",
+   "modifiedOn": "2026-10-23T13:43:55.18",
+   "categoryId": 3
+  },
+  {
+   "groupId": 23237,
+   "name": "SV: Scarlet & Violet 151",
+   "abbreviation": "MEW",
+   "isSupplemental": false,
+   "publishedOn": "2023-09-22T00:00:00",
+   "modifiedOn": "2026-10-22T19:56:00.547",
+   "categoryId": 3
+  },
+  {
+   "groupId": 23228,
+   "name": "SV03: Obsidian Flames",
+   "abbreviation": "OBF",
+   "isSupplemental": false,
+   "publishedOn": "2023-08-11T00:00:00",
+   "modifiedOn": "2026-10-21T15:44:09.54",
+   "categoryId": 3
+  },
+  {
+   "groupId": 22873,
+   "name": "SV01: Scarlet & Violet Base Set",
+   "abbreviation": "SVI",
+   "isSupplemental": false,
+   "publishedOn": "2023-03-31T00:00:00",
+   "modifiedOn": "2026-10-23T13:39:43.043",
+   "categoryId": 3
+  },
+  {
+   "groupId": 2585,
+   "name": "SWSH01: Sword & Shield Base Set",
+   "abbreviation": "SWSH01",
+   "isSupplemental": false,
+   "publishedOn": "2020-02-07T00:00:00",
+   "modifiedOn": "2026-10-21T15:33:19.85",
+   "categoryId": 3
+  },
+  {
+   "groupId": 2480,
+   "name": "Hidden Fates",
+   "abbreviation": "HIF",
+   "isSupplemental": false,
+   "publishedOn": "2019-08-23T00:00:00",
+   "modifiedOn": "2026-10-05T13:25:31.123",
+   "categoryId": 3
+  },
+  {
+   "groupId": 1863,
+   "name": "SM Base Set",
+   "abbreviation": "SM01",
+   "isSupplemental": false,
+   "publishedOn": "2017-02-03T00:00:00",
+   "modifiedOn": "2026-10-13T02:11:38.51",
+   "categoryId": 3
+  },
+  {
+   "groupId": 1842,
+   "name": "XY - Evolutions",
+   "abbreviation": "EVO",
+   "isSupplemental": false,
+   "publishedOn": "2016-11-02T00:00:00",
+   "modifiedOn": "2026-10-15T19:20:37.107",
+   "categoryId": 3
+  },
+  {
+   "groupId": 1387,
+   "name": "XY Base Set",
+   "abbreviation": "XY",
+   "isSupplemental": false,
+   "publishedOn": "2014-02-05T00:00:00",
+   "modifiedOn": "2026-08-05T21:48:06.933",
+   "categoryId": 3
+  },
+  {
+   "groupId": 1400,
+   "name": "Black and White",
+   "abbreviation": "BLW",
+   "isSupplemental": false,
+   "publishedOn": "2011-04-25T00:00:00",
+   "modifiedOn": "2026-05-09T04:25:37.463",
+   "categoryId": 3
+  },
+  {
+   "groupId": 1402,
+   "name": "HeartGold SoulSilver",
+   "abbreviation": "HS",
+   "isSupplemental": false,
+   "publishedOn": "2010-02-10T00:00:00",
+   "modifiedOn": "2026-08-05T21:55:55.037",
+   "categoryId": 3
+  },
+  {
+   "groupId": 1374,
+   "name": "Legendary Collection",
+   "abbreviation": "LC",
+   "isSupplemental": false,
+   "publishedOn": "2002-05-24T00:00:00",
+   "modifiedOn": "2026-09-23T01:21:27.493",
+   "categoryId": 3
+  },
+  {
+   "groupId": 605,
+   "name": "Base Set 2",
+   "abbreviation": "BS2",
+   "isSupplemental": false,
+   "publishedOn": "2000-02-24T00:00:00",
+   "modifiedOn": "2026-09-16T21:51:39.683",
+   "categoryId": 3
+  },
+  {
+   "groupId": 635,
+   "name": "Jungle",
+   "abbreviation": "JU",
+   "isSupplemental": false,
+   "publishedOn": "1999-06-16T00:00:00",
+   "modifiedOn": "2026-10-07T23:25:10.67",
+   "categoryId": 3
+  },
+  {
+   "groupId": 604,
+   "name": "Base Set",
+   "abbreviation": "BS",
+   "isSupplemental": false,
+   "publishedOn": "1999-01-09T00:00:00",
+   "modifiedOn": "2026-10-19T18:50:49.3",
+   "categoryId": 3
+  },
+  {
+   "groupId": 1663,
+   "name": "Base Set (Shadowless)",
+   "abbreviation": "BSS",
+   "isSupplemental": false,
+   "publishedOn": "1999-01-09T00:00:00",
+   "modifiedOn": "2026-10-02T23:10:07.707",
+   "categoryId": 3
+  },
+  {
+   "groupId": 3179,
+   "name": "Trick or Trade BOOster Bundle",
+   "abbreviation": "TTBB",
+   "isSupplemental": false,
+   "publishedOn": "2022-09-01T00:00:00",
+   "modifiedOn": "2026-07-07T05:23:40.913",
+   "categoryId": 3
+  },
+  {
+   "groupId": 3020,
+   "name": "SWSH09: Brilliant Stars Trainer Gallery",
+   "abbreviation": "SWSH09:TG",
+   "isSupplemental": false,
+   "publishedOn": "2022-02-25T00:00:00",
+   "modifiedOn": "2026-08-11T04:10:02.08",
+   "categoryId": 3
+  }
+ ]
+}

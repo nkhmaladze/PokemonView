@@ -1,0 +1,42 @@
+{
+ "results": [
+  {
+   "productId": 98530,
+   "name": "HeartGold SoulSilver Booster Pack",
+   "groupId": 1402,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/98530_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 98531,
+   "name": "HeartGold SoulSilver Booster Box",
+   "groupId": 1402,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/98531_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 83509,
+   "name": "Alph Lithograph",
+   "groupId": 1402,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/83509_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "ONE"
+    }
+   ]
+  },
+  {
+   "productId": 83544,
+   "name": "Ampharos",
+   "groupId": 1402,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/83544_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "14/123"
+    }
+   ]
+  }
+ ]
+}

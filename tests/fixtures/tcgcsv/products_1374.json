@@ -1,0 +1,56 @@
+{
+ "results": [
+  {
+   "productId": 138150,
+   "name": "Legendary Collection Booster Pack",
+   "groupId": 1374,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/138150_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 450748,
+   "name": "Legendary Collection Theme Deck - \"Lava\"",
+   "groupId": 1374,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/450748_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 451094,
+   "name": "Legendary Collection Theme Deck - \"Turmoil\"",
+   "groupId": 1374,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/451094_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 691155,
+   "name": "Legendary Collection Booster Box",
+   "groupId": 1374,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/691155_200w.jpg",
+   "extendedData": []
+  },
+  {
+   "productId": 83446,
+   "name": "Abra",
+   "groupId": 1374,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/83446_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "067/110"
+    }
+   ]
+  },
+  {
+   "productId": 83496,
+   "name": "Alakazam",
+   "groupId": 1374,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/83496_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "001/110"
+    }
+   ]
+  }
+ ]
+}

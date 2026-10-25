@@ -1,0 +1,28 @@
+{
+ "results": [
+  {
+   "productId": 264202,
+   "name": "Boltund V",
+   "groupId": 3020,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/264202_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "TG13/TG30"
+    }
+   ]
+  },
+  {
+   "productId": 264203,
+   "name": "Cafe Master",
+   "groupId": 3020,
+   "imageUrl": "https://tcgplayer-cdn.tcgplayer.com/product/264203_200w.jpg",
+   "extendedData": [
+    {
+     "name": "Number",
+     "value": "TG25/TG30"
+    }
+   ]
+  }
+ ]
+}
