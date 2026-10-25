@@ -45,6 +45,8 @@ export default function ProductRow({ product }) {
             src={product.image_url}
             alt={`${product.display_name} thumbnail`}
             className={styles.thumb__img}
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <span
