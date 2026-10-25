@@ -448,3 +448,14 @@ def test_mega_evolution_does_not_exclude_the_evolutions_set_name():
     entries, _ = build_entries(groups, products, [], TODAY)
     mega = next(e for e in entries if e["set_name"] == "Mega Evolution")
     assert "evolutions" not in mega["excluded_keywords"]
+
+
+def test_vintage_team_rocket_excludes_modern_team_rocket_products():
+    """"Team Rocket" is also the theme of 2024-26 products (Moltres ex, Glory of
+    Team Rocket, Ultra Premium Collection)."""
+    from scripts.build_catalog import build_entries
+
+    groups, products = _synthetic(("Team Rocket", "2000-04-24", "Team Rocket Booster Box [Unlimited Edition]"))
+    entries, _ = build_entries(groups, products, [], TODAY)
+    excluded = set(entries[0]["excluded_keywords"])
+    assert {"moltres", "glory of", "upc", "ultra premium", "burning sparks"} <= excluded
