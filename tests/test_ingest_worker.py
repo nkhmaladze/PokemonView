@@ -362,3 +362,31 @@ def test_build_query_unlimited_and_none_are_unchanged():
     legacy = {"set_name": "Chaos Rising", "product_type": "booster_box"}
     assert build_query(unlimited) == "Pokemon Jungle Booster Box"
     assert build_query(plain) == build_query(legacy) == "Pokemon Chaos Rising Booster Box"
+
+
+def _ttl_seconds(collection, field):
+    """expireAfterSeconds of the single-field index on `field`, or None."""
+    for spec in collection.index_information().values():
+        if [k for k, _ in spec["key"]] == [field]:
+            return spec.get("expireAfterSeconds")
+    return None
+
+
+def test_active_listings_expire_two_weeks_after_last_seen(ingest_db):
+    """Every upsert refreshes fetched_at, so a listing still being returned
+    never ages out; one that has sold or ended stops being refreshed and is
+    deleted 14 days after its last sighting."""
+    assert _ttl_seconds(ingest_db.active_listings, "fetched_at") == 14 * 24 * 60 * 60
+
+
+def test_init_collections_adds_the_ttl_to_an_existing_active_listings(ingest_db):
+    """Production's active_listings already exists without the TTL index;
+    re-running init_collections (seed_catalog does) must add it."""
+    from db.init_collections import init_collections
+
+    ingest_db.active_listings.drop_index("fetched_at_1")
+    assert _ttl_seconds(ingest_db.active_listings, "fetched_at") is None
+
+    init_collections(ingest_db)
+
+    assert _ttl_seconds(ingest_db.active_listings, "fetched_at") == 14 * 24 * 60 * 60

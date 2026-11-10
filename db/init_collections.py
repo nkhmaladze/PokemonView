@@ -38,6 +38,11 @@ import" discipline established in scripts/ebay_client.py.
 
 from pymongo import ASCENDING, DESCENDING
 
+# How long an active_listings row survives without being seen again. The
+# worker runs every 4 hours, so 14 days tolerates a long outage without
+# expiring listings that are still live.
+ACTIVE_LISTINGS_TTL_DAYS = 14
+
 PRODUCTS_JSON_SCHEMA = {
     "bsonType": "object",
     "additionalProperties": False,
@@ -125,7 +130,10 @@ def init_collections(db):
     option, no validator) holding Phase 3's raw eBay listing output,
     keyed by _id=itemId. A non-unique index on product_ref (the
     catalog query slug that found the listing, not a matched
-    product_id) supports Phase 4's per-catalog-product reads.
+    product_id) supports Phase 4's per-catalog-product reads. A TTL
+    index on fetched_at (ACTIVE_LISTINGS_TTL_DAYS) deletes listings no
+    run has seen for that long (sold or ended), keeping the free-tier
+    database from growing without bound.
 
     ingestion_locks: created as a plain collection providing the
     cross-process concurrency guard Phase 3's ingestion worker uses to
@@ -205,6 +213,17 @@ def init_collections(db):
     if "active_listings" not in db.list_collection_names():
         db.create_collection("active_listings")
     db.active_listings.create_index([("product_ref", ASCENDING)])
+    # Every upsert refreshes fetched_at to the run's start time, so a
+    # listing that is still being returned never ages out; one that has
+    # sold or ended stops being refreshed and MongoDB deletes it
+    # ACTIVE_LISTINGS_TTL_DAYS after its last sighting. Matching only
+    # reads the current run's rows and price_points is a separate
+    # collection, so price history is untouched. (Changing the number
+    # later needs a collMod: create_index rejects a different TTL on an
+    # existing index.)
+    db.active_listings.create_index(
+        "fetched_at", expireAfterSeconds=ACTIVE_LISTINGS_TTL_DAYS * 24 * 60 * 60
+    )
 
     # ingestion_locks: a PLAIN collection providing the cross-process
     # concurrency guard. The TTL index on expires_at
