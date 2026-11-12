@@ -61,6 +61,11 @@ describe('formatAxisPrice', () => {
   it('formats a number as a whole-dollar string with no decimal places', () => {
     expect(formatAxisPrice(150)).toBe('$150')
   })
+
+  it('shows cents when asked to', () => {
+    expect(formatAxisPrice(9.5, 2)).toBe('$9.50')
+    expect(formatAxisPrice(40, 2)).toBe('$40.00')
+  })
 })
 
 describe('formatTooltipValue', () => {

@@ -1,4 +1,5 @@
 import styles from './PriceHistoryChart.module.css'
+import { priceAxis } from '../utils/priceAxis'
 import {
   LineChart,
   Line,
@@ -46,8 +47,8 @@ export function formatTooltipDate(ts) {
   }).format(new Date(ts))
 }
 
-export function formatAxisPrice(value) {
-  return `$${Math.round(Number(value))}`
+export function formatAxisPrice(value, decimals = 0) {
+  return decimals ? `$${Number(value).toFixed(decimals)}` : `$${Math.round(Number(value))}`
 }
 
 export function formatTooltipValue(value) {
@@ -68,6 +69,11 @@ export default function PriceHistoryChart({ data }) {
   // scale="time"` axis instead.
   const chartData = data.map((d) => ({ ...d, tsMillis: new Date(d.ts).getTime() }))
 
+  // The Y axis is fitted to the prices (see utils/priceAxis.js) rather than
+  // starting at $0, which would flatten any product far above it. With nothing
+  // numeric to fit it keeps Recharts' default axis.
+  const axis = priceAxis(data.map((d) => d.total_price))
+
   return (
     <div className={styles.chartWrap} data-testid="price-history-chart">
       <ResponsiveContainer width="100%" height="100%">
@@ -85,7 +91,8 @@ export default function PriceHistoryChart({ data }) {
           <YAxis
             stroke="var(--text-secondary)"
             tick={{ fill: 'var(--text-secondary)', fontSize: 'var(--font-size-label)' }}
-            tickFormatter={formatAxisPrice}
+            {...(axis ? { domain: axis.domain, ticks: axis.ticks, interval: 0 } : {})}
+            tickFormatter={(value) => formatAxisPrice(value, axis ? axis.decimals : 0)}
           />
           <Tooltip
             labelFormatter={formatTooltipDate}
