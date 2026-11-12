@@ -1,5 +1,5 @@
-/* CatalogPage — browse route. Header order: title, search, chip rows, then the flat
- * dense list or the empty state. */
+/* CatalogPage — browse route. Header order: title, search, filter dropdowns, then
+ * the flat dense list or the empty state. */
 
 .catalog {
   display: flex;
@@ -16,6 +16,12 @@
   line-height: var(--line-height-heading);
   color: var(--text-primary);
   margin: 0;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .list {
