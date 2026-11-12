@@ -71,7 +71,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
-  min-height: var(--space-lg);
+  min-height: 20px;
 }
 
 .count {
@@ -83,7 +83,7 @@
 }
 
 .clear {
-  padding: var(--space-xs) var(--space-sm);
+  padding: 0 var(--space-xs);
   background: none;
   border: none;
   border-radius: 4px;

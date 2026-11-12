@@ -76,4 +76,12 @@ describe('ProductRow', () => {
     expect(img).toHaveAttribute('loading', 'lazy')
     expect(img).toHaveAttribute('decoding', 'async')
   })
+
+  it('shows just the two amounts, with no captions (the product page explains them)', () => {
+    renderRow(okProduct)
+    expect(screen.getByText('$150.00')).toBeInTheDocument()
+    expect(screen.getByText('$145.00')).toBeInTheDocument()
+    expect(screen.queryByText('item')).not.toBeInTheDocument()
+    expect(screen.queryByText('with shipping')).not.toBeInTheDocument()
+  })
 })
