@@ -18,23 +18,28 @@ function formatCurrency(value) {
  * `variant="display"` selects the 28/600 Display-size headline used on
  * the product detail page; the default `"heading"` variant selects the
  * compact 18/600 Heading-size headline used in the list row.
+ *
+ * `align="end"` right-aligns both lines so the cents of every row in a
+ * list line up down the page; the default leaves the block left-aligned.
  */
-export default function PriceDisplay({ currentPrice, variant = 'heading' }) {
+export default function PriceDisplay({ currentPrice, variant = 'heading', align = 'start' }) {
   const totalClassName =
     variant === 'display'
       ? `${styles.price__total} ${styles['price__total--display']}`
       : styles.price__total
+  const priceClassName =
+    align === 'end' ? `${styles.price} ${styles['price--end']}` : styles.price
 
   if (!currentPrice) {
     return (
-      <div className={styles.price}>
+      <div className={priceClassName}>
         <span className={totalClassName}>{'—'}</span>
       </div>
     )
   }
 
   return (
-    <div className={styles.price}>
+    <div className={priceClassName}>
       <span className={totalClassName}>{formatCurrency(currentPrice.total_price)}</span>
       <span className={styles.price__secondary}>{formatCurrency(currentPrice.item_price)}</span>
     </div>

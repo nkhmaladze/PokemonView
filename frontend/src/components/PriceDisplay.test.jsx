@@ -39,4 +39,21 @@ describe('PriceDisplay', () => {
     const total = screen.getByText('$161.64')
     expect(total.className).not.toContain('price__total--display')
   })
+
+  it('right-aligns both price lines when align="end" (list rows)', () => {
+    render(<PriceDisplay currentPrice={currentPrice} align="end" />)
+    const wrapper = screen.getByText('$161.64').parentElement
+    expect(wrapper.className).toContain('price--end')
+  })
+
+  it('leaves the price block left-aligned by default (detail page)', () => {
+    render(<PriceDisplay currentPrice={currentPrice} />)
+    const wrapper = screen.getByText('$161.64').parentElement
+    expect(wrapper.className).not.toContain('price--end')
+  })
+
+  it('right-aligns the missing-price dash too when align="end"', () => {
+    render(<PriceDisplay currentPrice={null} align="end" />)
+    expect(screen.getByText('—').parentElement.className).toContain('price--end')
+  })
 })

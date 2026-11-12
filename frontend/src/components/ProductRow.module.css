@@ -62,9 +62,13 @@
   font-size: var(--font-size-body);
   font-weight: var(--font-weight-semibold);
   color: var(--text-primary);
-  white-space: nowrap;
+  /* Wrap to two lines before truncating: on a phone "Delta Reign Booster Box",
+   * "... Booster Bundle" and "... Booster Pack" must stay tell-apart-able. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .row__setBadge {
@@ -79,9 +83,15 @@
 
 .row__price {
   flex-shrink: 0;
+  /* One fixed-width, right-pinned column: every row's price ends at the same
+   * x, and with tabular digits the decimal points line up down the list. */
+  display: flex;
+  justify-content: flex-end;
+  min-width: 6.5rem;
 }
 
 .row__noData {
+  text-align: right;
   font-size: var(--font-size-heading);
   line-height: var(--line-height-heading);
   font-weight: var(--font-weight-semibold);

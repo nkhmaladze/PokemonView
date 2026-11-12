@@ -9,6 +9,11 @@
   gap: var(--space-xs);
 }
 
+.price--end {
+  align-items: flex-end;
+  text-align: right;
+}
+
 .price__total {
   font-variant-numeric: tabular-nums;
   font-weight: var(--font-weight-semibold);
