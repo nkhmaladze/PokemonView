@@ -287,4 +287,17 @@ describe('CatalogPage', () => {
     await user.selectOptions(eraSelect(), 'Classic')
     expect(screen.queryByText('Mystery Set ETB')).not.toBeInTheDocument()
   })
+
+  it('explains the two prices once, above the list', () => {
+    renderCatalog()
+    expect(screen.getByText('with shipping')).toBeInTheDocument()
+    expect(screen.getByText('item price')).toBeInTheDocument()
+  })
+
+  it('does not show the price explainer when no products match', async () => {
+    const user = userEvent.setup()
+    renderCatalog()
+    await user.type(screen.getByLabelText('Search products'), 'zzzzzznotfound')
+    expect(screen.queryByText('with shipping')).not.toBeInTheDocument()
+  })
 })

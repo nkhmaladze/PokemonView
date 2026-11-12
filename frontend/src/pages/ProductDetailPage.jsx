@@ -132,7 +132,7 @@ export default function ProductDetailPage() {
 
       {product.price_status === 'ok' ? (
         <div className={styles.detail__priceSection}>
-          <PriceDisplay currentPrice={product.current_price} variant="display" />
+          <PriceDisplay currentPrice={product.current_price} variant="display" showLabels />
           <p className={styles.sampleSize}>
             {formatSampleSize(product.current_price.listing_count)}
           </p>

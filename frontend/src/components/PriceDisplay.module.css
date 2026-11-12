@@ -14,6 +14,28 @@
   text-align: right;
 }
 
+/* One amount per line, with its optional badge/label on the same baseline. */
+.price__line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.price__badge {
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  color: var(--text-secondary);
+  background: var(--color-divider);
+  padding: 2px var(--space-sm);
+  border-radius: 999px;
+}
+
+.price__label {
+  font-size: var(--font-size-label);
+  line-height: var(--line-height-label);
+  color: var(--text-secondary);
+}
+
 .price__total {
   font-variant-numeric: tabular-nums;
   font-weight: var(--font-weight-semibold);

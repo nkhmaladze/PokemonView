@@ -28,7 +28,9 @@ const OTHER_ERA = 'Other'
  * Renders one ProductRow per visible product as a single flat,
  * continuous list in the loader's given order — no per-set section
  * headers or tabs — or the "No products found" empty state when
- * the combined filter matches nothing.
+ * the combined filter matches nothing. A small legend above the rows says
+ * which price is which (bold = with shipping, grey = item price), once,
+ * instead of repeating a badge on every row.
  */
 export default function CatalogPage() {
   const products = useLoaderData()
@@ -128,10 +130,16 @@ export default function CatalogPage() {
           <p>Try a different search term, or clear your filters to see the full catalog.</p>
         </div>
       ) : (
-        <div className={styles.list}>
-          {visible.map((product) => (
-            <ProductRow key={product.id} product={product} />
-          ))}
+        <div className={styles.results}>
+          <div className={styles.legend}>
+            <span className={styles.legend__badge}>with shipping</span>
+            <span className={styles.legend__muted}>item price</span>
+          </div>
+          <div className={styles.list}>
+            {visible.map((product) => (
+              <ProductRow key={product.id} product={product} />
+            ))}
+          </div>
         </div>
       )}
     </div>

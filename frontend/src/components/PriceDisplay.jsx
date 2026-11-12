@@ -21,8 +21,18 @@ function formatCurrency(value) {
  *
  * `align="end"` right-aligns both lines so the cents of every row in a
  * list line up down the page; the default leaves the block left-aligned.
+ *
+ * `showLabels` says in words which number is which: a "with shipping"
+ * badge beside the headline total and an "item price" label beside the
+ * grey line. The detail page turns it on; list rows leave it off because
+ * the list explains the two numbers once, above the rows.
  */
-export default function PriceDisplay({ currentPrice, variant = 'heading', align = 'start' }) {
+export default function PriceDisplay({
+  currentPrice,
+  variant = 'heading',
+  align = 'start',
+  showLabels = false,
+}) {
   const totalClassName =
     variant === 'display'
       ? `${styles.price__total} ${styles['price__total--display']}`
@@ -40,8 +50,14 @@ export default function PriceDisplay({ currentPrice, variant = 'heading', align 
 
   return (
     <div className={priceClassName}>
-      <span className={totalClassName}>{formatCurrency(currentPrice.total_price)}</span>
-      <span className={styles.price__secondary}>{formatCurrency(currentPrice.item_price)}</span>
+      <span className={styles.price__line}>
+        <span className={totalClassName}>{formatCurrency(currentPrice.total_price)}</span>
+        {showLabels && <span className={styles.price__badge}>with shipping</span>}
+      </span>
+      <span className={styles.price__line}>
+        <span className={styles.price__secondary}>{formatCurrency(currentPrice.item_price)}</span>
+        {showLabels && <span className={styles.price__label}>item price</span>}
+      </span>
     </div>
   )
 }

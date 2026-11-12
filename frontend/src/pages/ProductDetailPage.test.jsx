@@ -75,6 +75,13 @@ describe('ProductDetailPage', () => {
     getPriceHistory.mockResolvedValue([])
   })
 
+  it('badges the headline price as "with shipping" and labels the item price', () => {
+    renderDetail(okProduct)
+
+    expect(screen.getByText('with shipping')).toBeInTheDocument()
+    expect(screen.getByText('item price')).toBeInTheDocument()
+  })
+
   it('renders total price, item price, all three trend badges, freshness caption, and sample-size caption for an "ok" product', () => {
     renderDetail(okProduct)
 
