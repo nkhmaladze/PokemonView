@@ -7,6 +7,7 @@ silent visual regression; these tests make it loud.
 
 import re
 
+from scripts.build_catalog import EDITION_DISPLAY, TYPE_LABELS
 from scripts.catalog_data import CATALOG, CURATED_CATALOG, GENERATED_CATALOG
 from scripts.catalog_slug import EDITIONS, product_slug
 
@@ -81,3 +82,16 @@ def test_required_keywords_lead_with_the_set_phrase():
     for e in CATALOG:
         assert e["required_keywords"], _key(e)
         assert e["required_keywords"][0] == e["required_keywords"][0].lower()
+
+
+def test_every_display_name_is_the_set_plus_the_product_type():
+    """One naming format across the whole catalog: "{set} {type}" plus the
+    edition suffix, never retailer boilerplate such as
+    "Pokemon TCG: Mega Evolution-Chaos Rising Booster Display Box (36 Packs)"."""
+    off_format = {
+        _key(e): e["display_name"]
+        for e in CATALOG
+        if e["display_name"]
+        != f"{e['set_name']} {TYPE_LABELS[e['product_type']]}{EDITION_DISPLAY[e.get('edition')]}"
+    }
+    assert off_format == {}

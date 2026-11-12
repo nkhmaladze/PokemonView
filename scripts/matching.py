@@ -21,9 +21,8 @@ Matching design is two-tier and strict/precision-first:
     match_status="unmatched"/match_method="ambiguous".
   Tier 2 (bounded fuzzy fallback, only when Tier 1 finds zero
     candidates) — RapidFuzz `process.extract` against a lean
-    per-product canonical phrase (never the catalog's full
-    `display_name`, which shares enough "Pokemon TCG: Mega
-    Evolution-..." boilerplate across every product to dilute fuzzy
+    per-product canonical phrase (never the catalog's `display_name`,
+    which is a display label and can carry words that dilute fuzzy
     discrimination). Only accepted when the
     top score clears both an absolute floor (FUZZY_SCORE_CUTOFF) and a
     margin over the runner-up (FUZZY_MARGIN) — otherwise unmatched.
