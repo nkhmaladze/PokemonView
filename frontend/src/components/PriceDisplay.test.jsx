@@ -86,4 +86,29 @@ describe('PriceDisplay', () => {
     expect(screen.queryByText('with shipping')).not.toBeInTheDocument()
     expect(screen.queryByText('item price')).not.toBeInTheDocument()
   })
+
+  it('with itemLabel, puts the word "item" before the grey amount (list rows)', () => {
+    render(<PriceDisplay currentPrice={currentPrice} itemLabel />)
+    const itemLine = screen.getByText('$150.00').parentElement
+    expect(itemLine).toContainElement(screen.getByText('item'))
+    expect(itemLine.firstElementChild).toBe(screen.getByText('item'))
+    // the headline gets no badge: the list header covers it
+    expect(screen.queryByText('with shipping')).not.toBeInTheDocument()
+  })
+
+  it('shows no "item" word by default', () => {
+    render(<PriceDisplay currentPrice={currentPrice} />)
+    expect(screen.queryByText('item')).not.toBeInTheDocument()
+  })
+
+  it('showLabels takes over from itemLabel (no duplicate wording)', () => {
+    render(<PriceDisplay currentPrice={currentPrice} showLabels itemLabel />)
+    expect(screen.queryByText('item')).not.toBeInTheDocument()
+    expect(screen.getByText('item price')).toBeInTheDocument()
+  })
+
+  it('shows no "item" word when there is no price', () => {
+    render(<PriceDisplay currentPrice={null} itemLabel />)
+    expect(screen.queryByText('item')).not.toBeInTheDocument()
+  })
 })

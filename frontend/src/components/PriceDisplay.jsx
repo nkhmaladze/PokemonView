@@ -24,14 +24,16 @@ function formatCurrency(value) {
  *
  * `showLabels` says in words which number is which: a "with shipping"
  * badge beside the headline total and an "item price" label beside the
- * grey line. The detail page turns it on; list rows leave it off because
- * the list explains the two numbers once, above the rows.
+ * grey line. The detail page turns it on. List rows use `itemLabel`
+ * instead: just the word "item" before the grey amount, because the list's
+ * header already says the bold price includes shipping.
  */
 export default function PriceDisplay({
   currentPrice,
   variant = 'heading',
   align = 'start',
   showLabels = false,
+  itemLabel = false,
 }) {
   const totalClassName =
     variant === 'display'
@@ -55,6 +57,7 @@ export default function PriceDisplay({
         {showLabels && <span className={styles.price__badge}>with shipping</span>}
       </span>
       <span className={styles.price__line}>
+        {itemLabel && !showLabels && <span className={styles.price__label}>item</span>}
         <span className={styles.price__secondary}>{formatCurrency(currentPrice.item_price)}</span>
         {showLabels && <span className={styles.price__label}>item price</span>}
       </span>

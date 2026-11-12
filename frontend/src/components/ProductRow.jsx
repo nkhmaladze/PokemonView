@@ -64,7 +64,12 @@ export default function ProductRow({ product }) {
 
       <span className={styles.row__price}>
         {product.price_status === 'ok' ? (
-          <PriceDisplay currentPrice={product.current_price} variant="heading" align="end" />
+          <PriceDisplay
+            currentPrice={product.current_price}
+            variant="heading"
+            align="end"
+            itemLabel
+          />
         ) : (
           <span className={styles.row__noData}>No pricing data yet</span>
         )}

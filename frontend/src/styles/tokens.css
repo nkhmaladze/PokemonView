@@ -88,20 +88,56 @@ body {
   line-height: var(--line-height-body);
 }
 
-/* Page backdrop: soft colour glows in the corners over a faint tiled Poke Ball
- * pattern. A fixed layer behind the page rather than `background-attachment:
- * fixed`, which iOS Safari ignores. Rows, inputs and cards keep their solid
- * surface colours, so text never sits on the pattern. */
-body::before {
+/* Page backdrop: soft colour glows in the corners (::before) with a faint tiled
+ * Poke Ball pattern over them (::after). Both are fixed layers behind the page
+ * rather than `background-attachment: fixed`, which iOS Safari ignores. Rows,
+ * inputs and cards keep their solid surface colours, so text never sits on the
+ * pattern. */
+body::before,
+body::after {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
+}
+
+body::before {
   background-image:
     radial-gradient(ellipse 70% 55% at 0% 0%, var(--backdrop-glow-warm), transparent 70%),
     radial-gradient(ellipse 65% 50% at 100% 0%, var(--backdrop-glow-cool), transparent 70%),
-    radial-gradient(ellipse 60% 45% at 50% 100%, var(--backdrop-glow-violet), transparent 70%),
-    url('../assets/bg-pokeballs.svg');
-  background-size: auto, auto, auto, 360px 360px;
+    radial-gradient(ellipse 60% 45% at 50% 100%, var(--backdrop-glow-violet), transparent 70%);
+}
+
+body::after {
+  background-image: url('../assets/bg-pokeballs.svg');
+  background-size: 360px 360px;
+  /* On a phone the page is all content, so keep the pattern very faint. */
+  opacity: 0.5;
+}
+
+/* Wider than the content column (720px + gutters): keep the pattern in the side
+ * margins only, so a ring is never cut off by the edge of a search box or list. */
+@media (min-width: 760px) {
+  body::after {
+    opacity: 1;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      #000 0,
+      #000 calc(50% - 410px),
+      transparent calc(50% - 370px),
+      transparent calc(50% + 370px),
+      #000 calc(50% + 410px),
+      #000 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      #000 0,
+      #000 calc(50% - 410px),
+      transparent calc(50% - 370px),
+      transparent calc(50% + 370px),
+      #000 calc(50% + 410px),
+      #000 100%
+    );
+  }
 }

@@ -288,16 +288,22 @@ describe('CatalogPage', () => {
     expect(screen.queryByText('Mystery Set ETB')).not.toBeInTheDocument()
   })
 
-  it('explains the two prices once, above the list', () => {
+  it('heads the list with a table header that says the bold price includes shipping', () => {
     renderCatalog()
-    expect(screen.getByText('with shipping')).toBeInTheDocument()
-    expect(screen.getByText('item price')).toBeInTheDocument()
+    expect(screen.getByText('Product')).toBeInTheDocument()
+    expect(screen.getByText('Price with shipping')).toBeInTheDocument()
   })
 
-  it('does not show the price explainer when no products match', async () => {
+  it('labels the grey line of every priced row "item"', () => {
+    renderCatalog()
+    // p1, p2, p4, p5 have a price; p3 has no data yet
+    expect(screen.getAllByText('item')).toHaveLength(4)
+  })
+
+  it('does not show the table header when no products match', async () => {
     const user = userEvent.setup()
     renderCatalog()
     await user.type(screen.getByLabelText('Search products'), 'zzzzzznotfound')
-    expect(screen.queryByText('with shipping')).not.toBeInTheDocument()
+    expect(screen.queryByText('Price with shipping')).not.toBeInTheDocument()
   })
 })
