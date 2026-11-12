@@ -14,6 +14,11 @@
   --color-destructive: #D92D20; /* reserved, unused this phase (no write actions) */
   --color-hover: #1D212B; /* neutral row hover state (never accent) */
 
+  /* Page backdrop glows (behind the page, never on content) */
+  --backdrop-glow-warm: rgba(232, 163, 61, 0.17);
+  --backdrop-glow-cool: rgba(92, 108, 255, 0.17);
+  --backdrop-glow-violet: rgba(160, 64, 170, 0.1);
+
   /* Text */
   --text-primary: #F5F6F8;
   --text-secondary: #9AA3B2;
@@ -81,4 +86,22 @@ body {
   font-family: var(--font-family-base);
   font-size: var(--font-size-body);
   line-height: var(--line-height-body);
+}
+
+/* Page backdrop: soft colour glows in the corners over a faint tiled Poke Ball
+ * pattern. A fixed layer behind the page rather than `background-attachment:
+ * fixed`, which iOS Safari ignores. Rows, inputs and cards keep their solid
+ * surface colours, so text never sits on the pattern. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse 70% 55% at 0% 0%, var(--backdrop-glow-warm), transparent 70%),
+    radial-gradient(ellipse 65% 50% at 100% 0%, var(--backdrop-glow-cool), transparent 70%),
+    radial-gradient(ellipse 60% 45% at 50% 100%, var(--backdrop-glow-violet), transparent 70%),
+    url('../assets/bg-pokeballs.svg');
+  background-size: auto, auto, auto, 360px 360px;
 }

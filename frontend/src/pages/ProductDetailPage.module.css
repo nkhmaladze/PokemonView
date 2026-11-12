@@ -152,6 +152,10 @@
      them never shifts the page. */
   height: 280px;
   width: 100%;
+  /* Solid panel so the page backdrop never shows through the plot. */
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) 0;
+  background: var(--color-surface);
+  border-radius: 8px;
 }
 
 .historyMessage {

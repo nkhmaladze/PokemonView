@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="360" height="360" viewBox="0 0 360 360">
+  <defs>
+    <g id="ball" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round">
+      <circle r="42"/>
+      <path d="M-42 0H-14M14 0H42"/>
+      <circle r="14"/>
+      <circle r="5"/>
+    </g>
+  </defs>
+  <g opacity="0.06">
+    <use xlink:href="#ball" href="#ball" transform="translate(78 74) rotate(-18)"/>
+    <use xlink:href="#ball" href="#ball" transform="translate(262 142) rotate(24) scale(0.72)"/>
+    <use xlink:href="#ball" href="#ball" transform="translate(132 276) rotate(9) scale(0.52)"/>
+    <use xlink:href="#ball" href="#ball" transform="translate(318 318) rotate(-34) scale(0.4)"/>
+  </g>
+</svg>
