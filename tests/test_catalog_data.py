@@ -39,7 +39,13 @@ def test_no_two_products_share_an_image():
 
 
 def test_catalog_is_curated_plus_generated():
-    assert CATALOG == CURATED_CATALOG + GENERATED_CATALOG
+    # Same products in the same order; the only difference is the msrp that
+    # scripts/msrp_data.py fills in for generated products.
+    def without_msrp(entries):
+        return [{k: v for k, v in e.items() if k != "msrp"} for e in entries]
+
+    assert len(CATALOG) == len(CURATED_CATALOG) + len(GENERATED_CATALOG)
+    assert without_msrp(CATALOG) == without_msrp(CURATED_CATALOG + GENERATED_CATALOG)
     assert len(CURATED_CATALOG) == 15
 
 

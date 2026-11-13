@@ -1,6 +1,7 @@
 """Sealed-product catalog for PokemonView.
 
-`CATALOG` = `CURATED_CATALOG` + `GENERATED_CATALOG`.
+`CATALOG` = `CURATED_CATALOG` + `GENERATED_CATALOG`, with the launch MSRPs from
+`scripts/msrp_data.py` filled in for the generated products that have one.
 
 CURATED_CATALOG is hand-maintained: the 4 sets selected for v1 —
 Chaos Rising (ME04), Perfect Order (ME03), Ascended Heroes, and Pitch
@@ -9,7 +10,8 @@ flags. GENERATED_CATALOG (scripts/catalog_generated.py, written by
 `python -m scripts.build_catalog`) holds every other English booster
 pack, booster box, ETB and booster bundle from Base Set (1999) onward,
 including 1st Edition / Shadowless / Unlimited printings, with msrp
-None. Never edit the generated file by hand.
+None (scripts/msrp_data.py supplies the known ones on top, so rerunning the
+generator never loses them). Never edit the generated file by hand.
 
 Each entry is a plain dict describing one distinct (set, edition,
 product_type) combination — up to 4 product types per set: booster_pack,
@@ -79,6 +81,8 @@ Sourcing notes (Task 1 research, 2026-07-13):
 """
 
 from scripts.catalog_generated import GENERATED_CATALOG  # noqa: E402
+from scripts.catalog_slug import product_slug  # noqa: E402
+from scripts.msrp_data import MSRP_BY_PRODUCT  # noqa: E402
 
 CURATED_CATALOG = [
     # -- Chaos Rising (ME04) - released 2026-05-22 --
@@ -270,4 +274,16 @@ CURATED_CATALOG = [
     },
 ]
 
-CATALOG = CURATED_CATALOG + GENERATED_CATALOG
+def _with_known_msrp(entry):
+    """A copy of a generated entry with its launch MSRP, when one is known.
+
+    Never mutates the shared GENERATED_CATALOG constant, and never overrides an
+    msrp the entry already has.
+    """
+    msrp = MSRP_BY_PRODUCT.get(product_slug(entry))
+    if msrp is None or entry.get("msrp") is not None:
+        return entry
+    return {**entry, "msrp": msrp}
+
+
+CATALOG = CURATED_CATALOG + [_with_known_msrp(e) for e in GENERATED_CATALOG]
