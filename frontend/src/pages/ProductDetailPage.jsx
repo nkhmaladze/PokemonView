@@ -25,8 +25,10 @@ const PRODUCT_TYPE_LABELS = {
   etb: 'ETB',
 }
 
+// MSRP is only known for the hand-checked recent sets; every other product
+// has `msrp: null`. The line is hidden for those rather than showing a dash.
 function formatMsrp(msrp) {
-  return typeof msrp === 'number' ? `$${msrp.toFixed(2)}` : '—'
+  return `$${msrp.toFixed(2)}`
 }
 
 function formatSampleSize(listingCount) {
@@ -180,7 +182,7 @@ export default function ProductDetailPage() {
       </div>
 
       <div className={styles.detail__meta}>
-        <span>MSRP: {formatMsrp(product.msrp)}</span>
+        {typeof product.msrp === 'number' && <span>MSRP: {formatMsrp(product.msrp)}</span>}
         <span>Release date: {product.release_date ?? 'TBD'}</span>
       </div>
     </div>

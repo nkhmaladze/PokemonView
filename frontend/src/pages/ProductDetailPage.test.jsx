@@ -127,11 +127,24 @@ describe('ProductDetailPage', () => {
     expect(screen.queryByText(/Based on/)).not.toBeInTheDocument()
   })
 
-  it('shows "—" for a null msrp and "TBD" for a null release_date', () => {
+  it('shows the MSRP when it is known', () => {
+    renderDetail(okProduct)
+
+    expect(screen.getByText('MSRP: $161.64')).toBeInTheDocument()
+  })
+
+  it('hides the MSRP line when the MSRP is unknown, and shows "TBD" for a null release_date', () => {
     renderDetail({ ...okProduct, msrp: null, release_date: null })
 
-    expect(screen.getByText(/—/)).toBeInTheDocument()
+    expect(screen.queryByText(/MSRP/)).not.toBeInTheDocument()
     expect(screen.getByText(/TBD/)).toBeInTheDocument()
+  })
+
+  it('still shows the release date when the MSRP is unknown', () => {
+    renderDetail({ ...okProduct, msrp: null })
+
+    expect(screen.queryByText(/MSRP/)).not.toBeInTheDocument()
+    expect(screen.getByText('Release date: 2026-03-01')).toBeInTheDocument()
   })
 
   it('shows the price headline before the history fetch resolves, then renders the chart once it does', async () => {
